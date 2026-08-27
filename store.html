@@ -828,8 +828,8 @@
           element.setAttribute(attribute, currentLanguage === 'en' ? translateZhToEn(sourceMap[attribute]) : sourceMap[attribute]);
         });
       });
-      if (languageObserver) { languageObserver.takeRecords(); observeLanguageChanges(); }
       updateLanguageState();
+      if (languageObserver) { languageObserver.takeRecords(); observeLanguageChanges(); }
     }
     const updateLanguageState = () => {
       const zhButton = document.getElementById('languageZh');
