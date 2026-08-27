@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FoneSquare 多端交互原型入口">
+  <title>FoneSquare 多端交互原型</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --accent: #1769e0;
+      --border: #e4e9f2;
+      font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eef4ff 0%, var(--bg) 50%, #f8fbff 100%);
+      color: var(--text);
+    }
+    main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 72px 0; }
+    header { margin-bottom: 36px; }
+    .eyebrow { color: var(--accent); font-size: 14px; font-weight: 700; letter-spacing: .08em; }
+    h1 { margin: 10px 0 12px; font-size: clamp(32px, 5vw, 52px); line-height: 1.12; }
+    header p { margin: 0; color: var(--muted); font-size: 17px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .card {
+      display: flex;
+      min-height: 220px;
+      flex-direction: column;
+      padding: 26px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--card);
+      box-shadow: 0 16px 40px rgba(42, 63, 105, .08);
+      color: inherit;
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .card:hover, .card:focus-visible {
+      transform: translateY(-4px);
+      border-color: #a9c7f5;
+      box-shadow: 0 22px 48px rgba(42, 63, 105, .14);
+      outline: none;
+    }
+    .tag { align-self: flex-start; padding: 6px 10px; border-radius: 999px; background: #edf4ff; color: var(--accent); font-size: 13px; font-weight: 700; }
+    h2 { margin: 22px 0 10px; font-size: 24px; }
+    .card p { margin: 0; color: var(--muted); line-height: 1.65; }
+    .open { margin-top: auto; padding-top: 22px; color: var(--accent); font-weight: 700; }
+    footer { margin-top: 32px; color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 560px); padding: 44px 0; }
+      .grid { grid-template-columns: 1fr; }
+      .card { min-height: 190px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">FONESQUARE PROTOTYPES</div>
+      <h1>多端交互原型</h1>
+      <p>请选择要查看的业务端，原型将在当前窗口打开。</p>
+    </header>
+    <section class="grid" aria-label="原型列表">
+      <a class="card" href="store.html">
+        <span class="tag">STORE</span>
+        <h2>门店端</h2>
+        <p>创建标单、质检、竞拍和订单相关交互。</p>
+        <span class="open">打开原型 →</span>
+      </a>
+      <a class="card" href="platform.html">
+        <span class="tag">PLATFORM</span>
+        <h2>平台端</h2>
+        <p>商家、账户、权限和业务配置管理交互。</p>
+        <span class="open">打开原型 →</span>
+      </a>
+      <a class="card" href="recycler.html">
+        <span class="tag">RECYCLER</span>
+        <h2>回收商端</h2>
+        <p>订单详情、竞价结果与履约信息交互。</p>
+        <span class="open">打开原型 →</span>
+      </a>
+    </section>
+    <footer>交互原型仅用于产品评审与演示。</footer>
+  </main>
+</body>
+</html>

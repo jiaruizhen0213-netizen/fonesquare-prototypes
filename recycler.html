@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FoneSquare Recycler Prototype</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      color-scheme: light;
+      --orange: #ff4b0b;
+      --orange-soft: #fff1eb;
+      --ink: #181818;
+      --muted: #858585;
+      --line: #ececec;
+      --surface: #fff;
+      --page: #f3f4f6;
+      --green: #17804f;
+      --amber: #a15c00;
+    }
+    html { background: #e7e9ec; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: #e7e9ec;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .phone-shell {
+      position: relative;
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--page);
+      box-shadow: 0 0 32px rgba(20, 24, 31, .1);
+    }
+    .page { display: none; min-height: 100vh; padding-bottom: 76px; }
+    .page.active { display: block; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 15;
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      align-items: center;
+      height: 54px;
+      padding: 0 10px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .topbar h1 { margin: 0; text-align: center; font-size: 17px; font-weight: 650; }
+    .brand { color: var(--orange); letter-spacing: -.5px; font-size: 21px !important; font-weight: 850 !important; }
+    .icon-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      font-size: 27px;
+      line-height: 1;
+    }
+    .section {
+      margin: 10px 12px 0;
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .search-wrap { padding: 12px 12px 0; background: #fff; }
+    .search {
+      width: 100%;
+      padding: 11px 14px;
+      border: 0;
+      border-radius: 12px;
+      outline: 0;
+      background: #f4f5f6;
+      font-size: 14px;
+    }
+    .filter-bar {
+      position: sticky;
+      top: 54px;
+      z-index: 12;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 10px 8px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    .filter-button {
+      padding: 7px 2px;
+      border: 0;
+      background: transparent;
+      color: #333;
+      font-size: 13px;
+    }
+    .filter-button::after { content: "⌄"; padding-left: 4px; color: #999; }
+    .filter-button.selected { color: var(--orange); font-weight: 650; }
+    .notice { margin: 10px 12px 0; padding: 10px 13px; border-radius: 11px; color: var(--orange); background: var(--orange-soft); font-size: 13px; }
+    .card-list { display: grid; gap: 10px; padding: 10px 12px; }
+    .product-card {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 12px;
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 16px;
+      background: #fff;
+      color: inherit;
+      text-align: left;
+    }
+    .device-thumb {
+      position: relative;
+      width: 90px;
+      height: 108px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #dfe5e1, #b9c3bd);
+    }
+    .mini-phone {
+      position: absolute;
+      left: 25px;
+      top: 10px;
+      width: 48px;
+      height: 88px;
+      transform: rotate(-4deg);
+      border-radius: 9px;
+      background: linear-gradient(145deg, #382d42, #17141e 70%, #55465f);
+      box-shadow: 0 8px 12px rgba(0,0,0,.22);
+    }
+    .mini-phone::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 7px;
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      background: radial-gradient(circle at 30% 30%, #111 0 22%, #5b5065 24% 38%, transparent 40%), radial-gradient(circle at 72% 66%, #111 0 22%, #5b5065 24% 38%, transparent 40%);
+    }
+    .card-body { min-width: 0; }
+    .title-line { display: flex; align-items: flex-start; gap: 7px; }
+    .condition-tag {
+      flex: 0 0 auto;
+      min-width: 30px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--orange);
+      text-align: center;
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .product-name { margin: 0; font-size: 15px; font-weight: 680; line-height: 1.35; }
+    .specs { margin: 7px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .card-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 11px; color: var(--muted); font-size: 11px; }
+    .money { color: var(--orange); font-size: 17px; font-weight: 750; }
+    .my-bid { color: #555; font-weight: 600; }
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: min(100%, 430px);
+      padding: 9px 20px calc(9px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.98);
+      transform: translateX(-50%);
+    }
+    .nav-button { border: 0; background: transparent; color: #666; font-size: 12px; }
+    .nav-button span { display: block; margin-bottom: 2px; font-size: 20px; }
+    .nav-button.active { color: var(--orange); font-weight: 650; }
+    .nav-icon { display: grid !important; width: 25px; height: 25px; margin: 0 auto 2px !important; place-items: center; font-size: 20px !important; }
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding: 12px; background: #fff; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: 0 0 auto;
+      padding: 8px 13px;
+      border: 1px solid #e4e4e4;
+      border-radius: 18px;
+      background: #fff;
+      color: #666;
+      font-size: 13px;
+    }
+    .tab.active { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); font-weight: 650; }
+    .order-card { grid-template-columns: 76px 1fr; }
+    .order-card .device-thumb { width: 76px; height: 90px; }
+    .order-card .mini-phone { left: 20px; top: 7px; width: 42px; height: 74px; }
+    .order-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; font-size: 12px; }
+    .order-label { color: var(--muted); }
+    .order-state { color: var(--amber); font-weight: 650; }
+    .order-state.complete { color: var(--green); }
+    .order-state.closed { color: #777; }
+    .image-section { position: relative; background: #dce1dd; }
+    .image-strip { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .image-strip::-webkit-scrollbar { display: none; }
+    .device-shot {
+      position: relative;
+      flex: 0 0 100%;
+      height: 340px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      background: radial-gradient(circle at 72% 18%, rgba(255,255,255,.65), transparent 28%), linear-gradient(155deg, #dfe6e0, #bcc8c0);
+    }
+    .device-shot:nth-child(2) { background: linear-gradient(150deg, #d7dbe1, #adb5c0); }
+    .device-shot:nth-child(3) { background: linear-gradient(155deg, #e4ddd8, #c9bdb5); }
+    .phone-back {
+      position: absolute;
+      left: 50%;
+      top: 31px;
+      width: 185px;
+      height: 278px;
+      transform: translateX(-50%) rotate(-2deg);
+      border-radius: 31px;
+      background: linear-gradient(145deg, #30283b, #17141e 68%, #443a51);
+      box-shadow: 0 25px 36px rgba(22,22,28,.3), inset 0 0 0 2px rgba(255,255,255,.1);
+    }
+    .phone-back::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 76px;
+      height: 76px;
+      border-radius: 21px;
+      background: radial-gradient(circle at 28% 28%, #090a0e 0 15%, #5a5064 17% 28%, transparent 30%), radial-gradient(circle at 72% 48%, #090a0e 0 15%, #5a5064 17% 28%, transparent 30%), radial-gradient(circle at 29% 76%, #090a0e 0 15%, #5a5064 17% 28%, transparent 30%), #3d3547;
+    }
+    .phone-front {
+      position: absolute;
+      left: 50%;
+      top: 28px;
+      width: 180px;
+      height: 285px;
+      transform: translateX(-50%) rotate(2deg);
+      padding: 7px;
+      border-radius: 34px;
+      background: #17181c;
+      box-shadow: 0 25px 36px rgba(22,22,28,.3);
+    }
+    .phone-screen { width: 100%; height: 100%; border-radius: 28px; background: linear-gradient(150deg, #5f355e 8%, #2b1d4f 42%, #de6a58 100%); }
+    .scratch-panel { position: absolute; left: 50%; top: 55px; width: 275px; height: 230px; transform: translateX(-50%); border-radius: 24px; background: #29242e; }
+    .scratch-panel::before { content: "Minor scratch"; position: absolute; right: 14px; bottom: 14px; padding: 7px 10px; border-radius: 12px; color: #fff; background: rgba(0,0,0,.55); font-size: 12px; }
+    .scratch-panel::after { content: ""; position: absolute; left: 60px; top: 82px; width: 145px; height: 2px; transform: rotate(-14deg); background: rgba(255,255,255,.55); box-shadow: 0 12px 0 rgba(255,255,255,.3); }
+    .image-count { position: absolute; right: 15px; bottom: 13px; z-index: 2; padding: 6px 10px; border-radius: 14px; color: #fff; background: rgba(0,0,0,.58); font-size: 12px; font-weight: 650; }
+    .product-title { display: flex; gap: 9px; align-items: flex-start; }
+    .detail-name { margin: 0; font-size: 20px; font-weight: 680; line-height: 1.28; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+    .field-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; }
+    .field-value { font-size: 14px; font-weight: 650; }
+    .status { color: var(--green); }
+    .countdown { color: var(--orange); font-variant-numeric: tabular-nums; }
+    .result-banner { margin: 10px 12px 0; padding: 16px; border-radius: 16px; color: var(--green); background: #eaf7f0; font-size: 18px; font-weight: 750; text-align: center; }
+    .amount-panel { display: flex; align-items: end; justify-content: space-between; gap: 10px; }
+    .amount-panel .money { font-size: 26px; }
+    .inspection-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 13px; border-bottom: 1px solid var(--line); }
+    .inspection-heading h2 { margin: 0; font-size: 18px; }
+    .inspection-time { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .inspection-condition { color: var(--orange); font-size: 34px; font-weight: 750; }
+    .inspection-list { margin: 4px 0 0; }
+    .inspection-row { display: grid; grid-template-columns: 115px 1fr; gap: 13px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .inspection-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .inspection-row dt { color: var(--muted); font-size: 13px; }
+    .inspection-row dd { margin: 0; text-align: right; font-size: 13px; line-height: 1.4; font-weight: 550; }
+    .inspection-row dd.issue { color: #b33b1b; }
+    .action-bar { display: grid; grid-template-columns: .8fr 1.2fr; gap: 10px; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: #fff; }
+    .action-button { min-height: 48px; border-radius: 24px; font-weight: 650; }
+    .secondary { border: 1px solid #cfcfcf; background: #fff; color: var(--ink); }
+    .primary { border: 1px solid var(--orange); background: var(--orange); color: #fff; }
+    .filter-sheet {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 40;
+      display: none;
+      width: min(100%, 430px);
+      max-height: 68vh;
+      overflow: auto;
+      padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+      border-radius: 22px 22px 0 0;
+      background: #fff;
+      box-shadow: 0 -15px 50px rgba(0,0,0,.18);
+      transform: translateX(-50%);
+    }
+    .filter-sheet.open { display: block; }
+    .sheet-backdrop { position: fixed; inset: 0; z-index: 35; display: none; background: rgba(0,0,0,.38); }
+    .sheet-backdrop.open { display: block; }
+    .sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .sheet-head h2 { margin: 0; font-size: 19px; }
+    .sheet-close { border: 0; background: transparent; color: #777; font-size: 24px; }
+    .enum-group { display: none; }
+    .enum-group.active { display: block; }
+    .enum-group h3 { margin: 16px 0 9px; font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { padding: 8px 13px; border: 1px solid #e4e4e4; border-radius: 10px; background: #f8f8f8; color: #555; font-size: 13px; }
+    .chip.selected { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); }
+    .sheet-confirm { width: 100%; min-height: 48px; margin-top: 22px; border: 0; border-radius: 24px; color: #fff; background: var(--orange); font-weight: 650; }
+    dialog { width: min(calc(100% - 32px), 390px); padding: 0; border: 0; border-radius: 22px; box-shadow: 0 24px 80px rgba(0,0,0,.24); }
+    dialog::backdrop { background: rgba(0,0,0,.42); }
+    .quote-dialog { padding: 22px; }
+    .quote-dialog h2 { margin: 0 0 6px; font-size: 20px; }
+    .quote-dialog p { margin: 0 0 18px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .amount-input { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; padding: 0 14px; border: 1px solid #d3d3d3; border-radius: 12px; }
+    .amount-input input { width: 100%; padding: 15px 0; border: 0; outline: 0; font-size: 22px; font-weight: 650; }
+    .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .dialog-actions button { min-height: 46px; border-radius: 23px; font-weight: 650; }
+    .profile-card { margin: 12px; padding: 20px 18px; border-radius: 18px; background: #fff; }
+    .profile-main { display: flex; align-items: center; gap: 14px; }
+    .avatar { display: grid; flex: 0 0 auto; width: 68px; height: 68px; place-items: center; border-radius: 50%; color: #fff; background: var(--orange); font-size: 32px; font-weight: 650; }
+    .profile-name { margin: 0 0 5px; font-size: 21px; }
+    .profile-phone { color: var(--muted); font-size: 14px; }
+    .verified-badge { display: inline-flex; align-items: center; gap: 4px; margin-top: 9px; padding: 4px 8px; border: 1px solid #b8e1cd; border-radius: 7px; color: var(--green); background: #effaf4; font-size: 12px; font-weight: 650; }
+    .verified-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 13px 14px; border-radius: 12px; color: var(--green); background: #edf8f2; font-size: 13px; line-height: 1.45; }
+    .verified-banner strong { display: block; margin-bottom: 2px; font-size: 14px; }
+    .verified-banner-icon { font-size: 28px; }
+    .menu-card { margin: 10px 12px 0; overflow: hidden; border-radius: 16px; background: #fff; }
+    .menu-heading { margin: 0; padding: 17px 18px 11px; font-size: 17px; }
+    .menu-row { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; width: calc(100% - 32px); margin: 0 16px; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); color: inherit; background: transparent; text-align: left; }
+    .menu-row:last-child { border-bottom: 0; }
+    .menu-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 11px; background: #f1f2f3; font-size: 21px; }
+    .menu-title { display: block; font-size: 15px; font-weight: 650; }
+    .menu-description { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .chevron { color: #aaa; font-size: 23px; }
+    .settings-card { margin: 12px; overflow: hidden; border-radius: 16px; background: #fff; }
+    .settings-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; min-height: 64px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .settings-row:last-child { border-bottom: 0; }
+    .settings-row-title { display: block; font-size: 15px; font-weight: 650; }
+    .settings-row-description { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .language-control { display: flex; padding: 3px; border-radius: 10px; background: #f1f2f3; }
+    .language-option { min-width: 54px; padding: 7px 9px; border: 0; border-radius: 8px; color: #777; background: transparent; font-size: 12px; }
+    .language-option.active { color: var(--orange); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); font-weight: 700; }
+    .form-card { margin: 12px; padding: 18px 16px; border-radius: 16px; background: #fff; }
+    .form-field { display: block; margin-bottom: 17px; }
+    .form-field:last-of-type { margin-bottom: 0; }
+    .form-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 650; }
+    .form-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .required { color: var(--orange); }
+    .form-control { width: 100%; min-height: 48px; padding: 12px 13px; border: 1px solid #dedede; border-radius: 11px; outline: 0; color: var(--ink); background: #fff; font-size: 14px; }
+    textarea.form-control { min-height: 92px; resize: vertical; line-height: 1.5; }
+    .form-control:focus { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-soft); }
+    .prefill-card { margin: 12px 12px 0; padding: 14px 15px; border: 1px solid #cce9d9; border-radius: 14px; background: #f0faf5; }
+    .prefill-card strong { display: block; color: var(--green); font-size: 14px; }
+    .prefill-card p { margin: 5px 0 12px; color: #557267; font-size: 12px; line-height: 1.5; }
+    .prefill-button { padding: 8px 12px; border: 1px solid #9ed2b7; border-radius: 9px; color: var(--green); background: #fff; font-size: 13px; font-weight: 650; }
+    .page-action { position: sticky; bottom: 0; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(255,255,255,.98); }
+    .save-button { width: 100%; min-height: 48px; border: 0; border-radius: 24px; color: #fff; background: var(--orange); font-weight: 700; }
+    .toast { position: fixed; left: 50%; bottom: 90px; z-index: 60; visibility: hidden; padding: 10px 16px; border-radius: 20px; color: #fff; background: rgba(20,20,20,.88); transform: translate(-50%, 12px); opacity: 0; transition: .2s ease; font-size: 13px; }
+    .toast.show { visibility: visible; transform: translate(-50%, 0); opacity: 1; }
+    html[lang="zh-CN"] .scratch-panel::before { content: "轻微划痕"; }
+  </style>
+</head>
+<body>
+  <main class="phone-shell" aria-label="FoneSquare recycler prototype">
+    <section class="page active" id="marketPage" data-page="market">
+      <header class="topbar"><span></span><h1 class="brand">FONESQUARE</h1><span></span></header>
+      <div class="search-wrap"><input class="search" type="search" placeholder="Search lot, product, brand or model" aria-label="Search lots"></div>
+      <div class="filter-bar" aria-label="Auction filters">
+        <button class="filter-button" type="button" data-filter="model">Model</button>
+        <button class="filter-button" type="button" data-filter="specs">Specs</button>
+        <button class="filter-button" type="button" data-filter="condition">Condition</button>
+        <button class="filter-button" type="button" data-filter="sort">Sort</button>
+      </div>
+      <div class="notice">Available this week · 5,678 units</div>
+      <div class="card-list">
+        <button class="product-card" type="button" data-open="auction">
+          <span class="device-thumb"><span class="mini-phone"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">A</span><span class="product-name">iPhone 17 Pro Max 512G Starry Orange</span></span>
+            <span class="specs">CN Version · Battery Health 90%–95%</span>
+            <span class="card-meta"><span>Ends in 01:28:36</span><span class="my-bid">My bid MYR 2,350</span></span>
+          </span>
+        </button>
+        <button class="product-card" type="button" data-open="auction">
+          <span class="device-thumb" style="background:linear-gradient(145deg,#e7ddd4,#c6b5a6)"><span class="mini-phone" style="background:linear-gradient(145deg,#d7b193,#8e6b54)"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">B</span><span class="product-name">Huawei Mate 70 Pro 512G Gold</span></span>
+            <span class="specs">CN Version · Battery Health 85%–90%</span>
+            <span class="card-meta"><span>Ends in 03:16:08</span><span>Not bid</span></span>
+          </span>
+        </button>
+        <button class="product-card" type="button" data-open="auction">
+          <span class="device-thumb" style="background:linear-gradient(145deg,#dbe2ea,#aeb9c7)"><span class="mini-phone" style="background:linear-gradient(145deg,#344968,#152134)"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">C</span><span class="product-name">Samsung Galaxy S25 Ultra 256G Titanium Blue</span></span>
+            <span class="specs">HK Version · Battery Health 80%–85%</span>
+            <span class="card-meta"><span>Ends in 05:40:21</span><span>Not bid</span></span>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="page" id="auctionPage" data-page="auction">
+      <header class="topbar"><button class="icon-button" type="button" data-back="market" aria-label="Back">‹</button><h1>Auction Details</h1><span></span></header>
+      <section class="image-section" aria-label="Device photos">
+        <div class="image-strip" id="deviceImages">
+          <div class="device-shot" aria-label="Device back photo"><div class="phone-back"></div></div>
+          <div class="device-shot" aria-label="Device screen photo"><div class="phone-front"><div class="phone-screen"></div></div></div>
+          <div class="device-shot" aria-label="Device scratch detail photo"><div class="scratch-panel"></div></div>
+        </div>
+        <div class="image-count" id="imageCount" aria-live="polite">1 / 3</div>
+      </section>
+      <section class="section">
+        <div class="product-title"><span class="condition-tag">A</span><h2 class="detail-name">iPhone 17 Pro Max 512G Starry Orange</h2></div>
+        <p class="specs">CN Version · Battery Health 90%–95% · Dual SIM</p>
+      </section>
+      <section class="section field-grid">
+        <div><span class="field-label">Lot number</span><span class="field-value">FS-HK-260821-0186</span></div>
+        <div><span class="field-label">Execution status</span><span class="field-value status">Bidding</span></div>
+        <div><span class="field-label">Round result</span><span class="field-value">—</span></div>
+        <div><span class="field-label">Time left</span><span class="field-value countdown" id="countdown">01:28:36</span></div>
+        <div><span class="field-label">Currency</span><span class="field-value">MYR</span></div>
+        <div><span class="field-label">My latest bid</span><span class="field-value">MYR 2,350</span></div>
+        <div><span class="field-label">Bid status</span><span class="field-value status">Valid</span></div>
+      </section>
+      <section class="section inspection" aria-label="Inspection report">
+        <div class="inspection-heading"><div><h2>Inspection Report</h2><div class="inspection-time">Completed 21 Aug 2026, 09:30</div></div><div class="inspection-condition" aria-label="Condition A">A</div></div>
+        <dl class="inspection-list">
+          <div class="inspection-row"><dt>Screen Exterior</dt><dd class="issue">Minor scratches on screen/body</dd></div>
+          <div class="inspection-row"><dt>Frame / Back</dt><dd>Perfect Casing</dd></div>
+          <div class="inspection-row"><dt>Screen Display</dt><dd>Perfect Display</dd></div>
+          <div class="inspection-row"><dt>Functionality</dt><dd>Fully Functional</dd></div>
+          <div class="inspection-row"><dt>Repair Status</dt><dd>No Repairs</dd></div>
+          <div class="inspection-row"><dt>Battery Health</dt><dd>90%–95% Health</dd></div>
+        </dl>
+      </section>
+      <nav class="action-bar"><button class="action-button secondary" type="button">View My Bid</button><button class="action-button primary" id="openQuote" type="button">Place Bid</button></nav>
+    </section>
+
+    <section class="page" id="ordersPage" data-page="orders">
+      <header class="topbar"><span></span><h1>Winning Orders</h1><span></span></header>
+      <div class="tabs" aria-label="Order status filters">
+        <button class="tab active" type="button" data-status="all">All</button>
+        <button class="tab" type="button" data-status="pending">Pending Pickup</button>
+        <button class="tab" type="button" data-status="complete">Picked Up</button>
+        <button class="tab" type="button" data-status="closed">Closed</button>
+      </div>
+      <div class="card-list" id="orderList">
+        <button class="product-card order-card" type="button" data-order-status="pending" data-open="won">
+          <span class="device-thumb"><span class="mini-phone"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">A</span><span class="product-name">iPhone 17 Pro Max 512G Starry Orange</span></span>
+            <span class="specs">CN Version · Battery Health 90%–95%</span>
+            <span class="order-row"><span class="order-label">Status</span><span class="order-state">Pending Pickup</span></span>
+            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 2,350</span></span>
+            <span class="order-row"><span class="order-label">21 Aug 2026, 11:02</span><span>FSO-260821-0098</span></span>
+          </span>
+        </button>
+        <button class="product-card order-card" type="button" data-order-status="complete" data-open="won">
+          <span class="device-thumb" style="background:linear-gradient(145deg,#e7ddd4,#c6b5a6)"><span class="mini-phone" style="background:linear-gradient(145deg,#d7b193,#8e6b54)"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">B</span><span class="product-name">Huawei Mate 70 Pro 512G Gold</span></span>
+            <span class="specs">CN Version · Battery Health 85%–90%</span>
+            <span class="order-row"><span class="order-label">Status</span><span class="order-state complete">Picked Up</span></span>
+            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 1,980</span></span>
+            <span class="order-row"><span class="order-label">12 Aug 2026, 16:40</span><span>FSO-260812-0041</span></span>
+          </span>
+        </button>
+        <button class="product-card order-card" type="button" data-order-status="closed" data-open="won">
+          <span class="device-thumb" style="background:linear-gradient(145deg,#dbe2ea,#aeb9c7)"><span class="mini-phone" style="background:linear-gradient(145deg,#344968,#152134)"></span></span>
+          <span class="card-body">
+            <span class="title-line"><span class="condition-tag">C</span><span class="product-name">Samsung Galaxy S25 Ultra 256G Titanium Blue</span></span>
+            <span class="specs">HK Version · Battery Health 80%–85%</span>
+            <span class="order-row"><span class="order-label">Status</span><span class="order-state closed">Closed</span></span>
+            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 1,620</span></span>
+            <span class="order-row"><span class="order-label">30 Jul 2026, 10:18</span><span>FSO-260730-0117</span></span>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section class="page" id="wonPage" data-page="won">
+      <header class="topbar"><button class="icon-button" type="button" data-back="orders" aria-label="Back">‹</button><h1>Order Details</h1><span></span></header>
+      <div class="result-banner">✓ Formally Won</div>
+      <section class="section">
+        <div class="product-card" style="padding:0">
+          <span class="device-thumb"><span class="mini-phone"></span></span>
+          <span class="card-body"><span class="title-line"><span class="condition-tag">A</span><span class="product-name">iPhone 17 Pro Max 512G Starry Orange</span></span><span class="specs">CN Version · Battery Health 90%–95% · Dual SIM</span></span>
+        </div>
+      </section>
+      <section class="section amount-panel"><div><span class="field-label">Transaction Amount</span><span class="money">MYR 2,350</span></div><span class="order-state">Pending Pickup</span></section>
+      <div class="notice">Pickup is recorded by the platform supervisor after selecting the units actually collected at the store. The recycler cannot edit the pickup batch or require store confirmation.</div>
+      <section class="section field-grid">
+        <div><span class="field-label">Order number</span><span class="field-value">FSO-260821-0098</span></div>
+        <div><span class="field-label">Lot number</span><span class="field-value">FS-HK-260821-0186</span></div>
+        <div><span class="field-label">Transaction time</span><span class="field-value">21 Aug 2026, 11:02</span></div>
+        <div><span class="field-label">Condition</span><span class="field-value">A</span></div>
+      </section>
+      <section class="section inspection" aria-label="Inspection report">
+        <div class="inspection-heading"><div><h2>Inspection Report</h2><div class="inspection-time">Completed 21 Aug 2026, 09:30</div></div><div class="inspection-condition" aria-label="Condition A">A</div></div>
+        <dl class="inspection-list">
+          <div class="inspection-row"><dt>Screen Exterior</dt><dd class="issue">Minor scratches on screen/body</dd></div>
+          <div class="inspection-row"><dt>Frame / Back</dt><dd>Perfect Casing</dd></div>
+          <div class="inspection-row"><dt>Screen Display</dt><dd>Perfect Display</dd></div>
+          <div class="inspection-row"><dt>Functionality</dt><dd>Fully Functional</dd></div>
+          <div class="inspection-row"><dt>Repair Status</dt><dd>No Repairs</dd></div>
+          <div class="inspection-row"><dt>Battery Health</dt><dd>90%–95% Health</dd></div>
+        </dl>
+      </section>
+    </section>
+
+    <section class="page" id="mePage" data-page="me">
+      <header class="topbar"><span></span><h1>Me</h1><span></span></header>
+      <section class="profile-card">
+        <div class="profile-main">
+          <div class="avatar" aria-hidden="true">R</div>
+          <div>
+            <h2 class="profile-name">Recycler</h2>
+            <div class="profile-phone">+60 12-345 6789</div>
+            <span class="verified-badge">✓ Identity verified</span>
+          </div>
+        </div>
+        <div class="verified-banner">
+          <div><strong>Verification completed</strong><span>Your verified address is available for store setup</span></div>
+          <span class="verified-banner-icon" aria-hidden="true">♢</span>
+        </div>
+      </section>
+      <section class="menu-card">
+        <h2 class="menu-heading">Quick access</h2>
+        <button class="menu-row" type="button" data-open="address">
+          <span class="menu-icon" aria-hidden="true">⌖</span>
+          <span><span class="menu-title">Store address</span><span class="menu-description" id="addressSummary">Country, address and phone number</span></span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="menu-row" type="button" data-open="settings">
+          <span class="menu-icon" aria-hidden="true">⚙</span>
+          <span><span class="menu-title">Settings</span><span class="menu-description">Account, security and language</span></span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="menu-row" type="button">
+          <span class="menu-icon" aria-hidden="true">?</span>
+          <span><span class="menu-title">Help &amp; support</span><span class="menu-description">FAQs and contact us</span></span>
+          <span class="chevron" aria-hidden="true">›</span>
+        </button>
+      </section>
+    </section>
+
+    <section class="page" id="settingsPage" data-page="settings">
+      <header class="topbar"><button class="icon-button" type="button" data-back="me" aria-label="Back">‹</button><h1>Settings</h1><span></span></header>
+      <section class="settings-card">
+        <div class="settings-row">
+          <div><span class="settings-row-title">Language</span><span class="settings-row-description">Switch the display language</span></div>
+          <div class="language-control" role="group" aria-label="Language">
+            <button class="language-option" type="button" data-language="zh">中文</button>
+            <button class="language-option active" type="button" data-language="en">English</button>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div><span class="settings-row-title">Account &amp; security</span><span class="settings-row-description">Login phone and identity information</span></div>
+          <span class="chevron" aria-hidden="true">›</span>
+        </div>
+      </section>
+    </section>
+
+    <section class="page" id="addressPage" data-page="address">
+      <header class="topbar"><button class="icon-button" type="button" data-back="me" aria-label="Back">‹</button><h1>Store address</h1><span></span></header>
+      <section class="prefill-card">
+        <strong>Verified identity address available</strong>
+        <p>You have completed identity verification. You can fill the verified address into the store address form.</p>
+        <button class="prefill-button" id="useVerifiedAddress" type="button">Use verified address</button>
+      </section>
+      <form id="addressForm" novalidate>
+        <section class="form-card">
+          <label class="form-field">
+            <span class="form-label">Country / region <span class="required">*</span></span>
+            <select class="form-control" id="storeCountry" name="country" required>
+              <option value="Malaysia">Malaysia</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Hong Kong SAR">Hong Kong SAR</option>
+              <option value="Mainland China">Mainland China</option>
+            </select>
+            <span class="form-hint">Defaulted to the country selected at registration</span>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Detailed address <span class="required">*</span></span>
+            <textarea class="form-control" id="storeAddress" name="address" required placeholder="Enter street, building, unit and postal code"></textarea>
+          </label>
+          <label class="form-field">
+            <span class="form-label">Contact phone <span class="required">*</span></span>
+            <input class="form-control" id="storePhone" name="phone" type="tel" value="+60 12-345 6789" required>
+            <span class="form-hint">Defaulted to the login phone number</span>
+          </label>
+        </section>
+        <div class="page-action"><button class="save-button" type="submit">Save store address</button></div>
+      </form>
+    </section>
+
+    <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
+      <button class="nav-button active" type="button" data-nav="market"><span class="nav-icon">⌂</span>Market</button>
+      <button class="nav-button" type="button" data-nav="orders"><span class="nav-icon">▣</span>Orders</button>
+      <button class="nav-button" type="button" data-nav="me"><span class="nav-icon">●</span>Me</button>
+    </nav>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <aside class="filter-sheet" id="filterSheet" aria-label="Filter values">
+    <div class="sheet-head"><h2 id="sheetTitle">Model</h2><button class="sheet-close" id="sheetClose" type="button" aria-label="Close">×</button></div>
+    <div class="enum-group" data-enum="model">
+      <h3>Brand</h3><div class="chips"><button class="chip selected" type="button">All</button><button class="chip" type="button">Apple</button><button class="chip" type="button">Huawei</button><button class="chip" type="button">Samsung</button></div>
+      <h3>Model</h3><div class="chips"><button class="chip" type="button">iPhone 17 Pro Max</button><button class="chip" type="button">Mate 70 Pro</button><button class="chip" type="button">Galaxy S25 Ultra</button></div>
+    </div>
+    <div class="enum-group" data-enum="specs">
+      <h3>Storage</h3><div class="chips"><button class="chip" type="button">128G</button><button class="chip" type="button">256G</button><button class="chip" type="button">512G</button><button class="chip" type="button">1T</button><button class="chip" type="button">2T</button></div>
+      <h3>Color</h3><div class="chips"><button class="chip" type="button">Silver</button><button class="chip" type="button">Starry Orange</button><button class="chip" type="button">Deep Blue</button></div>
+      <h3>Version</h3><div class="chips"><button class="chip" type="button">CN</button><button class="chip" type="button">HK</button><button class="chip" type="button">US</button></div>
+    </div>
+    <div class="enum-group" data-enum="condition">
+      <h3>Condition</h3><div class="chips"><button class="chip" type="button">A</button><button class="chip" type="button">B</button><button class="chip" type="button">C</button></div>
+      <h3>Battery Health</h3><div class="chips"><button class="chip" type="button">95%–100%</button><button class="chip" type="button">90%–95%</button><button class="chip" type="button">85%–90%</button><button class="chip" type="button">Below 85%</button></div>
+      <h3>Inspection Issue</h3><div class="chips"><button class="chip" type="button">Screen Scratch</button><button class="chip" type="button">Body Damage</button><button class="chip" type="button">Repair History</button></div>
+    </div>
+    <div class="enum-group" data-enum="sort">
+      <h3>Sort by</h3><div class="chips"><button class="chip selected" type="button">Ending Soon</button><button class="chip" type="button">Newest</button></div>
+    </div>
+    <button class="sheet-confirm" id="sheetConfirm" type="button">Confirm</button>
+  </aside>
+
+  <dialog id="quoteDialog" aria-labelledby="quoteTitle">
+    <form class="quote-dialog" method="dialog">
+      <h2 id="quoteTitle">Place Bid</h2>
+      <p>iPhone 17 Pro Max 512G Starry Orange<br>Time left: <span id="dialogCountdown">01:28:36</span></p>
+      <label class="amount-input"><span>MYR</span><input name="amount" type="number" min="0.01" step="0.01" value="2350" aria-label="Bid amount"></label>
+      <div class="dialog-actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" value="confirm">Confirm</button></div>
+    </form>
+  </dialog>
+
+  <script>
+    const pages = [...document.querySelectorAll('.page')];
+    const nav = document.getElementById('bottomNav');
+    const showPage = (name) => {
+      pages.forEach(page => page.classList.toggle('active', page.dataset.page === name));
+      nav.style.display = ['market', 'orders', 'me'].includes(name) ? 'grid' : 'none';
+      document.querySelectorAll('[data-nav]').forEach(button => button.classList.toggle('active', button.dataset.nav === name));
+      window.scrollTo(0, 0);
+    };
+    document.querySelectorAll('[data-nav]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.nav)));
+    document.querySelectorAll('[data-open]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.open)));
+    document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.back)));
+
+    const zh = {
+      'Market': '市场', 'Orders': '订单', 'Me': '我的',
+      'Search lot, product, brand or model': '搜索批次、产品、品牌或型号',
+      'Model': '型号', 'Specs': '规格', 'Condition': '成色', 'Sort': '排序',
+      'Available this week · 5,678 units': '本周可竞拍 · 5,678 台',
+      'iPhone 17 Pro Max 512G Starry Orange': 'iPhone 17 Pro Max 512G 星宇橙',
+      'Huawei Mate 70 Pro 512G Gold': '华为 Mate 70 Pro 512G 金色',
+      'Samsung Galaxy S25 Ultra 256G Titanium Blue': '三星 Galaxy S25 Ultra 256G 钛蓝色',
+      'CN Version · Battery Health 90%–95%': '国行 · 电池健康度 90%–95%',
+      'CN Version · Battery Health 85%–90%': '国行 · 电池健康度 85%–90%',
+      'HK Version · Battery Health 80%–85%': '港版 · 电池健康度 80%–85%',
+      'CN Version · Battery Health 90%–95% · Dual SIM': '国行 · 电池健康度 90%–95% · 双卡',
+      'Ends in 01:28:36': '距结束 01:28:36', 'Ends in 03:16:08': '距结束 03:16:08', 'Ends in 05:40:21': '距结束 05:40:21',
+      'My bid MYR 2,350': '我的出价 MYR 2,350', 'Not bid': '未出价',
+      'Auction Details': '竞拍详情', 'Lot number': '批次号', 'Execution status': '执行状态',
+      'Bidding': '竞价中', 'Round result': '本轮结果', 'Time left': '剩余时间', 'Currency': '币种',
+      'My latest bid': '我的最新出价', 'Bid status': '出价状态', 'Valid': '有效',
+      'Inspection Report': '验机报告', 'Completed 21 Aug 2026, 09:30': '完成于 2026年8月21日 09:30',
+      'Screen Exterior': '屏幕外观', 'Minor scratches on screen/body': '屏幕/机身有轻微划痕',
+      'Frame / Back': '边框 / 后盖', 'Perfect Casing': '外壳完好', 'Screen Display': '屏幕显示',
+      'Perfect Display': '显示完好', 'Functionality': '功能情况', 'Fully Functional': '功能正常',
+      'Repair Status': '维修情况', 'No Repairs': '无维修', 'Battery Health': '电池健康度', '90%–95% Health': '健康度 90%–95%',
+      'View My Bid': '查看我的出价', 'Place Bid': '出价',
+      'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货', 'Closed': '已关闭',
+      'Status': '状态', 'Transaction Amount': '成交金额', 'Order Details': '订单详情', '✓ Formally Won': '✓ 已正式中标',
+      '21 Aug 2026, 11:02': '2026年8月21日 11:02', '12 Aug 2026, 16:40': '2026年8月12日 16:40', '30 Jul 2026, 10:18': '2026年7月30日 10:18',
+      'Pickup is recorded by the platform supervisor after selecting the units actually collected at the store. The recycler cannot edit the pickup batch or require store confirmation.': '平台督导在门店选择实际提货设备后记录提货结果。回收商不可编辑提货批次，也无需门店确认。',
+      'Order number': '订单号', 'Transaction time': '成交时间',
+      'Recycler': '回收商', '✓ Identity verified': '✓ 已完成身份认证', 'Verification completed': '身份认证已完成',
+      'Your verified address is available for store setup': '认证地址可用于维护门店地址', 'Quick access': '快捷入口',
+      'Store address': '门店地址', 'Country, address and phone number': '国家/地区、具体地址、联系电话',
+      'Settings': '设置', 'Account, security and language': '账户、安全与语言', 'Help & support': '帮助与支持',
+      'FAQs and contact us': '常见问题、联系我们', 'Language': '语言', 'Switch the display language': '切换界面显示语言',
+      'Account & security': '账户与安全', 'Login phone and identity information': '登录手机号与身份信息',
+      'Verified identity address available': '可使用身份认证地址',
+      'You have completed identity verification. You can fill the verified address into the store address form.': '你已完成身份认证，可将认证地址一键代入门店地址表单。',
+      'Use verified address': '使用认证地址', 'Country / region': '国家/地区', 'Detailed address': '具体地址',
+      'Contact phone': '联系电话', 'Save store address': '保存门店地址',
+      'Defaulted to the country selected at registration': '默认使用注册时选择的国家', 'Defaulted to the login phone number': '默认使用登录手机号',
+      'Malaysia': '马来西亚', 'Singapore': '新加坡', 'Hong Kong SAR': '中国香港', 'Mainland China': '中国大陆',
+      'Brand': '品牌', 'Apple': '苹果', 'Huawei': '华为', 'Samsung': '三星', 'Storage': '存储容量',
+      'Color': '颜色', 'Silver': '银色', 'Starry Orange': '星宇橙', 'Deep Blue': '深蓝色', 'Version': '版本',
+      'Battery Health': '电池健康度', 'Below 85%': '低于 85%', 'Inspection Issue': '验机问题',
+      'Screen Scratch': '屏幕划痕', 'Body Damage': '机身破损', 'Repair History': '维修记录', 'Sort by': '排序方式',
+      'Ending Soon': '即将结束', 'Newest': '最新发布', 'Confirm': '确认', 'Cancel': '取消',
+      'Time left:': '剩余时间：'
+    };
+    const placeholderZh = { 'Search lot, product, brand or model': '搜索批次、产品、品牌或型号', 'Enter street, building, unit and postal code': '请输入街道、楼栋、单元及邮编' };
+    const textNodes = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        return node.parentElement && !['SCRIPT', 'STYLE'].includes(node.parentElement.tagName) && node.nodeValue.trim()
+          ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    while (walker.nextNode()) textNodes.push({ node: walker.currentNode, en: walker.currentNode.nodeValue });
+    document.querySelectorAll('[placeholder]').forEach(element => { element.dataset.placeholderEn = element.placeholder; });
+
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    let currentLanguage = localStorage.getItem('recyclerPrototypeLanguage') === 'zh' ? 'zh' : 'en';
+    const showToast = (english, chinese) => {
+      toast.textContent = currentLanguage === 'zh' ? chinese : english;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    };
+    const addressSummary = document.getElementById('addressSummary');
+    const updateAddressSummary = () => {
+      const saved = JSON.parse(localStorage.getItem('recyclerStoreAddress') || 'null');
+      if (saved?.address) addressSummary.textContent = `${currentLanguage === 'zh' ? (zh[saved.country] || saved.country) : saved.country} · ${saved.address}`;
+      else addressSummary.textContent = currentLanguage === 'zh' ? zh['Country, address and phone number'] : 'Country, address and phone number';
+    };
+    const setLanguage = language => {
+      currentLanguage = language;
+      document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+      document.title = language === 'zh' ? 'FoneSquare 回收商原型' : 'FoneSquare Recycler Prototype';
+      textNodes.forEach(({ node, en }) => {
+        const key = en.trim();
+        const translated = language === 'zh' ? (zh[key] || key) : key;
+        node.nodeValue = `${en.match(/^\s*/)[0]}${translated}${en.match(/\s*$/)[0]}`;
+      });
+      document.querySelectorAll('[data-placeholder-en]').forEach(element => {
+        element.placeholder = language === 'zh' ? (placeholderZh[element.dataset.placeholderEn] || element.dataset.placeholderEn) : element.dataset.placeholderEn;
+      });
+      document.querySelectorAll('[data-language]').forEach(button => button.classList.toggle('active', button.dataset.language === language));
+      localStorage.setItem('recyclerPrototypeLanguage', language);
+      updateAddressSummary();
+    };
+    document.querySelectorAll('[data-language]').forEach(button => button.addEventListener('click', () => {
+      setLanguage(button.dataset.language);
+      showToast('Language switched', '语言已切换');
+    }));
+
+    const addressForm = document.getElementById('addressForm');
+    const storeCountry = document.getElementById('storeCountry');
+    const storeAddress = document.getElementById('storeAddress');
+    const storePhone = document.getElementById('storePhone');
+    try {
+      const savedAddress = JSON.parse(localStorage.getItem('recyclerStoreAddress') || 'null');
+      if (savedAddress) {
+        storeCountry.value = savedAddress.country || 'Malaysia';
+        storeAddress.value = savedAddress.address || '';
+        storePhone.value = savedAddress.phone || '+60 12-345 6789';
+      }
+    } catch (error) {
+      localStorage.removeItem('recyclerStoreAddress');
+    }
+    document.getElementById('useVerifiedAddress').addEventListener('click', () => {
+      storeCountry.value = 'Malaysia';
+      storeAddress.value = '18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor';
+      storePhone.value = '+60 12-345 6789';
+      showToast('Verified address filled in', '已代入认证地址');
+    });
+    addressForm.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!addressForm.reportValidity()) return;
+      localStorage.setItem('recyclerStoreAddress', JSON.stringify({ country: storeCountry.value, address: storeAddress.value.trim(), phone: storePhone.value.trim() }));
+      updateAddressSummary();
+      showToast('Store address saved', '门店地址已保存');
+    });
+    setLanguage(currentLanguage);
+
+    const imageStrip = document.getElementById('deviceImages');
+    const imageCount = document.getElementById('imageCount');
+    imageStrip.addEventListener('scroll', () => {
+      const index = Math.round(imageStrip.scrollLeft / imageStrip.clientWidth) + 1;
+      imageCount.textContent = `${Math.min(imageStrip.children.length, Math.max(1, index))} / ${imageStrip.children.length}`;
+    }, { passive: true });
+
+    const countdown = document.getElementById('countdown');
+    const dialogCountdown = document.getElementById('dialogCountdown');
+    let remaining = 5316;
+    const renderCountdown = () => {
+      const hours = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const seconds = String(remaining % 60).padStart(2, '0');
+      const value = `${hours}:${minutes}:${seconds}`;
+      countdown.textContent = value;
+      dialogCountdown.textContent = value;
+      if (remaining > 0) remaining -= 1;
+    };
+    renderCountdown();
+    setInterval(renderCountdown, 1000);
+    document.getElementById('openQuote').addEventListener('click', () => document.getElementById('quoteDialog').showModal());
+
+    const sheet = document.getElementById('filterSheet');
+    const backdrop = document.getElementById('sheetBackdrop');
+    const closeSheet = () => { sheet.classList.remove('open'); backdrop.classList.remove('open'); };
+    document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => {
+      const type = button.dataset.filter;
+      document.getElementById('sheetTitle').textContent = button.textContent;
+      document.querySelectorAll('.enum-group').forEach(group => group.classList.toggle('active', group.dataset.enum === type));
+      sheet.classList.add('open');
+      backdrop.classList.add('open');
+    }));
+    document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => chip.classList.toggle('selected')));
+    document.getElementById('sheetClose').addEventListener('click', closeSheet);
+    document.getElementById('sheetConfirm').addEventListener('click', closeSheet);
+    backdrop.addEventListener('click', closeSheet);
+
+    document.querySelectorAll('[data-status]').forEach(tab => tab.addEventListener('click', () => {
+      const status = tab.dataset.status;
+      document.querySelectorAll('[data-status]').forEach(item => item.classList.toggle('active', item === tab));
+      document.querySelectorAll('[data-order-status]').forEach(card => { card.style.display = status === 'all' || card.dataset.orderStatus === status ? 'grid' : 'none'; });
+    }));
+  </script>
+</body>
+</html>

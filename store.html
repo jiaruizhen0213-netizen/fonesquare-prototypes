@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FoneSquare 门店端 · 创建标单与在拍商品</title>
+  <style>
+    .role-switch { margin-left:auto; max-width:112px; padding:7px 9px; border:1px solid var(--line); border-radius:10px; color:var(--text); background:#fff; font-size:12px; }
+    * { box-sizing: border-box; }
+    :root {
+      color-scheme: light;
+      --orange: #ff4b0b;
+      --orange-dark: #df3e04;
+      --orange-soft: #fff1eb;
+      --ink: #181818;
+      --muted: #858585;
+      --line: #ececec;
+      --surface: #fff;
+      --page: #f3f4f6;
+      --green: #17804f;
+      --green-soft: #eaf7f0;
+      --amber: #a15c00;
+      --amber-soft: #fff7e3;
+      --red: #b83b2b;
+      --red-soft: #fff0ed;
+    }
+    html { background: #e7e9ec; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: #e7e9ec;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(255,75,11,.24); outline-offset: 2px; }
+    .phone-shell {
+      position: relative;
+      width: min(100%, 430px);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: var(--page);
+      box-shadow: 0 0 32px rgba(20,24,31,.1);
+    }
+    .page { display: none; min-height: 100vh; padding-bottom: 88px; }
+    .page.active { display: block; }
+    .page.with-actions { padding-bottom: 104px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      align-items: center;
+      height: 54px;
+      padding: 0 10px;
+      background: rgba(255,255,255,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .topbar h1 { margin: 0; text-align: center; font-size: 17px; font-weight: 680; }
+    .brand { color: var(--orange); letter-spacing: -.5px; font-size: 21px !important; font-weight: 850 !important; }
+    .icon-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: var(--ink);
+      font-size: 27px;
+      line-height: 1;
+    }
+    .section {
+      margin: 10px 12px 0;
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+    }
+    .section-title { margin: 0 0 12px; font-size: 16px; font-weight: 720; }
+    .section-kicker { margin: 0 0 5px; color: var(--orange); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .35px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; line-height: 1.45; }
+    .eyebrow { color: var(--orange); font-size: 12px; font-weight: 750; text-transform: uppercase; letter-spacing: .4px; }
+    .hero {
+      margin: 10px 12px 0;
+      padding: 22px 18px;
+      overflow: hidden;
+      border-radius: 20px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff4b0b 0%, #ff6d36 58%, #ff8c5f 100%);
+      box-shadow: 0 13px 28px rgba(255,75,11,.18);
+    }
+    .hero .eyebrow { color: rgba(255,255,255,.78); }
+    .hero h2 { max-width: 280px; margin: 8px 0 8px; font-size: 27px; line-height: 1.14; letter-spacing: -.6px; }
+    .hero p { max-width: 320px; margin: 0; color: rgba(255,255,255,.84); font-size: 13px; line-height: 1.5; }
+    .hero-button { margin-top: 20px; padding: 12px 18px; border: 0; border-radius: 24px; color: var(--orange); background: #fff; font-weight: 720; }
+    .identity-card { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; }
+    .avatar { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; color: var(--orange); background: var(--orange-soft); font-weight: 800; }
+    .identity-card strong { display: block; margin-bottom: 3px; font-size: 14px; }
+    .identity-card span { color: var(--muted); font-size: 12px; }
+    .verified { padding: 5px 8px; border-radius: 99px; color: var(--green) !important; background: var(--green-soft); font-size: 11px !important; font-weight: 700; }
+    .progress-rail { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; padding: 14px 14px 4px; background: #fff; }
+    .step { position: relative; padding-top: 13px; color: #aaa; text-align: center; font-size: 11px; }
+    .step::before { content: ""; position: absolute; top: 2px; left: 0; right: 0; height: 4px; border-radius: 99px; background: #e7e7e7; }
+    .step.active, .step.done { color: var(--orange); font-weight: 700; }
+    .step.active::before, .step.done::before { background: var(--orange); }
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 25;
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      width: min(100%,430px);
+      padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.98);
+      transform: translateX(-50%);
+    }
+    .nav-button { border: 0; background: transparent; color: #777; font-size: 10px; }
+    .nav-button span { display: block; min-height: 22px; margin-bottom: 1px; font-size: 19px; }
+    .nav-button.active { color: var(--orange); font-weight: 700; }
+    .action-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: .85fr 1.4fr;
+      gap: 10px;
+      width: min(100%,430px);
+      padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,.98);
+      transform: translateX(-50%);
+    }
+    .action-bar.single { grid-template-columns: 1fr; }
+    .action-button { min-height: 48px; padding: 0 16px; border-radius: 24px; font-weight: 700; }
+    .primary { border: 1px solid var(--orange); color: #fff; background: var(--orange); }
+    .primary:hover { background: var(--orange-dark); }
+    .secondary { border: 1px solid #d1d1d1; color: var(--ink); background: #fff; }
+    .tertiary { border: 0; color: var(--orange); background: transparent; }
+    .primary:disabled { border-color: #ffc0a8; background: #ffc0a8; cursor: not-allowed; }
+    .scan-stage { padding: 28px 20px 20px; text-align: center; }
+    .scan-frame {
+      position: relative;
+      width: min(72vw,280px);
+      aspect-ratio: 1;
+      margin: 12px auto 24px;
+      border-radius: 25px;
+      background: linear-gradient(145deg,#262a30,#14171b);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+    .scan-frame::before, .scan-frame::after { content: ""; position: absolute; inset: 30px; border: 3px solid transparent; }
+    .scan-frame::before { border-top-color: var(--orange); border-left-color: var(--orange); border-radius: 14px 0 0; }
+    .scan-frame::after { border-right-color: var(--orange); border-bottom-color: var(--orange); border-radius: 0 0 14px; }
+    .qr-code {
+      position: absolute;
+      inset: 80px;
+      opacity: .88;
+      background: repeating-linear-gradient(0deg,#fff 0 7px,transparent 7px 13px), repeating-linear-gradient(90deg,#fff 0 7px,transparent 7px 13px);
+      mix-blend-mode: screen;
+    }
+    .scan-line { position: absolute; left: 35px; right: 35px; top: 50%; height: 2px; background: var(--orange); box-shadow: 0 0 14px var(--orange); animation: scan 2.1s ease-in-out infinite; }
+    @keyframes scan { 0%,100% { transform: translateY(-82px); } 50% { transform: translateY(82px); } }
+    @media (prefers-reduced-motion: reduce) { .scan-line { animation: none; } }
+    .scan-stage h2 { margin: 0 0 8px; font-size: 21px; }
+    .scan-stage p { margin: 0 auto; max-width: 300px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .inspection-list { padding: 0; overflow: hidden; }
+    .inspection-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; min-height: 62px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+    .inspection-item:last-child { border-bottom: 0; }
+    .inspection-index { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; color: #fff; background: #b8b8b8; font-size: 11px; font-weight: 700; }
+    .inspection-copy strong { display: block; margin-bottom: 5px; font-size: 13px; }
+    .inspection-value { color: var(--red); font-size: 12px; }
+    .inspection-value.filled { color: var(--ink); font-weight: 650; }
+    .source-tag { display: none; padding: 4px 7px; border-radius: 999px; color: var(--orange); background: var(--orange-soft); font-size: 10px; font-weight: 700; }
+    .source-tag.show { display: inline-block; }
+    .manual-answer { padding: 7px 9px; border: 1px solid #ddd; border-radius: 9px; color: var(--orange); background: #fff; font-size: 11px; }
+    .manual-answer.selected { border-color: #d9eadf; color: var(--green); background: var(--green-soft); }
+    .wide-button { width: 100%; min-height: 48px; margin-top: 18px; border-radius: 24px; font-weight: 700; }
+    .device-summary { display: grid; grid-template-columns: 88px 1fr; gap: 13px; align-items: center; }
+    .device-thumb { position: relative; width: 88px; height: 104px; overflow: hidden; border-radius: 13px; background: linear-gradient(145deg,#dfe5e1,#b9c3bd); }
+    .mini-phone { position: absolute; left: 24px; top: 9px; width: 48px; height: 87px; transform: rotate(-4deg); border-radius: 9px; background: linear-gradient(145deg,#382d42,#17141e 70%,#55465f); box-shadow: 0 8px 12px rgba(0,0,0,.22); }
+    .mini-phone::before { content: ""; position: absolute; left: 6px; top: 7px; width: 22px; height: 22px; border-radius: 7px; background: radial-gradient(circle at 30% 30%,#111 0 22%,#5b5065 24% 38%,transparent 40%), radial-gradient(circle at 72% 66%,#111 0 22%,#5b5065 24% 38%,transparent 40%); }
+    .condition-tag { display: inline-block; min-width: 30px; padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--orange); text-align: center; font-size: 12px; font-weight: 800; }
+    .product-name { margin: 7px 0 5px; font-size: 16px; line-height: 1.35; }
+    .specs { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .meta-list { margin: 2px 0 0; }
+    .meta-row { display: grid; grid-template-columns: 118px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .meta-row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .meta-row dt { color: var(--muted); font-size: 12px; }
+    .meta-row dd { margin: 0; text-align: right; font-size: 13px; line-height: 1.4; font-weight: 620; }
+    .callout { margin: 10px 12px 0; padding: 12px 14px; border-radius: 12px; font-size: 12px; line-height: 1.5; }
+    .callout.warning { color: var(--amber); background: var(--amber-soft); }
+    .callout.success { color: var(--green); background: var(--green-soft); }
+    .callout.error { color: var(--red); background: var(--red-soft); }
+    details { border-top: 1px solid var(--line); }
+    details:first-of-type { border-top: 0; }
+    summary { padding: 13px 0; cursor: pointer; font-size: 14px; font-weight: 650; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; float: right; color: #aaa; font-size: 20px; font-weight: 400; }
+    details[open] summary::after { content: "−"; }
+    .detail-copy { padding: 0 0 13px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .issue-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+    .issue-row:last-child { border: 0; }
+    .issue-value { color: var(--red); text-align: right; font-weight: 650; }
+    .choice-group { margin-top: 15px; }
+    .choice-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 650; }
+    .choice-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .choice-chip { padding: 9px 13px; border: 1px solid #e3e3e3; border-radius: 11px; color: #555; background: #f8f8f8; font-size: 13px; }
+    .choice-chip.selected { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); font-weight: 650; }
+    .mapping-card { position: relative; overflow: hidden; border: 1px solid #cfe9da; }
+    .mapping-card::after { content: "已匹配"; position: absolute; top: 0; right: 0; padding: 6px 9px; border-radius: 0 15px 0 10px; color: var(--green); background: var(--green-soft); font-size: 9px; font-weight: 800; letter-spacing: .4px; }
+    .mapping-source { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; color: var(--green); font-size: 11px; font-weight: 700; }
+    .form-field { display: block; margin-top: 14px; }
+    .form-field:first-of-type { margin-top: 0; }
+    .form-field > span { display: block; margin-bottom: 7px; font-size: 12px; font-weight: 650; }
+    .form-field input { width: 100%; padding: 13px 12px; border: 1px solid #ddd; border-radius: 11px; outline: 0; background: #fff; font-size: 14px; }
+    .required { color: var(--orange); }
+    .readonly { color: #666; background: #f6f6f6 !important; }
+    .checkbox-row { display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; padding: 2px 0; cursor: pointer; }
+    .checkbox-row input { width: 20px; height: 20px; margin: 0; accent-color: var(--orange); }
+    .checkbox-row strong { display: block; font-size: 13px; }
+    .checkbox-row span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .inline-error { display: none; margin: 10px 0 0; color: var(--red); font-size: 12px; }
+    .inline-error.show { display: block; }
+    .summary-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .summary-row:last-child { border: 0; padding-bottom: 0; }
+    .summary-row span { color: var(--muted); font-size: 12px; }
+    .summary-row strong { max-width: 230px; text-align: right; font-size: 13px; line-height: 1.4; }
+    .success-hero { padding: 38px 22px 22px; text-align: center; background: #fff; }
+    .success-icon { display: grid; width: 74px; height: 74px; margin: 0 auto 18px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); box-shadow: 0 12px 25px rgba(23,128,79,.2); font-size: 34px; font-weight: 800; }
+    .success-hero h2 { margin: 0 0 8px; font-size: 24px; }
+    .success-hero p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .number-card { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; padding: 0; overflow: hidden; background: var(--line); }
+    .number-item { padding: 16px; background: #fff; }
+    .number-item span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; }
+    .number-item strong { font-size: 13px; }
+    .status-line { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-size: 13px; font-weight: 700; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .timeline { position: relative; margin: 2px 0 0 8px; padding-left: 22px; }
+    .timeline::before { content: ""; position: absolute; left: 4px; top: 7px; bottom: 7px; width: 2px; background: #e5e5e5; }
+    .timeline-item { position: relative; padding: 0 0 18px; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before { content: ""; position: absolute; left: -22px; top: 4px; width: 10px; height: 10px; border: 2px solid #fff; border-radius: 50%; background: #bbb; box-shadow: 0 0 0 2px #ddd; }
+    .timeline-item.active::before { background: var(--orange); box-shadow: 0 0 0 2px #ffc9b5; }
+    .timeline-item strong { display: block; margin-bottom: 3px; font-size: 13px; }
+    .timeline-item span { color: var(--muted); font-size: 11px; }
+    .auction-card { display: grid; grid-template-columns: 76px 1fr; gap: 12px; width: 100%; padding: 12px; border: 0; border-radius: 16px; color: inherit; background: #fff; text-align: left; }
+    .auction-card .device-thumb { width: 76px; height: 90px; }
+    .auction-card .mini-phone { left: 20px; top: 7px; width: 42px; height: 75px; }
+    .auction-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; color: var(--muted); font-size: 11px; }
+    .handover-tabs { position: sticky; top: 54px; z-index: 15; display: grid; grid-template-columns: repeat(3,1fr); padding: 0 12px; background: #fff; border-bottom: 1px solid var(--line); }
+    .handover-tab { padding: 13px 4px 11px; border: 0; border-bottom: 2px solid transparent; color: var(--muted); background: transparent; font-size: 13px; }
+    .handover-tab.active { border-bottom-color: var(--orange); color: var(--orange); font-weight: 700; }
+    .batch-list { display: grid; gap: 10px; padding: 10px 12px; }
+    .batch-card { width: 100%; padding: 15px; border: 0; border-radius: 16px; color: inherit; background: #fff; text-align: left; }
+    .batch-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .batch-head strong { display: block; font-size: 14px; }
+    .batch-head small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+    .status-badge { flex: 0 0 auto; padding: 5px 8px; border-radius: 99px; color: var(--green); background: var(--green-soft); font-size: 10px; font-weight: 750; }
+    .status-badge.warning { color: var(--amber); background: var(--amber-soft); }
+    .status-badge.complete { color: #666; background: #f0f1f2; }
+    .batch-facts { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--line); }
+    .batch-fact span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 10px; }
+    .batch-fact strong { font-size: 12px; line-height: 1.35; }
+    .overdue { color: var(--red); }
+    .code-panel { margin: 10px 12px 0; padding: 22px 18px; border-radius: 18px; color: #fff; background: linear-gradient(135deg,#20242a,#353b44); text-align: center; }
+    .code-panel span { display: block; color: rgba(255,255,255,.66); font-size: 11px; }
+    .handover-code { margin: 9px 0 7px; color: #fff !important; font-size: 32px !important; font-weight: 800; letter-spacing: 7px; font-variant-numeric: tabular-nums; }
+    .code-panel small { color: rgba(255,255,255,.72); font-size: 11px; }
+    .order-list { display: grid; gap: 10px; }
+    .handover-order { padding: 12px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .handover-order-head { display: flex; justify-content: space-between; gap: 10px; }
+    .handover-order-head strong { font-size: 13px; line-height: 1.35; }
+    .handover-order-head span { flex: 0 0 auto; color: var(--muted); font-size: 10px; }
+    .handover-order p { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .adjust-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .adjust-row:last-child { border-bottom: 0; }
+    .adjust-row strong { display: block; font-size: 13px; }
+    .adjust-row span { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .adjust-button { min-width: 70px; padding: 8px 10px; border: 1px solid var(--orange); border-radius: 16px; color: var(--orange); background: #fff; font-size: 11px; font-weight: 700; }
+    .adjust-button.selected { color: #fff; background: var(--orange); }
+    .adjust-button:disabled { border-color: #ddd; color: #aaa; background: #f5f5f5; cursor: not-allowed; }
+    .permission-note { display: inline-block; margin-top: 6px; padding: 3px 7px; border-radius: 7px; color: #777; background: #f2f2f2; font-size: 10px; }
+    .verification-record { display: none; }
+    .verification-record.show { display: block; }
+    .empty-state { padding: 54px 26px; text-align: center; }
+    .empty-state .symbol { font-size: 44px; opacity: .45; }
+    .empty-state h2 { margin: 12px 0 7px; font-size: 19px; }
+    .empty-state p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .toast { position: fixed; left: 50%; bottom: 88px; z-index: 70; display: none; max-width: calc(100% - 40px); padding: 11px 15px; border-radius: 12px; color: #fff; background: rgba(24,24,24,.9); transform: translateX(-50%); font-size: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.18); }
+    .toast.show { display: block; }
+    .create-lot-fab {
+      position: fixed;
+      left: 50%;
+      bottom: calc(54px + env(safe-area-inset-bottom));
+      z-index: 40;
+      display: grid;
+      width: 58px;
+      height: 58px;
+      place-items: center;
+      border: 5px solid #fff;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--orange);
+      transform: translateX(-50%);
+      box-shadow: 0 10px 24px rgba(255,75,11,.3);
+      font-size: 30px;
+      font-weight: 400;
+    }
+    .selector-tabs { display: flex; gap: 4px; overflow-x: auto; padding: 0 12px; border-bottom: 1px solid var(--line); background: #fff; scrollbar-width: none; }
+    .selector-tabs::-webkit-scrollbar { display: none; }
+    .category-tab { flex: 0 0 auto; padding: 14px 12px 11px; border: 0; border-bottom: 3px solid transparent; color: var(--muted); background: transparent; font-size: 13px; }
+    .category-tab.active { border-bottom-color: var(--orange); color: var(--ink); font-weight: 750; }
+    .model-search-wrap { padding: 12px; background: #fff; }
+    .model-search { width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 12px; background: #f8f8f8; font-size: 14px; outline: 0; }
+    .selector-context { margin: 0; padding: 0 12px 10px; color: var(--muted); background: #fff; font-size: 11px; }
+    .model-selector-grid { display: grid; grid-template-columns: 96px 1fr; min-height: calc(100vh - 177px); }
+    .brand-list { padding: 8px; border-right: 1px solid var(--line); background: #fafafa; }
+    .brand-button { width: 100%; padding: 12px 6px; border: 0; border-radius: 10px; color: #666; background: transparent; font-size: 13px; }
+    .brand-button.active { color: var(--orange); background: var(--orange-soft); font-weight: 750; }
+    .model-list { display: grid; align-content: start; gap: 1px; padding: 8px; background: var(--line); }
+    .model-option { display: grid; grid-template-columns: 48px 1fr auto; gap: 11px; align-items: center; width: 100%; padding: 12px; border: 0; color: inherit; background: #fff; text-align: left; }
+    .model-option:first-child { border-radius: 12px 12px 0 0; }
+    .model-option:last-child { border-radius: 0 0 12px 12px; }
+    .model-option-thumb { display: grid; width: 44px; height: 52px; place-items: center; border-radius: 9px; color: #fff; background: linear-gradient(145deg,#4d4558,#1c1920); font-size: 20px; }
+    .model-option strong { display: block; font-size: 13px; line-height: 1.35; }
+    .model-option span { margin-top: 4px; color: var(--muted); font-size: 10px; }
+    .model-option .select-mark { color: var(--orange); font-size: 17px; }
+    .model-empty { display: none; padding: 54px 18px; color: var(--muted); background: #fff; text-align: center; font-size: 12px; line-height: 1.5; }
+    .model-empty.show { display: block; }
+    .dialog-summary { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: #f7f7f7; }
+    .dialog-summary .summary-row { padding: 7px 0; }
+    .inspection-progress { margin: 10px 12px 0; padding: 12px 14px; border-radius: 12px; color: #555; background: #fff; font-size: 12px; font-weight: 650; }
+    .photo-upload { display: grid; grid-template-columns: 58px 1fr auto; gap: 12px; align-items: center; width: 100%; padding: 13px; border: 1px dashed #d4d4d4; border-radius: 13px; color: inherit; background: #fafafa; text-align: left; }
+    .photo-icon { display: grid; width: 54px; height: 54px; place-items: center; border-radius: 10px; color: var(--orange); background: var(--orange-soft); font-size: 25px; }
+    .photo-upload strong { display: block; font-size: 13px; }
+    .photo-upload small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.4; }
+    .photo-upload.has-photo { border-color: #bfe1cc; background: var(--green-soft); }
+    .remove-photo { display: none; padding: 7px 9px; border: 0; border-radius: 9px; color: var(--red); background: var(--red-soft); font-size: 11px; }
+    .photo-upload.has-photo .remove-photo { display: block; }
+    .inspection-row { background: #fff; border-bottom: 1px solid var(--line); }
+    .inspection-row:last-child { border-bottom: 0; }
+    .inspection-toggle { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; width: 100%; min-height: 68px; padding: 10px 14px; border: 0; color: inherit; background: transparent; text-align: left; }
+    .inspection-main strong { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-size: 13px; }
+    .required-badge { color: var(--red); font-style: normal; }
+    .inspection-result { color: var(--red); font-size: 12px; }
+    .inspection-result.filled { color: var(--ink); font-weight: 650; }
+    .inspection-side { display: flex; align-items: center; gap: 8px; }
+    .inspection-chevron { color: #999; font-size: 18px; transition: transform .18s ease; }
+    .inspection-row.open .inspection-chevron { transform: rotate(180deg); }
+    .inspection-detail { display: none; padding: 0 14px 14px 52px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+    .inspection-row.open .inspection-detail { display: block; }
+    .inspection-detail .manual-answer { margin-top: 9px; }
+    .source-tag.manual { color: var(--green); background: var(--green-soft); }
+    .choice-options { display: grid; gap: 8px; margin-top: 14px; }
+    .choice-option { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 11px; color: inherit; background: #fff; text-align: left; }
+    .choice-option:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); }
+    .loading-overlay { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; background: rgba(255,255,255,.82); backdrop-filter: blur(4px); }
+    .loading-overlay.show { display: grid; }
+    .loading-card { min-width: 180px; padding: 24px; border-radius: 18px; background: #fff; box-shadow: 0 18px 70px rgba(0,0,0,.18); text-align: center; }
+    .spinner { width: 38px; height: 38px; margin: 0 auto 13px; border: 4px solid #ffe0d4; border-top-color: var(--orange); border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-card strong { display: block; font-size: 14px; }
+    .loading-card span { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+    dialog { width: min(calc(100% - 32px),390px); padding: 0; border: 0; border-radius: 22px; box-shadow: 0 24px 80px rgba(0,0,0,.24); }
+    dialog::backdrop { background: rgba(0,0,0,.42); }
+    .dialog-body { padding: 22px; }
+    .dialog-icon { display: grid; width: 46px; height: 46px; margin-bottom: 14px; place-items: center; border-radius: 50%; color: var(--red); background: var(--red-soft); font-size: 21px; font-weight: 800; }
+    .dialog-body h2 { margin: 0 0 8px; font-size: 20px; }
+    .dialog-body p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .dialog-actions button { min-height: 46px; border-radius: 23px; font-weight: 700; }
+    .account-profile { padding: 18px; }
+    .account-profile-head { display: grid; grid-template-columns: 62px 1fr; gap: 14px; align-items: center; }
+    .account-avatar { display: grid; width: 62px; height: 62px; place-items: center; border-radius: 50%; color: #fff; background: var(--orange); font-size: 28px; font-weight: 800; }
+    .account-name { display: block; font-size: 20px; }
+    .account-phone { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .verification-badge { display: inline-flex; margin-top: 9px; padding: 5px 9px; border: 1px solid #a8dcc1; border-radius: 8px; color: var(--green); background: var(--green-soft); font-size: 11px; font-weight: 700; }
+    .verification-banner { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-top: 16px; padding: 14px; border-radius: 14px; color: var(--green); background: var(--green-soft); }
+    .verification-banner strong { display: block; font-size: 13px; }
+    .verification-banner span { display: block; margin-top: 4px; font-size: 11px; line-height: 1.45; }
+    .verification-symbol { font-size: 25px; }
+    .quick-list { display: grid; }
+    .quick-entry { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; width: 100%; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); color: inherit; background: transparent; text-align: left; }
+    .quick-entry:last-child { border-bottom: 0; }
+    .entry-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 12px; background: #f2f3f4; font-size: 19px; }
+    .quick-entry strong { display: block; font-size: 14px; }
+    .quick-entry small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .entry-chevron { color: #aaa; font-size: 21px; }
+    .identity-address-callout { margin: 12px; padding: 16px; border: 1px solid #bfe6d2; border-radius: 16px; color: var(--green); background: var(--green-soft); }
+    .identity-address-callout strong { display: block; font-size: 14px; }
+    .identity-address-callout p { margin: 6px 0 12px; font-size: 12px; line-height: 1.5; }
+    .outline-button { padding: 9px 13px; border: 1px solid #8fd2b1; border-radius: 10px; color: var(--green); background: #fff; font-weight: 700; }
+    .settings-list { padding: 0 14px; background: #fff; }
+    .settings-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; width: 100%; min-height: 62px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--line); color: inherit; background: transparent; text-align: left; }
+    .settings-row:last-child { border-bottom: 0; }
+    .settings-row strong { font-size: 14px; }
+    .settings-value { color: var(--muted); font-size: 12px; }
+    .language-options { display: grid; gap: 10px; padding: 12px; }
+    .language-option { display: grid; grid-template-columns: 1fr auto; align-items: center; width: 100%; min-height: 58px; padding: 0 16px; border: 1px solid var(--line); border-radius: 14px; color: inherit; background: #fff; text-align: left; font-size: 14px; font-weight: 700; }
+    .language-option.selected { border-color: var(--orange); color: var(--orange); background: var(--orange-soft); }
+    .language-check { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid #ccc; border-radius: 50%; color: transparent; font-size: 12px; }
+    .language-option.selected .language-check { border-color: var(--orange); color: #fff; background: var(--orange); }
+    .form-hint { display: block; margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <main class="phone-shell" aria-label="FoneSquare 门店端创建标单与经营查看原型">
+    <section class="page active" data-page="home" id="homePage">
+      <header class="topbar"><span></span><h1 class="brand">FONESQUARE</h1><button class="icon-button" type="button" aria-label="通知">⋯</button></header>
+      <section class="section identity-card">
+        <div class="avatar">JR</div>
+        <div><strong>贾瑞真</strong><span id="identityScope">FS Retail Malaysia · 商家主账号</span></div>
+        <select class="role-switch" id="roleSwitch" aria-label="切换演示角色"><option value="merchant">商家主账号</option><option value="store">店铺主账号</option><option value="employee">员工</option></select>
+        <span class="verified">可建拍</span>
+      </section>
+      <section class="hero">
+        <div class="eyebrow">统一门店端工作台</div>
+        <h2>创建竞拍标单</h2>
+        <p>完成设备质检并生成质检报告后创建竞拍标单。</p>
+        <button class="hero-button" id="homeCreateLot" type="button">开始质检并建标&nbsp; →</button>
+      </section>
+      <section class="section">
+        <p class="section-kicker">快速指引</p>
+        <h2 class="section-title">两步完成发布</h2>
+        <div class="timeline">
+          <div class="timeline-item active"><strong>完成质检</strong><span>扫描 MAX 二维码，核对自动结果并补齐剩余项目。</span></div>
+          <div class="timeline-item"><strong>确认并发布</strong><span>查看质检结果，核对卖家信息及线下合同。</span></div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="summary-row"><span>草稿</span><strong>0</strong></div>
+        <div class="summary-row"><span>竞拍中</span><strong>2</strong></div>
+        <div class="summary-row"><span>待卖家决定</span><strong>1</strong></div>
+      </section>
+    </section>
+
+    <section class="page" data-page="modelSelect" id="modelSelectPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>选择回收物品</h1><span></span></header>
+      <div class="selector-tabs" aria-label="选择品类">
+        <button class="category-tab active" type="button" data-category="手机">手机</button>
+      </div>
+      <p class="selector-context" id="phoneOnlyNote">当前仅支持手机。</p>
+      <div class="model-search-wrap"><input class="model-search" id="modelSearch" type="search" placeholder="搜索型号名称" autocomplete="off"></div>
+      <p class="selector-context" id="selectorContext">请选择手机品牌和型号</p>
+      <p class="selector-context" id="catalogSourceNote">品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。</p>
+      <div class="model-selector-grid">
+        <aside class="brand-list" id="brandList" aria-label="选择品牌"></aside>
+        <div><div class="model-list" id="modelList" aria-live="polite"></div><div class="model-empty show" id="modelEmptyState">请先选择左侧品牌</div></div>
+      </div>
+    </section>
+
+    <section class="page with-actions" data-page="inspection" id="inspectionPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="modelSelect" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="扫描 MAX 质检二维码">⌗</button></header>
+      <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
+      <section class="section device-summary">
+        <div class="device-thumb"><div class="mini-phone"></div></div>
+        <div><h2 class="product-name" id="currentInspectionModel">苹果 iPhone 14 Pro</h2><p class="specs">质检单已创建 · 已加载 PMS 质检模板</p></div>
+      </section>
+      <div class="inspection-progress" id="inspectionProgress">共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传</div>
+      <p class="selector-context" id="templateSourceNote">质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。</p>
+      <div class="callout warning" id="inspectionStatus">必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。</div>
+      <section class="section">
+        <p class="section-kicker">设备信息</p>
+        <label class="form-field" style="margin-top:0"><span>IMEI <i class="required">*</i></span><input id="imeiInput" type="text" inputmode="numeric" maxlength="15" placeholder="请输入 15 位 IMEI" autocomplete="off"></label>
+        <p class="inline-error" id="imeiError">请输入 15 位数字 IMEI。</p>
+      </section>
+      <section class="section">
+        <p class="section-kicker">必填照片</p>
+        <button class="photo-upload" id="aboutDevicePhoto" type="button">
+          <span class="photo-icon">＋</span>
+          <span><strong>关于本机照片 <i class="required">*</i></strong><small id="aboutDevicePhotoStatus">点击上传能显示型号与 IMEI 的“关于本机”页面照片</small></span>
+          <span class="remove-photo" id="removeAboutDevicePhoto">删除</span>
+        </button>
+      </section>
+      <section class="section inspection-list" aria-label="质检项目">
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="tool" data-complete="false" data-scan-on-wait="true">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">1</span><span class="inspection-main"><strong>存储容量 <i class="required-badge">*</i></strong><span class="inspection-result tool-value" data-filled-value="512GB">等待扫码</span></span><span class="inspection-side"><span class="source-tag">灵犀</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">扫码后由灵犀报告填充。工具已覆盖的结果只读。</div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="tool" data-complete="false" data-scan-on-wait="true">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">2</span><span class="inspection-main"><strong>开机情况 <i class="required-badge">*</i></strong><span class="inspection-result tool-value" data-filled-value="正常开机">等待扫码</span></span><span class="inspection-side"><span class="source-tag">质检APP</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">质检 APP 检查设备是否能够正常开机并进入系统。</div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="tool" data-complete="false" data-scan-on-wait="true">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">3</span><span class="inspection-main"><strong>机身外观 <i class="required-badge">*</i></strong><span class="inspection-result tool-value" data-filled-value="轻微划痕">等待扫码</span></span><span class="inspection-side"><span class="source-tag">MAX</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">MAX 检查边框、背板及机身磕碰情况，并导入对应图片。</div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="tool" data-complete="false" data-scan-on-wait="true">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">4</span><span class="inspection-main"><strong>屏幕外观 <i class="required-badge">*</i></strong><span class="inspection-result tool-value" data-filled-value="轻微划痕">等待扫码</span></span><span class="inspection-side"><span class="source-tag">MAX</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">MAX 检查屏幕划痕、碎裂和显示区域外观。</div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="tool" data-complete="false" data-scan-on-wait="true">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">5</span><span class="inspection-main"><strong>蓝牙功能 <i class="required-badge">*</i></strong><span class="inspection-result tool-value" data-filled-value="蓝牙功能正常">等待扫码</span></span><span class="inspection-side"><span class="source-tag">质检APP</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">质检 APP 检查蓝牙开关和设备发现能力。</div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="manual" data-complete="false">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">6</span><span class="inspection-main"><strong>更换二手部件 <i class="required-badge">*</i></strong><span class="inspection-result manual-value">未选择</span></span><span class="inspection-side"><span class="source-tag manual">人工</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">MAX 未检查出该项目，需要店员人工选择。<br><button class="manual-answer" type="button" data-item-name="更换二手部件" data-options="无更换|更换屏幕|更换电池|其他部件">选择结果</button></div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="manual" data-complete="false">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">7</span><span class="inspection-main"><strong>电池健康度 <i class="required-badge">*</i></strong><span class="inspection-result manual-value">未选择</span></span><span class="inspection-side"><span class="source-tag manual">人工</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">MAX 未返回电池健康度，需要店员查看设备后选择。<br><button class="manual-answer" type="button" data-item-name="电池健康度" data-options="90%以上|80%–89%|低于80%|无法读取">选择结果</button></div>
+        </div>
+        <div class="inspection-row" data-inspection-item data-required="true" data-kind="manual" data-complete="false">
+          <button class="inspection-toggle" type="button" aria-expanded="false"><span class="inspection-index">8</span><span class="inspection-main"><strong>购买渠道 <i class="required-badge">*</i></strong><span class="inspection-result manual-value">未选择</span></span><span class="inspection-side"><span class="source-tag manual">人工</span><span class="inspection-chevron">⌄</span></span></button>
+          <div class="inspection-detail">工具报告未覆盖购买渠道，需要店员向卖家确认。<br><button class="manual-answer" type="button" data-item-name="购买渠道" data-options="香港零售|大陆国行|海外版本|未知">选择结果</button></div>
+        </div>
+      </section>
+      <nav class="action-bar single"><button class="action-button primary" id="confirmInspection" type="button" disabled>确认质检结果</button></nav>
+    </section>
+
+    <section class="page with-actions" data-page="scan" id="scanPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="inspection" aria-label="返回">‹</button><h1>扫描 MAX 质检二维码</h1><span></span></header>
+      <div class="scan-stage">
+        <div class="scan-frame" aria-label="二维码扫描模拟区"><div class="qr-code"></div><div class="scan-line"></div></div>
+        <h2>将 MAX 二维码对准扫描框</h2>
+        <p>MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。</p>
+      </div>
+      <section class="section">
+        <div class="summary-row"><span>当前质检单型号</span><strong id="scanSelectedModel">苹果 iPhone 14 Pro</strong></div>
+        <p class="permission-note">本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。</p>
+      </section>
+      <nav class="action-bar single"><button class="action-button primary" id="simulateMaxScan" type="button">模拟扫码并导入</button></nav>
+    </section>
+
+    <section class="page with-actions" data-page="report" id="reportPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="inspection" aria-label="返回">‹</button><h1>质检结果</h1><span></span></header>
+      <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
+      <div class="callout success">PMS 质检报告已创建，系统已完成后续内部处理。</div>
+      <section class="section device-summary">
+        <div class="device-thumb"><div class="mini-phone"></div></div>
+        <div><span class="condition-tag">A</span><h2 class="product-name" id="reportModel">苹果 iPhone 14 Pro</h2><p class="specs">512GB · 深空黑色 · 香港版本<br>IMEI 尾号 2761</p></div>
+      </section>
+      <section class="section">
+        <h2 class="section-title">报告信息</h2>
+        <dl class="meta-list">
+          <div class="meta-row"><dt>PMS 质检报告</dt><dd>PMS-HK-260823-0198</dd></div>
+          <div class="meta-row"><dt>工具报告</dt><dd>灵犀 · 质检APP · MAX</dd></div>
+          <div class="meta-row"><dt>完成时间</dt><dd>2026年8月23日 10:18</dd></div>
+        </dl>
+      </section>
+      <section class="section">
+        <details open><summary>主要问题</summary><div class="detail-copy"><div class="issue-row"><span>屏幕外观</span><span class="issue-value">轻微划痕</span></div><div class="issue-row"><span>边框 / 后盖</span><span class="issue-value">轻微划痕</span></div><div class="issue-row"><span>风险标签</span><span>无高风险问题</span></div></div></details>
+        <details><summary>功能与显示</summary><div class="detail-copy"><div class="issue-row"><span>屏幕显示</span><span>正常</span></div><div class="issue-row"><span>整机功能</span><span>功能正常</span></div><div class="issue-row"><span>电池健康度</span><span>92%</span></div></div></details>
+        <details><summary>图片与报告信息</summary><div class="detail-copy">工具图片已随质检结果导入，报告信息已由 PMS 保存。</div></details>
+      </section>
+      <nav class="action-bar"><button class="action-button secondary" type="button" data-back="inspection">返回修改</button><button class="action-button primary" type="button" data-open="confirm">确认结果并继续</button></nav>
+    </section>
+
+    <section class="page with-actions" data-page="confirm" id="confirmPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="report" aria-label="返回">‹</button><h1>确认并发布</h1><span></span></header>
+      <div class="progress-rail" aria-label="创建标单进度"><div class="step done">1 · 质检</div><div class="step active">2 · 确认发布</div></div>
+      <section class="section">
+        <p class="section-kicker">发布身份</p>
+        <h2 class="section-title">当前有效关系</h2>
+        <div class="summary-row"><span>供货商家</span><strong>FS Retail Malaysia Sdn. Bhd.</strong></div>
+        <div class="summary-row"><span>店铺</span><strong>中心旗舰店</strong></div>
+        <div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div>
+      </section>
+      <section class="section">
+        <p class="section-kicker">发布快照</p>
+        <h2 class="section-title">设备与报告</h2>
+        <div class="summary-row"><span>商品</span><strong id="confirmProduct">苹果 iPhone 14 Pro 512GB 深空黑色</strong></div>
+        <div class="summary-row"><span>质检报告</span><strong>PMS-HK-260823-0198</strong></div>
+      </section>
+      <section class="section">
+        <label class="checkbox-row"><input id="contractConfirm" type="checkbox"><span><strong>我已确认与卖家签署线下合同 <i class="required">*</i></strong><span>确认账号和时间将记录在发布快照中。</span></span></label>
+        <p class="inline-error" id="contractError">发布前请先确认线下合同。</p>
+        <label class="form-field"><span>卖家手机号 · 马来西亚（+60） <i class="required">*</i></span><input id="sellerMobile" type="tel" data-country="MY" placeholder="+60 12 345 6789" autocomplete="tel"></label>
+        <p class="inline-error" id="sellerMobileError">请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。</p>
+        <label class="form-field"><span>合同编号（选填）</span><input id="contractNumber" type="text" placeholder="请输入合同编号"></label>
+      </section>
+      <div class="callout warning">发布时将重新校验账号建拍资格、店铺状态、当前关系、报告、商品信息、合同、卖家手机号、设备唯一性及风险。</div>
+      <button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button>
+      <nav class="action-bar"><button class="action-button secondary" type="button" data-back="report">返回</button><button class="action-button primary" id="publishLot" type="button">确认并发布</button></nav>
+    </section>
+
+    <section class="page with-actions" data-page="success" id="successPage" data-auction-duration-minutes="10">
+      <header class="topbar"><span></span><h1>发布成功</h1><span></span></header>
+      <div class="success-hero"><div class="success-icon">✓</div><h2>标单创建成功</h2><p>回收单、标单及首轮竞拍已成功创建并立即开始。</p></div>
+      <section class="section number-card"><div class="number-item"><span>回收单号</span><strong>FSR-260823-0062</strong></div><div class="number-item"><span>标单号</span><strong>FS-HK-260823-0216</strong></div></section>
+      <section class="section"><div class="summary-row"><span>轮次执行状态</span><strong class="status-line"><i class="status-dot"></i>竞拍中</strong></div><div class="summary-row"><span>轮次结果</span><strong>—</strong></div><div class="summary-row"><span>竞拍时长</span><strong>竞拍时长：10分钟</strong></div><div class="summary-row"><span>竞拍开始</span><strong id="successAuctionStart" data-no-i18n>—</strong></div><div class="summary-row"><span>竞拍结束</span><strong id="successAuctionEnd" data-no-i18n>—</strong></div><div class="summary-row"><span>剩余时间</span><strong id="successAuctionCountdown">10:00</strong></div><div class="summary-row"><span>操作人</span><strong>贾瑞真</strong></div></section>
+      <div class="callout success">成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。</div>
+      <nav class="action-bar"><button class="action-button secondary" type="button" id="createAnother">继续建标</button><button class="action-button primary" type="button" data-open="lot">查看标单</button></nav>
+    </section>
+
+    <section class="page" data-page="auctions" id="auctionsPage">
+      <header class="topbar"><span></span><h1>在拍商品</h1><button class="icon-button" id="auctionScanEntry" type="button" aria-label="扫码查看质检">⌗</button></header>
+      <div class="callout success" id="auctionScopeNote">商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。</div>
+      <div id="auctionList" style="display:grid;gap:10px;padding:10px 12px" aria-label="按截止时间升序排列的标单">
+        <button class="auction-card" id="preWinnerAuctionCard" type="button" data-owner="jia" data-deadline-offset-minutes="-1"><span class="device-thumb" style="background:linear-gradient(145deg,#e9edf5,#b9c3d5)"><span class="mini-phone" style="background:linear-gradient(145deg,#c8d0dc,#69758a)"></span></span><span><span class="condition-tag">A-</span><strong class="product-name" style="display:block">Samsung Galaxy S25 Ultra 256GB</strong><span class="specs">FS-MY-260823-0197 · 贾瑞真</span><span class="auction-meta"><span>执行状态：已结束</span><span id="preWinnerCardResult">结果：预中标 · 中标价格 MYR 3,280</span></span></span></button>
+        <button class="auction-card" type="button" data-owner="aina" data-deadline-offset-minutes="3" data-toast="该示例标单不在本次建标流程范围内"><span class="device-thumb" style="background:linear-gradient(145deg,#e7ddd4,#c6b5a6)"><span class="mini-phone" style="background:linear-gradient(145deg,#d7b193,#8e6b54)"></span></span><span><span class="condition-tag">B</span><strong class="product-name" style="display:block">Huawei Mate 70 Pro 512GB</strong><span class="specs">FS-MY-260823-0208 · Aina Rahman</span><span class="auction-meta"><span>执行状态：竞拍中</span><span>结果：— · <i data-auction-countdown>03:00</i></span></span></span></button>
+        <button class="auction-card" id="currentAuctionCard" type="button" data-owner="jia" data-deadline-offset-minutes="10" data-open="lot"><span class="device-thumb"><span class="mini-phone"></span></span><span><span class="condition-tag">A</span><strong class="product-name" style="display:block">iPhone 17 Pro Max 512GB</strong><span class="specs">FS-HK-260823-0216 · 贾瑞真</span><span class="auction-meta"><span>执行状态：竞拍中</span><span>结果：— · <i data-auction-countdown>10:00</i></span></span></span></button>
+      </div><button class="create-lot-fab" id="createLotFab" type="button" aria-label="手动创建标单">＋</button>
+    </section>
+
+    <section class="page" data-page="lot" id="lotPage" data-auction-duration-minutes="10">
+      <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>标单详情</h1><span></span></header>
+      <div class="callout success">发布成功 · 竞拍中 · 默认竞拍 10 分钟</div>
+      <section class="section device-summary"><div class="device-thumb"><div class="mini-phone"></div></div><div><span class="condition-tag">A</span><h2 class="product-name">iPhone 17 Pro Max</h2><p class="specs">512GB · 星宇橙 · 香港版本<br>IMEI 尾号 2761</p></div></section>
+      <section class="section"><h2 class="section-title">当前竞拍轮次</h2><div class="summary-row"><span>标单号</span><strong>FS-HK-260823-0216</strong></div><div class="summary-row"><span>竞拍轮次</span><strong>第 1 轮</strong></div><div class="summary-row"><span>轮次执行状态</span><strong class="status-line"><i class="status-dot"></i>竞拍中</strong></div><div class="summary-row"><span>轮次结果</span><strong>—</strong></div><div class="summary-row"><span>竞拍时长</span><strong>10 分钟</strong></div><div class="summary-row"><span>竞拍开始</span><strong id="lotAuctionStart" data-no-i18n>—</strong></div><div class="summary-row"><span>竞拍结束</span><strong id="lotAuctionEnd" data-no-i18n>—</strong></div><div class="summary-row"><span>剩余时间</span><strong id="lotAuctionCountdown">10:00</strong></div></section>
+      <section class="section"><h2 class="section-title">发布快照</h2><div class="summary-row"><span>报告快照</span><strong>PMS-HK-260823-0198</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div><div class="summary-row"><span>发布时间</span><strong>2026年8月23日 10:24</strong></div></section>
+      <section class="section"><h2 class="section-title">下一步</h2><p class="small muted" style="margin:0" id="decisionNote">竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。</p></section>
+    </section>
+
+    <section class="page with-actions" data-page="preWinnerDetail" id="preWinnerDetailPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>预中标详情</h1><span></span></header>
+      <div class="callout warning" id="preWinnerStatus">预中标 · 等待卖家决定</div>
+      <section class="section device-summary"><div class="device-thumb" style="background:linear-gradient(145deg,#e9edf5,#b9c3d5)"><div class="mini-phone" style="background:linear-gradient(145deg,#c8d0dc,#69758a)"></div></div><div><span class="condition-tag">A-</span><h2 class="product-name">Samsung Galaxy S25 Ultra</h2><p class="specs">256GB · 银影蓝<br>标单号 FS-MY-260823-0197</p></div></section>
+      <section class="section"><p class="section-kicker">竞拍结果</p><h2 class="section-title">中标价格</h2><div class="summary-row"><span>中标价格</span><strong id="winningPrice">MYR 3,280</strong></div><div class="summary-row"><span>中标回收商</span><strong>Recycle Partner MY</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div></section>
+      <section class="section"><h2 class="section-title">卖家决定</h2><p class="small muted" style="margin:0" id="preWinnerPermissionNote">请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。</p></section>
+      <nav class="action-bar" id="preWinnerDecisionActions"><button class="action-button secondary" id="rejectPreWinner" type="button">不接受</button><button class="action-button primary" id="acceptPreWinner" type="button">接受预中标价</button></nav>
+    </section>
+
+    <section class="page" data-page="orders" id="ordersPage">
+      <header class="topbar"><span></span><h1>订单与取货</h1><span></span></header>
+      <div class="callout success" id="orderScopeNote">商家主账号查看本商家全部订单；取货结果只读。</div>
+      <div class="handover-tabs" aria-label="订单状态筛选">
+        <button class="handover-tab active" type="button" data-order-tab="all">全部</button>
+        <button class="handover-tab" type="button" data-order-tab="pending">待取货</button>
+        <button class="handover-tab" type="button" data-order-tab="complete">已取货</button>
+      </div>
+      <div class="batch-list">
+        <button class="batch-card" id="generatedOrderCard" type="button" data-owner="jia" data-order-card="pending" hidden data-toast="成交订单详情为只读；取货结果由后续流程维护。"><span class="batch-head"><span><strong>Samsung Galaxy S25 Ultra 256GB</strong><small>FSO-260827-0101 · 中心旗舰店</small></span><span class="status-badge warning">待取货</span></span><span class="batch-facts"><span class="batch-fact"><span>中标价格</span><strong>MYR 3,280</strong></span><span class="batch-fact"><span>实际建拍操作人</span><strong>贾瑞真</strong></span><span class="batch-fact"><span>成交来源</span><strong>卖家接受预中标价</strong></span><span class="batch-fact"><span>取货状态</span><strong>待取货</strong></span></span></button>
+        <button class="batch-card" type="button" data-owner="jia" data-order-card="pending" data-toast="订单详情为只读；门店端不组批、不确认取货。">
+          <span class="batch-head"><span><strong>iPhone 17 Pro Max 512GB</strong><small>FSO-260821-0098 · 中心旗舰店</small></span><span class="status-badge warning">待取货</span></span>
+          <span class="batch-facts"><span class="batch-fact"><span>实际建拍操作人</span><strong>贾瑞真</strong></span><span class="batch-fact"><span>成交时间</span><strong>8月21日 11:02</strong></span><span class="batch-fact"><span>隐私结果</span><strong>未记录</strong></span><span class="batch-fact"><span>退回状态</span><strong>未发起</strong></span></span>
+        </button>
+        <button class="batch-card" type="button" data-owner="aina" data-order-card="complete" data-toast="督导到店选择实际取走订单并二次确认后，系统直接生成已取货批次。">
+          <span class="batch-head"><span><strong>Huawei Mate 70 Pro 512GB</strong><small>FSO-260820-0048 · 中心旗舰店</small></span><span class="status-badge complete">已取货</span></span>
+          <span class="batch-facts"><span class="batch-fact"><span>取货批次</span><strong>PB-260821-0029</strong></span><span class="batch-fact"><span>取货时间</span><strong>8月21日 17:42</strong></span><span class="batch-fact"><span>隐私结果</span><strong>不通过</strong></span><span class="batch-fact"><span>退回状态</span><strong>运营未发起</strong></span></span>
+        </button>
+      </div>
+      <section class="section"><h2 class="section-title">取货规则</h2><p class="small muted" style="margin:0">门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货批次。</p></section>
+    </section>
+
+     <section class="page" data-page="bills" id="billsPage">
+      <header class="topbar"><span></span><h1>收益与佣金</h1><span></span></header>
+      <div class="callout success" id="billScopeNote">商家主账号可查看本商家店铺收益和所属员工佣金。</div>
+      <section class="section" id="storeRevenueCard">
+        <p class="section-kicker">按成交时间 · MYR</p><h2 class="section-title">店铺收益</h2>
+        <div class="summary-row"><span>店铺服务费</span><strong>MYR 486.80</strong></div>
+        <div class="summary-row"><span>店铺调整净额</span><strong>- MYR 40.00</strong></div>
+        <div class="summary-row"><span>店铺应收合计</span><strong>MYR 446.80</strong></div>
+        <p class="permission-note">店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。</p>
+      </section>
+      <section class="section" id="employeeCommissionCard">
+        <p class="section-kicker">员工佣金 · MYR</p><h2 class="section-title">所属员工佣金</h2>
+        <div class="summary-row"><span>贾瑞真</span><strong>MYR 86.20</strong></div>
+        <div class="summary-row"><span>Aina Rahman</span><strong>MYR 64.50</strong></div>
+        <div class="summary-row"><span>调整净额</span><strong>- MYR 10.00</strong></div>
+      </section>
+      <section class="section"><h2 class="section-title">最近成交</h2><div class="summary-row"><span>FSO-260821-0098</span><strong>8月21日 11:02</strong></div><div class="summary-row"><span>处理状态</span><strong>待结算</strong></div><p class="permission-note">不同币种分别汇总；所有金额与处理结果只读。</p></section>
+    </section>
+
+    <section class="page" data-page="my" id="myPage">
+      <header class="topbar"><span></span><h1>我的</h1><span></span></header>
+      <section class="section account-profile">
+        <div class="account-profile-head"><div class="account-avatar">FS</div><div><strong class="account-name">FS Retail Malaysia</strong><span class="account-phone">+60 12-*** 8821</span><span class="verification-badge">✓ 已完成身份认证</span></div></div>
+        <div class="verification-banner"><div><strong>身份认证已完成</strong><span>认证地址可用于维护门店地址</span></div><span class="verification-symbol">◇</span></div>
+      </section>
+      <section class="section">
+        <h2 class="section-title">快捷入口</h2>
+        <div class="quick-list">
+          <button class="quick-entry" type="button" data-open="storeAddress"><span class="entry-icon">⌖</span><span><strong>门店地址</strong><small id="storeAddressSummary">马来西亚 · 18, Jalan Teknologi 3/6, Kota Damansara</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" id="bankAccountEntry" type="button" data-open="bankAccount"><span class="entry-icon">▤</span><span><strong>银行卡号</strong><small id="bankAccountSummary" data-no-i18n>Maybank · •••• 9012</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" type="button" data-open="settings"><span class="entry-icon">⚙</span><span><strong>设置</strong><small>账户、安全与语言</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" id="helpSupportEntry" type="button"><span class="entry-icon">?</span><span><strong>帮助与支持</strong><small>常见问题、联系我们</small></span><span class="entry-chevron">›</span></button>
+        </div>
+      </section>
+    </section>
+
+    <section class="page with-actions" data-page="storeAddress" id="storeAddressPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1>门店地址</h1><span></span></header>
+      <div class="identity-address-callout"><strong>可使用身份认证地址</strong><p>你已完成身份认证，可将认证地址一键代入门店地址表单。</p><button class="outline-button" id="useVerifiedAddress" type="button">使用认证地址</button></div>
+      <section class="section">
+        <label class="form-field" style="margin-top:0"><span>国家/地区 <i class="required">*</i></span><select id="storeCountry"><option value="MY">马来西亚</option></select><small class="form-hint">默认使用注册时选择的国家</small></label>
+        <label class="form-field"><span>具体地址 <i class="required">*</i></span><textarea id="storeAddressInput" rows="4">18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor</textarea></label>
+        <label class="form-field"><span>联系电话 <i class="required">*</i></span><input id="storePhoneInput" type="tel" value="+60 12-345 6789"><small class="form-hint">默认使用登录手机号</small></label>
+        <p class="inline-error" id="storeAddressError">请填写完整的门店地址和联系电话。</p>
+      </section>
+      <nav class="action-bar single"><button class="action-button primary" id="saveStoreAddress" type="button">保存门店地址</button></nav>
+    </section>
+
+    <section class="page with-actions" data-page="bankAccount" id="bankAccountPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1>收款银行卡</h1><span></span></header>
+      <div class="callout success">银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。</div>
+      <section class="section">
+        <label class="form-field" style="margin-top:0"><span>持卡人名称 <i class="required">*</i></span><input id="bankAccountHolder" type="text" value="FS Retail Malaysia Sdn. Bhd." placeholder="请输入持卡人名称"></label>
+        <label class="form-field"><span>银行名称 <i class="required">*</i></span><input id="bankNameInput" type="text" value="Maybank" placeholder="请输入银行名称"></label>
+        <label class="form-field"><span>银行卡号 <i class="required">*</i></span><input id="bankAccountNumber" type="text" inputmode="numeric" value="1122334455669012" placeholder="请输入银行卡号" autocomplete="off"></label>
+        <p class="inline-error" id="bankAccountError">请输入8–20位银行卡号。</p>
+      </section>
+      <nav class="action-bar single"><button class="action-button primary" id="saveBankAccount" type="button">保存银行卡</button></nav>
+    </section>
+
+    <section class="page" data-page="settings" id="settingsPage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1>设置</h1><span></span></header>
+      <section class="section"><p class="section-kicker">语言与显示</p><button class="settings-row" type="button" data-open="language"><strong>语言</strong><span class="settings-value" id="settingLanguageValue" data-no-i18n>简体中文</span><span class="entry-chevron">›</span></button></section>
+    </section>
+
+    <section class="page" data-page="language" id="languagePage">
+      <header class="topbar"><button class="icon-button" type="button" data-back="settings" aria-label="返回">‹</button><h1>选择语言</h1><span></span></header>
+      <div class="callout success">切换后整份原型的页面、弹窗和提示将同步更新。</div>
+      <div class="language-options">
+        <button class="language-option" id="languageZh" type="button" data-language="zh"><span>简体中文</span><span class="language-check" data-no-i18n>✓</span></button>
+        <button class="language-option" id="languageEn" type="button" data-language="en"><span>English</span><span class="language-check" data-no-i18n>✓</span></button>
+      </div>
+    </section>
+
+    <nav class="bottom-nav" id="bottomNav" aria-label="主导航">
+      <button class="nav-button active" type="button" data-nav="home"><span>⌂</span>首页</button>
+      <button class="nav-button" type="button" data-nav="auctions"><span>◫</span>竞拍</button>
+      <button class="nav-button" type="button" data-nav="orders"><span>▣</span>订单</button>
+      <button class="nav-button" type="button" data-nav="bills"><span>▤</span>账单</button>
+      <button class="nav-button" id="myNav" type="button" data-nav="my"><span>●</span>我的</button>
+    </nav>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="loading-overlay" id="loadingOverlay" aria-live="polite"><div class="loading-card"><div class="spinner"></div><strong>正在发布标单</strong><span>正在执行最终校验…</span></div></div>
+
+  <dialog id="validationDialog" aria-labelledby="validationTitle">
+    <div class="dialog-body">
+      <div class="dialog-icon">!</div>
+      <h2 id="validationTitle">无法发布</h2>
+      <p>当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。</p>
+      <div class="dialog-actions"><button class="secondary" type="button" id="closeValidation">留在此页</button><button class="primary" type="button" id="retryValidation">重新校验</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="createOrderDialog" aria-labelledby="createOrderTitle">
+    <div class="dialog-body">
+      <div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">＋</div>
+      <h2 id="createOrderTitle">是否确认创建质检单？</h2>
+      <p>请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。</p>
+      <div class="dialog-summary">
+        <div class="summary-row"><span>品类</span><strong id="selectedCategorySummary">手机</strong></div>
+        <div class="summary-row"><span>品牌</span><strong id="selectedBrandSummary">苹果</strong></div>
+        <div class="summary-row"><span>型号</span><strong id="selectedModelSummary">苹果 iPhone 14 Pro</strong></div>
+      </div>
+      <div class="dialog-actions"><button class="secondary" type="button" id="cancelCreateOrder">取消</button><button class="primary" type="button" id="confirmCreateOrderButton">确认创建</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="sellerDecisionDialog" aria-labelledby="sellerDecisionTitle">
+    <div class="dialog-body"><div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">!</div><h2 id="sellerDecisionTitle">确认卖家决定</h2><p id="sellerDecisionMessage">请确认卖家是否接受中标价格。</p><div class="dialog-summary"><div class="summary-row"><span>中标价格</span><strong>MYR 3,280</strong></div></div><div class="dialog-actions"><button class="secondary" type="button" id="cancelSellerDecision">取消</button><button class="primary" type="button" id="confirmSellerDecisionButton">确认</button></div></div>
+  </dialog>
+
+  <dialog id="inspectionChoiceDialog" aria-labelledby="inspectionChoiceTitle">
+    <div class="dialog-body">
+      <h2 id="inspectionChoiceTitle">选择质检结果</h2>
+      <p>该项目未从 MAX 工具报告中检查出来，需要店员手动选择。</p>
+      <div class="choice-options" id="inspectionChoiceOptions"></div>
+      <div class="dialog-actions" style="grid-template-columns:1fr"><button class="secondary" type="button" id="cancelInspectionChoice">取消</button></div>
+    </div>
+  </dialog>
+
+
+  <script>
+
+    const I18N_EN = Object.freeze({"FS Retail Malaysia · 商家主账号":"FS Retail Malaysia · Merchant admin","竞拍中":"Bidding","取消":"Cancel","256GB · 银影蓝":"256GB · Silver Shadow Blue","发布身份":"Publishing identity","确认并发布":"Confirm & Publish","风险标签":"Risk label","待卖家决定":"Pending seller decision","品类":"Category","我已确认与卖家签署线下合同":"I confirm the offline contract with the seller","1 · 质检":"1 · Inspection","FSO-260820-0048 · 中心旗舰店":"FSO-260820-0048 · Central Flagship Store","操作人":"Operator","待结算":"Pending settlement","请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。":"Confirm the price with the seller. Acceptance immediately creates a transaction order; rejection ends the lot as “Seller declined” without an order.","开机情况":"Power-on Status","更换二手部件":"Replacement Parts","店铺调整净额":"Store adjustment net","标单详情":"Auction Lot Details","账单":"Bills","收益与佣金":"Earnings & Commission","等待扫码":"Waiting for scan","请输入 15 位数字 IMEI。":"Enter a 15-digit IMEI.","已取货":"Picked Up","全部":"All","当前竞拍轮次":"Current auction round","门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货批次。":"The Store App does not auto-group, edit or confirm batches and never shows a handover code. A platform supervisor selects the units actually collected at the store and creates a picked-up batch after a second confirmation.","正在发布标单":"Publishing auction lot","供货商家":"Supplier business","MAX 未检查出该项目，需要店员人工选择。":"MAX did not return this item. Store staff must select it manually.","待取货":"Pending Pickup","取货时间":"Picked up","8月21日 11:02":"21 Aug, 11:02","机身外观":"Body Condition","确认结果并继续":"Confirm & Continue","商品":"Product","贾瑞真":"Jia Ruizhen","未记录":"Not recorded","成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。":"A successful result is idempotent. Retrying will return this result and will not create a duplicate lot.","店铺主账号":"Store owner","卖家接受预中标价":"Seller accepted pre-winning price","第 1 轮":"Round 1","请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。":"Check the device information selected by store staff. The inspection order will be created and the matching PMS inspection template loaded after confirmation.","合同编号（选填）":"Contract reference (optional)","竞拍开始":"Auction starts","轮次结果":"Round result","报告快照":"Report snapshot","卖家决定":"Seller decision","重新校验":"Revalidate","电池健康度":"Battery health","继续建标":"Create Another","质检单已创建 · 已加载 PMS 质检模板":"Inspection order created · PMS inspection template loaded","灵犀":"Lingxi","主要问题":"Main issues","质检APP":"Inspection App","请先选择左侧品牌":"Select a brand on the left","2026年8月23日 10:18":"23 Aug 2026, 10:18","无高风险问题":"No high-risk issue","店铺收益":"Store Earnings","人工":"Manual","店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。":"Total store receivable = store service fee + store adjustment net. It excludes seller payable and employee commission.","填写质检结果":"Complete Inspection","完成设备质检并生成质检报告后创建竞拍标单。":"Complete the device inspection and generate the inspection report before creating an auction lot.","工具报告":"Tool reports","必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。":"MAX results must be imported successfully before submission. Tap the top-right scan icon.","该项目未从 MAX 工具报告中检查出来，需要店员手动选择。":"MAX did not return this required item. Store staff must select a result manually.","竞拍结束":"Auction ends","存储容量":"Storage","边框 / 后盖":"Frame / back","竞拍轮次":"Round","实际建拍操作人":"Actual operator","功能与显示":"Function and display","无法发布":"Unable to publish","竞拍时长：10分钟":"Auction duration: 10 minutes","确认质检结果":"Confirm Inspection Results","质检 APP 检查设备是否能够正常开机并进入系统。":"The Inspection App checks whether the device powers on and enters the system.","确认":"Confirm","IMEI 尾号 2761":"IMEI ending 2761","竞拍时长":"Auction duration","蓝牙功能":"Bluetooth","创建竞拍标单":"Create Auction Lot","成交来源":"Transaction source","商家主账号":"Merchant admin","竞拍":"Auctions","苹果 iPhone 14 Pro":"Apple iPhone 14 Pro","选择结果":"Select result","中心旗舰店":"Central Flagship Store","轮次执行状态":"Execution status","商家主账号查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders and pickup results.","接受预中标价":"Accept winning price","手机":"Mobile","取货批次":"Pickup batch","点击上传能显示型号与 IMEI 的“关于本机”页面照片":"Upload the About page showing the model and IMEI","成交时间":"Sold","竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。":"When the auction ends with a pre-winner, the actual operator records whether the seller accepts or rejects.","选择质检结果":"Select Inspection Result","发布快照":"Publish snapshot","不通过":"Failed","购买渠道":"Purchase Channel","查看质检结果，核对卖家信息及线下合同。":"Review the inspection result, seller details and offline contract.","MAX 未返回电池健康度，需要店员查看设备后选择。":"MAX did not return battery health. Store staff must check the device and select a result.","功能正常":"Fully functional","2026年8月23日 10:24":"23 Aug 2026, 10:24","MAX 检查屏幕划痕、碎裂和显示区域外观。":"MAX checks screen scratches, cracks and the visible display area.","工具图片已随质检结果导入，报告信息已由 PMS 保存。":"Tool images were imported with the inspection results, and PMS has saved the report information.","按成交时间 · MYR":"By transaction time · MYR","开始质检并建标 →":"Start Inspection →","执行状态：已结束":"Execution: Ended","品牌":"Brand","结果：— ·":"Result: — ·","质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。":"Inspection item count and content are dynamically returned by the PMS template; the 8 items below are prototype examples only.","苹果 iPhone 14 Pro 512GB 深空黑色":"Apple iPhone 14 Pro 512GB Space Black","贾瑞真 · 员工":"Jia Ruizhen · Staff","标单号":"Auction lot","最近成交":"Latest transaction","将 MAX 二维码对准扫描框":"Align the MAX QR code","512GB · 深空黑色 · 香港版本":"512GB · Space Black · HK Version","屏幕外观":"Screen Condition","取货状态":"Pickup status","是否确认创建质检单？":"Confirm inspection order creation?","本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。":"MAX results must be imported from all three reports in this release. No fully manual fallback is available.","512GB · 星宇橙 · 香港版本":"512GB · Cosmic Orange · HK Version","当前质检单型号":"Inspection order model","FSO-260827-0101 · 中心旗舰店":"FSO-260827-0101 · Central Flagship Store","运营未发起":"Not initiated by Ops","FoneSquare 门店端 · 创建标单与在拍商品":"FoneSquare Store App · Create Lots & View Live Auctions","未发起":"Not initiated","完成质检":"Complete inspection","正在执行最终校验…":"Running final validation…","竞拍结果":"Auction result","请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。":"Enter a valid Malaysian mobile number (+60 1X XXXX XXXX).","必填照片":"Required photo","卖家手机号 · 马来西亚（+60）":"Seller mobile number · Malaysia (+60)","正常":"Normal","图片与报告信息":"Images and report information","2 · 确认发布":"2 · Confirm & Publish","确认创建":"Confirm Creation","商家主账号可查看本商家店铺收益和所属员工佣金。":"Merchant admins can view store earnings and employee commission within the merchant account.","可建拍":"Eligible","设备信息":"Device information","查看标单":"View Auction Lot","确认账号和时间将记录在发布快照中。":"The confirmation account and time will be saved in the publishing snapshot.","确认卖家决定":"Confirm seller decision","灵犀 · 质检APP · MAX":"Lingxi · Inspection App · MAX","请确认卖家是否接受中标价格。":"Confirm whether the seller accepts the winning price.","发布时间":"Published","扫描 MAX 质检二维码":"Scan MAX Inspection QR","品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。":"Category, brand and model come from the existing PMS product catalog; this page uses prototype-only sample data.","店铺应收合计":"Total store receivable","整机功能":"Functionality","当前有效关系":"Current relationship","店铺服务费":"Store service fee","10 分钟":"10 minutes","轻微划痕":"Minor scratches","预览发布校验失败状态":"Preview a validation failure","统一门店端工作台":"Unified Store App workspace","订单与取货":"Orders & Pickup","中标价格":"Winning price","标单创建成功":"Auction lot created","预中标详情":"Pre-winner Details","8月21日 17:42":"21 Aug, 17:42","发布前请先确认线下合同。":"Confirm the offline contract before publishing.","不同币种分别汇总；所有金额与处理结果只读。":"Currencies are summarized separately. Amounts and processing results are read-only.","完成时间":"Completed","扫码后由灵犀报告填充。工具已覆盖的结果只读。":"Filled from the Lingxi report after scanning. Imported results are read-only.","订单":"Orders","留在此页":"Stay Here","剩余时间":"Time remaining","隐私结果":"Privacy result","标单号 FS-MY-260823-0197":"Lot FS-MY-260823-0197","两步完成发布":"2 steps to publish","当前仅支持手机。":"Only mobile phones are supported.","质检结果":"Inspection Results","取货规则":"Pickup rule","返回修改":"Edit Results","结果：预中标 · 中标价格 MYR 3,280":"Result: Pre-winner · Winning price MYR 3,280","PMS 质检报告已创建，系统已完成后续内部处理。":"The PMS inspection report was created. Internal processing is complete.","下一步":"Next step","质检报告":"Inspection report","FS-HK-260823-0216 · 贾瑞真":"FS-HK-260823-0216 · Jia Ruizhen","不接受":"Do not accept","当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。":"The store’s auction eligibility changed after this page was opened. No recycle record or auction lot was created. Return and retry after the relationship is restored.","在拍商品":"Live Auction Products","请选择手机品牌和型号":"Select a mobile brand and model","发布时将重新校验账号建拍资格、店铺状态、当前关系、报告、商品信息、合同、卖家手机号、设备唯一性及风险。":"Publishing will revalidate account eligibility, store status, relationship, report, product details, contract, seller mobile number, device uniqueness and risk.","商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。":"Merchant admins can view all auction lots in the merchant account. Lots are sorted by the nearest auction deadline.","退回状态":"Return","工具报告未覆盖购买渠道，需要店员向卖家确认。":"Tool reports do not cover the purchase channel. Store staff must confirm it with the seller.","质检 APP 检查蓝牙开关和设备发现能力。":"The Inspection App checks the Bluetooth switch and device discovery.","报告信息":"Report information","扫描 MAX 二维码，核对自动结果并补齐剩余项目。":"Scan the MAX QR code, review imported results and complete the remaining items.","发布成功":"Published","员工":"Employee","回收单号":"Recycle number","店铺":"Store","处理状态":"Processing status","返回":"Back","型号":"Model","FS-MY-260823-0197 · 贾瑞真":"FS-MY-260823-0197 · Jia Ruizhen","发布成功 · 竞拍中 · 默认竞拍 10 分钟":"Published · Bidding · Default duration 10 minutes","执行状态：竞拍中":"Execution: Bidding","MAX 检查边框、背板及机身磕碰情况，并导入对应图片。":"MAX checks the frame, back panel and dents, and imports the related images.","未选择":"Not selected","快速指引":"Quick guide","调整净额":"Adjustment net","MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。":"MAX does not return a model. The model selected by store staff from the PMS product catalog remains unchanged; only results and images from all three inspection reports are imported.","模拟扫码并导入":"Simulate Scan & Import","预中标 · 等待卖家决定":"Pre-winner · Pending seller decision","选择回收物品":"Select Device","中标回收商":"Winning recycler","关于本机照片":"About This Device Photo","删除":"Remove","首页":"Home","屏幕显示":"Screen display","共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传":"8 required · 0 complete · 8 pending · IMEI missing · About This Device Photo missing","所属员工佣金":"Employee Commission","回收单、标单及首轮竞拍已成功创建并立即开始。":"The recycle record, auction lot and first auction round were created and bidding started immediately.","设备与报告":"Device and report","草稿":"Drafts","FSO-260821-0098 · 中心旗舰店":"FSO-260821-0098 · Central Flagship Store","员工佣金 · MYR":"Employee commission · MYR","苹果":"Apple","PMS 质检报告":"PMS inspection report","该示例标单不在本次建标流程范围内":"This sample auction is outside the create-lot flow","搜索型号名称":"Search model name","创建标单进度":"Create auction progress","手动创建标单":"Create auction lot manually","主导航":"Primary navigation","切换演示角色":"Switch demo role","90%以上|80%–89%|低于80%|无法读取":"90% or above|80%–89%|Below 80%|Unavailable","FoneSquare 门店端创建标单与经营查看原型":"FoneSquare Store App prototype","请输入 15 位 IMEI":"Enter the 15-digit IMEI","按截止时间升序排列的标单":"Auction lots sorted by deadline ascending","二维码扫描模拟区":"QR scanner simulation","质检项目":"Inspection items","香港零售|大陆国行|海外版本|未知":"Hong Kong Retail|Mainland China|Overseas Version|Unknown","选择品牌":"Select brand","督导到店选择实际取走订单并二次确认后，系统直接生成已取货批次。":"A platform supervisor selected the units actually collected and confirmed the picked-up batch.","通知":"Notifications","扫码查看质检":"Scan to view inspection","无更换|更换屏幕|更换电池|其他部件":"No replacement|Screen replaced|Battery replaced|Other parts","成交订单详情为只读；取货结果由后续流程维护。":"Transaction order details are read-only; pickup is handled by the later flow.","订单状态筛选":"Order status filters","请输入合同编号":"Enter contract number","选择品类":"Select category","订单详情为只读；门店端不组批、不确认取货。":"Order details are read-only. The Store App cannot create or confirm pickup batches."," 512GB 深空黑色":" 512GB Space Black","没有匹配的型号，请清空搜索条件后重试":"No matching model. Clear the search and try again.","当前品类和品牌下暂无型号":"No models under this category and brand.","</strong><span>点击确认创建质检单</span></span><span class=\"select-mark\">›</span>":"</strong><span>Tap to confirm inspection order creation</span></span><span class=\"select-mark\">›</span>","请从 PMS 商品目录选择品类、品牌和型号后创建质检单":"Select a category, brand and model from the PMS product catalog to create an inspection order","正在创建质检单…":"Creating inspection order…","正在预览 about-this-device.jpg":"Previewing about-this-device.jpg","已上传：about-this-device.jpg · 点击预览":"Uploaded: about-this-device.jpg · Tap to preview"," 项 · 待补 ":" complete · "," 项 · IMEI ":" pending · IMEI ","已填写":"entered","未填写":"missing"," · 关于本机照片":" · About This Device Photo ","已上传":"uploaded","未上传":"missing","MAX 三份质检报告已成功导入 5 项结果，仍有 ":"MAX results from all three reports were imported successfully. "," 项需要店员手动选择。":" required items still need a manual selection.","正在导入 MAX 结果…":"Importing MAX results…","选择“":"Select result for “","”结果":"”","重新选择":"Change result","正在创建质检报告…":"Creating inspection report…","确认拒绝":"Confirm rejection","已接受中标价格，成交订单已生成":"Winning price accepted · Order created","已记录卖家拒绝，标单已结束":"Seller declined · Lot ended","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Merchant admins have read-only access and cannot record the seller decision.","中心旗舰店 · 店铺主账号":"Central Flagship Store · Store owner","本标单由员工贾瑞真创建。店铺主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Store owners have read-only access and cannot record the seller decision.","中心旗舰店 · 员工":"Central Flagship Store · Employee","你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。":"You are the actual operator for this lot and can record accept or reject after a pre-winner is produced.","建拍资格已恢复，可以继续发布":"Auction eligibility restored · You can publish now","我的":"Me","已完成身份认证":"Identity verified","认证地址可用于维护门店地址":"Use the verified address to maintain the store address","快捷入口":"Quick Access","门店地址":"Store Address","维护营业地址和联系电话":"Maintain business address and contact number","银行卡号":"Bank Account","维护收款银行卡信息":"Maintain payout bank details","设置":"Settings","账户、安全与语言":"Account, security & language","帮助与支持":"Help & Support","常见问题、联系我们":"FAQs & contact us","可使用身份认证地址":"Verified address available","你已完成身份认证，可将认证地址一键代入门店地址表单。":"Your identity is verified. Use the verified address to fill the store address form.","使用认证地址":"Use Verified Address","国家/地区":"Country/Region","马来西亚":"Malaysia","默认使用注册时选择的国家":"Defaults to the country selected at registration","具体地址":"Address","联系电话":"Contact Number","默认使用登录手机号":"Defaults to the login mobile number","保存门店地址":"Save Store Address","门店地址已保存":"Store address saved","收款银行卡":"Payout Bank Account","银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。":"Bank details are used only for transaction settlement. After saving, only the bank name and last four digits are shown.","持卡人名称":"Account Holder","请输入持卡人名称":"Enter account holder name","银行名称":"Bank Name","请输入银行名称":"Enter bank name","请输入银行卡号":"Enter bank account number","保存银行卡":"Save Bank Account","请输入8–20位银行卡号。":"Enter an 8–20 digit bank account number.","银行卡信息已保存":"Bank details saved","语言":"Language","语言与显示":"Language & Display","简体中文":"Simplified Chinese","切换后整份原型的页面、弹窗和提示将同步更新。":"All pages, dialogs and messages in this prototype update immediately.","选择语言":"Select Language","点击确认创建质检单":"Tap to confirm inspection order creation","华为":"Huawei","三星":"Samsung","小米":"Xiaomi","✓ 已完成身份认证":"✓ Identity verified","身份认证已完成":"Identity verification complete","请填写完整的门店地址和联系电话。":"Enter the complete store address and contact number.","扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号":"Scanning also requires a category, brand and model selection from the PMS product catalog first","确认接受中标价格？":"Accept the winning price?","确认不接受中标价格？":"Decline the winning price?","确认后立即生成成交订单。":"Confirmation immediately creates a transaction order.","确认后标单以“卖家拒绝”结束，不生成成交订单。":"Confirmation ends the lot as “Seller declined” and does not create an order.","确认接受":"Confirm acceptance","卖家已接受 · 成交订单已生成":"Seller accepted · Transaction order created","卖家拒绝 · 标单已结束":"Seller declined · Auction lot ended","结果：卖家已接受 · MYR 3,280":"Result: Seller accepted · MYR 3,280","结果：卖家拒绝":"Result: Seller declined","中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。":"The winning price was accepted and the transaction order was created immediately. View it under Orders.","卖家不接受中标价格，本标单已结束且未生成成交订单。":"The seller declined the winning price. The lot ended and no transaction order was created.","商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。":"Merchant admins can view all merchant auction lots; lots are sorted by nearest deadline.","商家主账号可查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders; pickup results are read-only.","店铺主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。":"Store owners can view all store auction lots; lots are sorted by nearest deadline.","店铺主账号可查看本店铺全部订单；取货结果只读。":"Store owners can view all store orders; pickup results are read-only.","店铺主账号可查看本店铺收益和本店员工佣金。":"Store owners can view store earnings and employee commission in their store.","员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。":"Employees only see auction lots they created; lots are sorted by nearest deadline.","员工仅查看本人创建的订单；取货结果只读。":"Employees only see orders they created; pickup results are read-only.","员工仅查看本人佣金，不展示店铺收益。":"Employees only see their own commission; store earnings are hidden.","客服热线：+60 3-8899 6688":"Support: +60 3-8899 6688"});
+    const I18N_TEXT_SOURCE = new WeakMap();
+    const I18N_ATTRIBUTE_SOURCE = new WeakMap();
+    const I18N_ATTRIBUTES = ['placeholder', 'aria-label', 'title', 'data-toast', 'data-options'];
+    const getSavedLanguage = () => {
+      try { return localStorage.getItem('fonesquare-language') === 'en' ? 'en' : 'zh'; }
+      catch { return 'zh'; }
+    };
+    let currentLanguage = getSavedLanguage();
+    let languageObserver = null;
+    const translateZhToEn = (source) => {
+      const value = String(source);
+      const normalizedValue = value.replace(/\u00a0/g, ' ');
+      if (I18N_EN[value] !== undefined) return I18N_EN[value];
+      if (I18N_EN[normalizedValue] !== undefined) return I18N_EN[normalizedValue];
+      let match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI (已填写|未填写) · 关于本机照片(已上传|未上传)$/);
+      if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI ' + (match[4] === '已填写' ? 'entered' : 'missing') + ' · About This Device Photo ' + (match[5] === '已上传' ? 'uploaded' : 'missing');
+      match = value.match(/^MAX 三份质检报告已成功导入 5 项结果，仍有 (\d+) 项需要店员手动选择。$/);
+      if (match) return 'MAX results from all three reports were imported successfully. ' + match[1] + ' required items still need a manual selection.';
+      match = value.match(/^选择“(.+)”结果$/);
+      if (match) return 'Select result for “' + translateZhToEn(match[1]) + '”';
+      if (value.startsWith('马来西亚 · ')) return 'Malaysia · ' + value.slice('马来西亚 · '.length);
+      const prefixes = [['苹果 ', 'Apple '], ['华为 ', 'Huawei '], ['三星 ', 'Samsung '], ['小米 ', 'Xiaomi ']];
+      for (const [zh, en] of prefixes) if (value.startsWith(zh)) return en + value.slice(zh.length);
+      return value;
+    };
+    const localizeRawText = (raw) => {
+      if (currentLanguage !== 'en' || !raw.trim()) return raw;
+      const leading = raw.match(/^\s*/)[0];
+      const trailing = raw.match(/\s*$/)[0];
+      const core = raw.slice(leading.length, raw.length - trailing.length);
+      return leading + translateZhToEn(core) + trailing;
+    };
+    const observeLanguageChanges = () => {
+      if (languageObserver) languageObserver.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRIBUTES });
+    };
+    function applyLanguage(language) {
+      currentLanguage = language === 'en' ? 'en' : 'zh';
+      if (languageObserver) languageObserver.disconnect();
+      document.documentElement.lang = currentLanguage === 'en' ? 'en' : 'zh-CN';
+      document.title = currentLanguage === 'en' ? 'FoneSquare Store Auction Prototype' : 'FoneSquare 门店端创建标单与经营查看原型';
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        if (!node.parentElement || node.parentElement.closest('script, style, [data-no-i18n]')) return;
+        if (!I18N_TEXT_SOURCE.has(node)) I18N_TEXT_SOURCE.set(node, node.nodeValue);
+        const source = I18N_TEXT_SOURCE.get(node);
+        node.nodeValue = currentLanguage === 'en' ? localizeRawText(source) : source;
+      });
+      document.querySelectorAll('*').forEach((element) => {
+        if (element.closest('[data-no-i18n]')) return;
+        let sourceMap = I18N_ATTRIBUTE_SOURCE.get(element);
+        if (!sourceMap) { sourceMap = {}; I18N_ATTRIBUTE_SOURCE.set(element, sourceMap); }
+        I18N_ATTRIBUTES.forEach((attribute) => {
+          if (!element.hasAttribute(attribute)) return;
+          if (sourceMap[attribute] === undefined) sourceMap[attribute] = element.getAttribute(attribute);
+          element.setAttribute(attribute, currentLanguage === 'en' ? translateZhToEn(sourceMap[attribute]) : sourceMap[attribute]);
+        });
+      });
+      if (languageObserver) { languageObserver.takeRecords(); observeLanguageChanges(); }
+      updateLanguageState();
+    }
+    const updateLanguageState = () => {
+      const zhButton = document.getElementById('languageZh');
+      const enButton = document.getElementById('languageEn');
+      if (!zhButton || !enButton) return;
+      zhButton.classList.toggle('selected', currentLanguage === 'zh');
+      enButton.classList.toggle('selected', currentLanguage === 'en');
+      document.getElementById('settingLanguageValue').textContent = currentLanguage === 'en' ? 'English' : '简体中文';
+    };
+    function saveLanguagePreference(language) {
+      try { localStorage.setItem('fonesquare-language', language); } catch {}
+      applyLanguage(language);
+      if (typeof activeAuctionStart !== 'undefined' && activeAuctionStart) {
+        document.getElementById('successAuctionStart').textContent = formatAuctionTime(activeAuctionStart);
+        document.getElementById('successAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd);
+        document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart);
+        document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd);
+      }
+      showToast(language === 'en' ? 'Language switched to English' : '已切换为简体中文');
+    }
+    languageObserver = new MutationObserver((records) => {
+      let needsRefresh = false;
+      records.forEach((record) => {
+        if (record.type === 'characterData') {
+          const node = record.target;
+          const known = I18N_TEXT_SOURCE.get(node);
+          const expected = known === undefined ? null : localizeRawText(known);
+          if (known === undefined || node.nodeValue !== expected) I18N_TEXT_SOURCE.set(node, node.nodeValue);
+          needsRefresh = true;
+        } else if (record.type === 'childList' && record.addedNodes.length) {
+          needsRefresh = true;
+        } else if (record.type === 'attributes') {
+          let sourceMap = I18N_ATTRIBUTE_SOURCE.get(record.target);
+          if (!sourceMap) { sourceMap = {}; I18N_ATTRIBUTE_SOURCE.set(record.target, sourceMap); }
+          sourceMap[record.attributeName] = record.target.getAttribute(record.attributeName);
+          needsRefresh = true;
+        }
+      });
+      if (needsRefresh) applyLanguage(currentLanguage);
+    });
+    observeLanguageChanges();
+
+    const pages = [...document.querySelectorAll('.page')];
+    const bottomNav = document.getElementById('bottomNav');
+    const mainPages = ['home', 'auctions', 'orders', 'bills', 'my'];
+    const showPage = (name) => {
+      pages.forEach((page) => page.classList.toggle('active', page.dataset.page === name));
+      bottomNav.style.display = mainPages.includes(name) ? 'grid' : 'none';
+      document.querySelectorAll('[data-nav]').forEach((button) => button.classList.toggle('active', button.dataset.nav === name));
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    document.querySelectorAll('[data-nav]').forEach((button) => button.addEventListener('click', () => showPage(button.dataset.nav)));
+    document.querySelectorAll('[data-open]').forEach((button) => button.addEventListener('click', () => showPage(button.dataset.open)));
+    document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => showPage(button.dataset.back)));
+
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    const showToast = (message) => {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    };
+    document.querySelectorAll('[data-toast]').forEach((button) => button.addEventListener('click', () => showToast(button.dataset.toast)));
+
+    const models = [
+      { category: '手机', brand: '苹果', id: 'iphone-14-pro', name: '苹果 iPhone 14 Pro' },
+      { category: '手机', brand: '苹果', id: 'iphone-11-pro', name: '苹果 iPhone 11 Pro' },
+      { category: '手机', brand: '苹果', id: 'iphone-17-pro-max', name: '苹果 iPhone 17 Pro Max' },
+      { category: '手机', brand: '华为', id: 'mate-70-pro', name: '华为 Mate 70 Pro' },
+      { category: '手机', brand: '三星', id: 'galaxy-s25-ultra', name: '三星 Galaxy S25 Ultra' },
+      { category: '手机', brand: '小米', id: 'xiaomi-15-ultra', name: '小米 15 Ultra' },
+      { category: '手机', brand: 'OPPO', id: 'oppo-find-x8', name: 'OPPO Find X8 Pro' },
+      { category: '手机', brand: 'vivo', id: 'vivo-x200', name: 'vivo X200 Pro' }
+    ];
+    const brands = ['苹果', '华为', '小米', '三星', 'OPPO', 'vivo'];
+    const lotDraft = {
+      entrySource: null,
+      selectedCategory: '手机',
+      selectedBrand: null,
+      selectedModel: null,
+      templateModel: null,
+      scanImported: false,
+      aboutDevicePhoto: false
+    };
+
+    const modelSearch = document.getElementById('modelSearch');
+    const brandList = document.getElementById('brandList');
+    const modelList = document.getElementById('modelList');
+    const modelEmptyState = document.getElementById('modelEmptyState');
+    const selectorContext = document.getElementById('selectorContext');
+    const createOrderDialog = document.getElementById('createOrderDialog');
+    const inspectionChoiceDialog = document.getElementById('inspectionChoiceDialog');
+    const confirmInspection = document.getElementById('confirmInspection');
+    const inspectionStatus = document.getElementById('inspectionStatus');
+
+    const updateModelCopies = () => {
+      if (!lotDraft.selectedModel) return;
+      const name = lotDraft.selectedModel.name;
+      document.getElementById('currentInspectionModel').textContent = name;
+      document.getElementById('scanSelectedModel').textContent = name;
+      document.getElementById('reportModel').textContent = name;
+      document.getElementById('confirmProduct').textContent = name + ' 512GB 深空黑色';
+    };
+
+    const renderBrandList = () => {
+      brandList.innerHTML = '';
+      brands.forEach((brand) => {
+        const button = document.createElement('button');
+        button.className = 'brand-button' + (lotDraft.selectedBrand === brand ? ' active' : '');
+        button.type = 'button';
+        button.textContent = brand;
+        button.addEventListener('click', () => {
+          lotDraft.selectedBrand = brand;
+          lotDraft.selectedModel = null;
+          modelSearch.value = '';
+          renderBrandList();
+          renderModelList();
+        });
+        brandList.appendChild(button);
+      });
+    };
+
+    const renderModelList = () => {
+      modelList.innerHTML = '';
+      const keyword = modelSearch.value.trim().toLowerCase();
+      if (!lotDraft.selectedBrand) {
+        modelEmptyState.textContent = '请先选择左侧品牌';
+        modelEmptyState.classList.add('show');
+        return;
+      }
+      const matched = models.filter((model) =>
+        model.category === lotDraft.selectedCategory &&
+        model.brand === lotDraft.selectedBrand &&
+        model.name.toLowerCase().includes(keyword)
+      );
+      modelEmptyState.textContent = keyword ? '没有匹配的型号，请清空搜索条件后重试' : '当前品类和品牌下暂无型号';
+      modelEmptyState.classList.toggle('show', matched.length === 0);
+      matched.forEach((model) => {
+        const button = document.createElement('button');
+        button.className = 'model-option';
+        button.type = 'button';
+        button.innerHTML = '<span class="model-option-thumb">▣</span><span><strong>' + model.name + '</strong><span>点击确认创建质检单</span></span><span class="select-mark">›</span>';
+        button.addEventListener('click', () => {
+          lotDraft.selectedModel = model;
+          document.getElementById('selectedCategorySummary').textContent = lotDraft.selectedCategory;
+          document.getElementById('selectedBrandSummary').textContent = lotDraft.selectedBrand;
+          document.getElementById('selectedModelSummary').textContent = model.name;
+          createOrderDialog.showModal();
+        });
+        modelList.appendChild(button);
+      });
+    };
+
+    const resetModelSelection = () => {
+      lotDraft.selectedCategory = '手机';
+      lotDraft.selectedBrand = null;
+      lotDraft.selectedModel = null;
+      modelSearch.value = '';
+      document.querySelectorAll('.category-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.category === '手机'));
+      selectorContext.textContent = lotDraft.entrySource === 'scan' ? '扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号' : '请从 PMS 商品目录选择品类、品牌和型号后创建质检单';
+      renderBrandList();
+      renderModelList();
+    };
+
+    const openModelSelector = (source) => {
+      lotDraft.entrySource = source;
+      resetModelSelection();
+      showPage('modelSelect');
+    };
+
+    document.getElementById('homeCreateLot').addEventListener('click', () => openModelSelector('manual'));
+    document.getElementById('createLotFab').addEventListener('click', () => openModelSelector('manual'));
+    document.getElementById('auctionScanEntry').addEventListener('click', () => openModelSelector('scan'));
+    document.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => {
+      lotDraft.selectedCategory = tab.dataset.category;
+      lotDraft.selectedBrand = null;
+      lotDraft.selectedModel = null;
+      modelSearch.value = '';
+      document.querySelectorAll('.category-tab').forEach((item) => item.classList.toggle('active', item === tab));
+      renderBrandList();
+      renderModelList();
+    }));
+    modelSearch.addEventListener('input', renderModelList);
+
+    document.getElementById('cancelCreateOrder').addEventListener('click', () => createOrderDialog.close());
+    const resetInspectionForModel = () => {
+      lotDraft.scanImported = false;
+      lotDraft.aboutDevicePhoto = false;
+      document.getElementById('imeiInput').value = '';
+      document.getElementById('imeiError').classList.remove('show');
+      document.querySelectorAll('[data-inspection-item]').forEach((row) => {
+        row.dataset.complete = 'false';
+        row.classList.remove('open');
+        const toggle = row.querySelector('.inspection-toggle');
+        toggle.setAttribute('aria-expanded', 'false');
+        const value = row.querySelector('.inspection-result');
+        value.textContent = row.dataset.kind === 'tool' ? '等待扫码' : '未选择';
+        value.classList.remove('filled');
+        row.querySelector('.source-tag').classList.remove('show');
+        const answer = row.querySelector('.manual-answer');
+        if (answer) answer.textContent = '选择结果';
+      });
+      const photo = document.getElementById('aboutDevicePhoto');
+      photo.classList.remove('has-photo');
+      photo.querySelector('.photo-icon').textContent = '＋';
+      document.getElementById('aboutDevicePhotoStatus').textContent = '点击上传能显示型号与 IMEI 的“关于本机”页面照片';
+      inspectionStatus.className = 'callout warning';
+      inspectionStatus.textContent = '必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。';
+      renderInspectionProgress();
+    };
+
+    const confirmCreateOrder = () => {
+      if (!lotDraft.selectedModel) return;
+      const confirmButton = document.getElementById('confirmCreateOrderButton');
+      const cancelButton = document.getElementById('cancelCreateOrder');
+      if (confirmButton.disabled) return;
+      confirmButton.disabled = true;
+      cancelButton.disabled = true;
+      confirmButton.textContent = '正在创建质检单…';
+      setTimeout(() => {
+        lotDraft.templateModel = lotDraft.selectedModel;
+        updateModelCopies();
+        resetInspectionForModel();
+        confirmButton.disabled = false;
+        cancelButton.disabled = false;
+        confirmButton.textContent = '确认创建';
+        createOrderDialog.close();
+        showPage('inspection');
+      }, 700);
+    };
+    document.getElementById('confirmCreateOrderButton').addEventListener('click', confirmCreateOrder);
+
+    const aboutDevicePhoto = document.getElementById('aboutDevicePhoto');
+    aboutDevicePhoto.addEventListener('click', (event) => {
+      if (event.target.closest('#removeAboutDevicePhoto')) return;
+      if (lotDraft.aboutDevicePhoto) {
+        showToast('正在预览 about-this-device.jpg');
+        return;
+      }
+      lotDraft.aboutDevicePhoto = true;
+      aboutDevicePhoto.classList.add('has-photo');
+      aboutDevicePhoto.querySelector('.photo-icon').textContent = '▣';
+      document.getElementById('aboutDevicePhotoStatus').textContent = '已上传：about-this-device.jpg · 点击预览';
+      renderInspectionProgress();
+    });
+    document.getElementById('removeAboutDevicePhoto').addEventListener('click', (event) => {
+      event.stopPropagation();
+      lotDraft.aboutDevicePhoto = false;
+      aboutDevicePhoto.classList.remove('has-photo');
+      aboutDevicePhoto.querySelector('.photo-icon').textContent = '＋';
+      document.getElementById('aboutDevicePhotoStatus').textContent = '点击上传能显示型号与 IMEI 的“关于本机”页面照片';
+      renderInspectionProgress();
+    });
+
+    const imeiInput = document.getElementById('imeiInput');
+    const imeiError = document.getElementById('imeiError');
+    const isImeiValid = () => /^\d{15}$/.test(imeiInput.value.trim());
+    const validateImei = (showError = true) => {
+      const valid = isImeiValid();
+      if (showError) imeiError.classList.toggle('show', !valid);
+      return valid;
+    };
+    imeiInput.addEventListener('input', () => {
+      imeiInput.value = imeiInput.value.replace(/\D/g, '').slice(0, 15);
+      imeiError.classList.remove('show');
+      renderInspectionProgress();
+    });
+    imeiInput.addEventListener('blur', () => validateImei(true));
+
+    const isInspectionItemComplete = (row) => row.dataset.complete === 'true';
+    const renderInspectionProgress = () => {
+      const requiredItems = [...document.querySelectorAll('[data-inspection-item][data-required="true"]')];
+      const completed = requiredItems.filter(isInspectionItemComplete).length;
+      const pending = requiredItems.length - completed;
+      document.getElementById('inspectionProgress').textContent =
+        '共 ' + requiredItems.length + ' 项 · 已完成 ' + completed + ' 项 · 待补 ' + pending + ' 项 · IMEI ' +
+        (isImeiValid() ? '已填写' : '未填写') + ' · 关于本机照片' +
+        (lotDraft.aboutDevicePhoto ? '已上传' : '未上传');
+      confirmInspection.disabled = !(lotDraft.scanImported && isImeiValid() && lotDraft.aboutDevicePhoto && pending === 0);
+    };
+
+    const importMaxResults = () => {
+      document.querySelectorAll('[data-inspection-item][data-kind="tool"]').forEach((row) => {
+        const value = row.querySelector('.tool-value');
+        value.textContent = value.dataset.filledValue;
+        value.classList.add('filled');
+        row.dataset.complete = 'true';
+        row.querySelector('.source-tag').classList.add('show');
+      });
+      lotDraft.scanImported = true;
+      const pending = [...document.querySelectorAll('[data-inspection-item][data-kind="manual"][data-complete="false"]')].length;
+      inspectionStatus.className = pending ? 'callout warning' : 'callout success';
+      inspectionStatus.textContent = 'MAX 三份质检报告已成功导入 5 项结果，仍有 ' + pending + ' 项需要店员手动选择。';
+      renderInspectionProgress();
+      showPage('inspection');
+    };
+
+    document.getElementById('inspectionScanEntry').addEventListener('click', () => showPage('scan'));
+    document.getElementById('simulateMaxScan').addEventListener('click', (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = '正在导入 MAX 结果…';
+      setTimeout(() => {
+        importMaxResults();
+        button.disabled = false;
+        button.textContent = '模拟扫码并导入';
+      }, 700);
+    });
+
+    document.querySelectorAll('.inspection-toggle').forEach((toggle) => toggle.addEventListener('click', () => {
+      const row = toggle.closest('.inspection-row');
+      if (row.dataset.scanOnWait === 'true' && row.dataset.complete === 'false') { showPage('scan'); return; }
+      row.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(row.classList.contains('open')));
+    }));
+
+    let activeManualRow = null;
+    document.querySelectorAll('.manual-answer').forEach((button) => button.addEventListener('click', () => {
+      activeManualRow = button.closest('.inspection-row');
+      document.getElementById('inspectionChoiceTitle').textContent = '选择“' + button.dataset.itemName + '”结果';
+      const options = document.getElementById('inspectionChoiceOptions');
+      options.innerHTML = '';
+      button.dataset.options.split('|').forEach((answer) => {
+        const option = document.createElement('button');
+        option.className = 'choice-option';
+        option.type = 'button';
+        option.textContent = answer;
+        option.addEventListener('click', () => {
+          const value = activeManualRow.querySelector('.manual-value');
+          value.textContent = answer;
+          value.classList.add('filled');
+          activeManualRow.dataset.complete = 'true';
+          activeManualRow.querySelector('.source-tag').classList.add('show');
+          activeManualRow.querySelector('.manual-answer').textContent = '重新选择';
+          inspectionChoiceDialog.close();
+          renderInspectionProgress();
+        });
+        options.appendChild(option);
+      });
+      inspectionChoiceDialog.showModal();
+    }));
+    document.getElementById('cancelInspectionChoice').addEventListener('click', () => inspectionChoiceDialog.close());
+
+    confirmInspection.addEventListener('click', () => {
+      confirmInspection.disabled = true;
+      confirmInspection.textContent = '正在创建质检报告…';
+      setTimeout(() => {
+        confirmInspection.disabled = false;
+        confirmInspection.textContent = '确认质检结果';
+        showPage('report');
+      }, 850);
+    });
+
+    const contractConfirm = document.getElementById('contractConfirm');
+    const contractError = document.getElementById('contractError');
+    const sellerMobile = document.getElementById('sellerMobile');
+    const sellerMobileError = document.getElementById('sellerMobileError');
+    contractConfirm.addEventListener('change', () => contractError.classList.remove('show'));
+    const validateSellerMobile = () => {
+      const value = sellerMobile.value.trim().replace(/[\s-]/g, '');
+      const valid = /^\+601\d{8,9}$/.test(value);
+      sellerMobileError.classList.toggle('show', !valid);
+      return valid;
+    };
+    sellerMobile.addEventListener('blur', validateSellerMobile);
+    sellerMobile.addEventListener('input', () => sellerMobileError.classList.remove('show'));
+
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    document.getElementById('publishLot').addEventListener('click', () => {
+      if (!contractConfirm.checked) {
+        contractError.classList.add('show');
+        contractConfirm.focus();
+        return;
+      }
+      if (!validateSellerMobile()) {
+        sellerMobile.focus();
+        return;
+      }
+      loadingOverlay.classList.add('show');
+      setTimeout(() => {
+        loadingOverlay.classList.remove('show');
+        startAuction();
+        showPage('success');
+      }, 1200);
+    });
+
+    const AUCTION_DURATION_MINUTES = 10;
+    const auctionList = document.getElementById('auctionList');
+    const currentAuctionCard = document.getElementById('currentAuctionCard');
+    let activeAuctionStart = null;
+    let activeAuctionEnd = null;
+    const formatAuctionTime = (timestamp) => currentLanguage === 'en' ? new Intl.DateTimeFormat('en-MY', { dateStyle: 'medium', timeStyle: 'short', hour12: false }).format(new Date(timestamp)) : new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(timestamp));
+    const formatCountdown = (milliseconds) => { const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000)); return String(Math.floor(totalSeconds / 60)).padStart(2, '0') + ':' + String(totalSeconds % 60).padStart(2, '0'); };
+    function sortAuctionCards() { [...auctionList.querySelectorAll('.auction-card')].sort((a, b) => Number(a.dataset.deadline) - Number(b.dataset.deadline)).forEach((card) => auctionList.appendChild(card)); }
+    const updateAuctionCountdowns = () => { const now = Date.now(); document.querySelectorAll('[data-auction-countdown]').forEach((countdown) => { const card = countdown.closest('.auction-card'); countdown.textContent = formatCountdown(Number(card.dataset.deadline) - now); }); if (activeAuctionEnd) { const remaining = formatCountdown(activeAuctionEnd - now); document.getElementById('successAuctionCountdown').textContent = remaining; document.getElementById('lotAuctionCountdown').textContent = remaining; } };
+    const initializeAuctionDeadlines = () => { const now = Date.now(); auctionList.querySelectorAll('[data-deadline-offset-minutes]').forEach((card) => { card.dataset.deadline = String(now + Number(card.dataset.deadlineOffsetMinutes) * 60 * 1000); }); sortAuctionCards(); updateAuctionCountdowns(); };
+    const startAuction = () => { activeAuctionStart = Date.now(); activeAuctionEnd = activeAuctionStart + AUCTION_DURATION_MINUTES * 60 * 1000; currentAuctionCard.dataset.deadline = String(activeAuctionEnd); document.getElementById('successAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('successAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); sortAuctionCards(); updateAuctionCountdowns(); };
+    function openPreWinnerDetail() { showPage('preWinnerDetail'); }
+    document.getElementById('preWinnerAuctionCard').addEventListener('click', openPreWinnerDetail);
+    const sellerDecisionDialog = document.getElementById('sellerDecisionDialog');
+    let pendingSellerDecision = null;
+    const requestSellerDecision = (decision) => { pendingSellerDecision = decision; document.getElementById('sellerDecisionTitle').textContent = decision === 'accept' ? '确认接受中标价格？' : '确认不接受中标价格？'; document.getElementById('sellerDecisionMessage').textContent = decision === 'accept' ? '确认后立即生成成交订单。' : '确认后标单以“卖家拒绝”结束，不生成成交订单。'; document.getElementById('confirmSellerDecisionButton').textContent = decision === 'accept' ? '确认接受' : '确认拒绝'; sellerDecisionDialog.showModal(); };
+    document.getElementById('acceptPreWinner').addEventListener('click', () => requestSellerDecision('accept'));
+    document.getElementById('rejectPreWinner').addEventListener('click', () => requestSellerDecision('reject'));
+    document.getElementById('cancelSellerDecision').addEventListener('click', () => sellerDecisionDialog.close());
+    function confirmSellerDecision() { if (!pendingSellerDecision) return; const accepted = pendingSellerDecision === 'accept'; document.getElementById('preWinnerStatus').className = accepted ? 'callout success' : 'callout warning'; document.getElementById('preWinnerStatus').textContent = accepted ? '卖家已接受 · 成交订单已生成' : '卖家拒绝 · 标单已结束'; document.getElementById('preWinnerCardResult').textContent = accepted ? '结果：卖家已接受 · MYR 3,280' : '结果：卖家拒绝'; document.getElementById('preWinnerPermissionNote').textContent = accepted ? '中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。' : '卖家不接受中标价格，本标单已结束且未生成成交订单。'; document.getElementById('preWinnerDecisionActions').dataset.decided = 'true'; document.getElementById('preWinnerDecisionActions').style.display = 'none'; if (accepted) document.getElementById('generatedOrderCard').removeAttribute('hidden'); sellerDecisionDialog.close(); showToast(accepted ? '已接受中标价格，成交订单已生成' : '已记录卖家拒绝，标单已结束'); pendingSellerDecision = null; applyRoleScope(); }
+    document.getElementById('confirmSellerDecisionButton').addEventListener('click', confirmSellerDecision);
+
+    const roleSwitch = document.getElementById('roleSwitch');
+    const roleCopy = {
+      merchant: { identity: 'FS Retail Malaysia · 商家主账号', auction: '商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。', order: '商家主账号可查看本商家全部订单；取货结果只读。', bill: '商家主账号可查看本商家店铺收益和所属员工佣金。', decision: '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。' },
+      store: { identity: '中心旗舰店 · 店铺主账号', auction: '店铺主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。', order: '店铺主账号可查看本店铺全部订单；取货结果只读。', bill: '店铺主账号可查看本店铺收益和本店员工佣金。', decision: '本标单由员工贾瑞真创建。店铺主账号只读，不能替实际建拍操作人记录卖家决定。' },
+      employee: { identity: '中心旗舰店 · 员工', auction: '员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。', order: '员工仅查看本人创建的订单；取货结果只读。', bill: '员工仅查看本人佣金，不展示店铺收益。', decision: '你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。' }
+    };
+    let currentOrderTab = 'all';
+    const applyOrderScope = () => document.querySelectorAll('[data-order-card]').forEach((card) => {
+      const byRole = roleSwitch.value !== 'employee' || card.dataset.owner === 'jia';
+      const byState = currentOrderTab === 'all' || card.dataset.orderCard === currentOrderTab;
+      card.style.display = byRole && byState ? 'block' : 'none';
+    });
+    const applyRoleScope = () => {
+      const role = roleSwitch.value;
+      const copy = roleCopy[role];
+      document.getElementById('identityScope').textContent = copy.identity;
+      document.getElementById('auctionScopeNote').textContent = copy.auction;
+      document.getElementById('orderScopeNote').textContent = copy.order;
+      document.getElementById('billScopeNote').textContent = copy.bill;
+      document.getElementById('decisionNote').textContent = copy.decision;
+      const canDecidePreWinner = role === 'employee';
+      const decisionActions = document.getElementById('preWinnerDecisionActions');
+      if (decisionActions.dataset.decided !== 'true') {
+        decisionActions.style.display = canDecidePreWinner ? 'grid' : 'none';
+        document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。' : copy.decision;
+      }
+      document.getElementById('storeRevenueCard').style.display = role === 'employee' ? 'none' : 'block';
+      document.querySelectorAll('#employeeCommissionCard .summary-row').forEach((row, index) => row.style.display = role === 'employee' && index === 1 ? 'none' : 'flex');
+      document.querySelectorAll('#auctionsPage [data-owner]').forEach((card) => card.style.display = role === 'employee' && card.dataset.owner !== 'jia' ? 'none' : 'grid');
+      applyOrderScope();
+    };
+    roleSwitch.addEventListener('change', applyRoleScope);
+    document.querySelectorAll('[data-order-tab]').forEach((tab) => tab.addEventListener('click', () => {
+      currentOrderTab = tab.dataset.orderTab;
+      document.querySelectorAll('[data-order-tab]').forEach((item) => item.classList.toggle('active', item === tab));
+      applyOrderScope();
+    }));
+    applyRoleScope();
+
+    const validationDialog = document.getElementById('validationDialog');
+    document.getElementById('simulateFailure').addEventListener('click', () => validationDialog.showModal());
+    document.getElementById('closeValidation').addEventListener('click', () => validationDialog.close());
+    document.getElementById('retryValidation').addEventListener('click', () => {
+      validationDialog.close();
+      showToast('建拍资格已恢复，可以继续发布');
+    });
+
+    document.getElementById('createAnother').addEventListener('click', () => {
+      contractConfirm.checked = false;
+      contractError.classList.remove('show');
+      sellerMobile.value = '';
+      sellerMobileError.classList.remove('show');
+      openModelSelector('manual');
+    });
+
+
+    document.getElementById('useVerifiedAddress').addEventListener('click', () => {
+      document.getElementById('storeAddressInput').value = '18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor';
+      document.getElementById('storePhoneInput').value = '+60 12-345 6789';
+      document.getElementById('storeAddressError').classList.remove('show');
+    });
+    document.getElementById('saveStoreAddress').addEventListener('click', () => {
+      const address = document.getElementById('storeAddressInput').value.trim();
+      const phone = document.getElementById('storePhoneInput').value.trim();
+      const valid = address.length >= 8 && /^\+60[\s-]?1\d[\d\s-]{7,10}$/.test(phone);
+      document.getElementById('storeAddressError').classList.toggle('show', !valid);
+      if (!valid) return;
+      document.getElementById('storeAddressSummary').textContent = '马来西亚 · ' + address;
+      showToast('门店地址已保存');
+      showPage('my');
+    });
+    const bankAccountNumber = document.getElementById('bankAccountNumber');
+    bankAccountNumber.addEventListener('input', () => {
+      bankAccountNumber.value = bankAccountNumber.value.replace(/\D/g, '').slice(0, 20);
+      document.getElementById('bankAccountError').classList.remove('show');
+    });
+    document.getElementById('saveBankAccount').addEventListener('click', () => {
+      const holder = document.getElementById('bankAccountHolder').value.trim();
+      const bank = document.getElementById('bankNameInput').value.trim();
+      const number = bankAccountNumber.value.trim();
+      const valid = holder.length > 1 && bank.length > 1 && /^\d{8,20}$/.test(number);
+      document.getElementById('bankAccountError').classList.toggle('show', !valid);
+      if (!valid) return;
+      document.getElementById('bankAccountSummary').textContent = bank + ' · •••• ' + number.slice(-4);
+      showToast('银行卡信息已保存');
+      showPage('my');
+    });
+    document.getElementById('helpSupportEntry').addEventListener('click', () => showToast('客服热线：+60 3-8899 6688'));
+    document.getElementById('languageZh').addEventListener('click', () => saveLanguagePreference('zh'));
+    document.getElementById('languageEn').addEventListener('click', () => saveLanguagePreference('en'));
+
+    initializeAuctionDeadlines();
+    setInterval(updateAuctionCountdowns, 1000);
+    renderBrandList();
+    renderModelList();
+    renderInspectionProgress();
+    applyLanguage(currentLanguage);
+  </script>
+</body>
+</html>
