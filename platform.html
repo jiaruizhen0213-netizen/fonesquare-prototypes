@@ -53,8 +53,7 @@
       <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
       <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
       <div class="nav-group">商品映射管理</div>
-      <div class="nav-item" data-nav="mappingRule">⇄ <span>属性值映射规则</span></div>
-      <div class="nav-item" data-nav="candidate">✓ <span>候选固化治理</span></div>
+      <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 版本映射规则</span></div>
       <div class="nav-group">竞拍运营</div>
       <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
       <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
@@ -158,31 +157,18 @@
       </section>
 
       <section class="page" id="mappingRulePage">
-        <div class="page-title"><h1>属性值映射规则配置</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
-        <div class="alert"><span>ⓘ</span><div>本页面仅维护海外平台使用的通用映射规则，不区分站点。MAX 优先 SKU/版本仅作为只读映射键，不提供任何 MAX 后台操作入口。</div></div>
+        <div class="page-title"><h1>PMS 版本映射转化规则</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
+        <div class="alert"><span>ⓘ</span><div>版本 PPN、源版本 PPV和目标版本 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。</div></div>
         <div class="metric-grid" id="mappingMetrics"></div>
         <div class="card"><div class="card-body"><div class="filters" id="mappingFilters">
-          <div class="field"><label>MAX 优先 SKU / 版本</label><input class="control" id="mappingSkuFilter" placeholder="请输入 SKU 名称或版本" /></div>
-          <div class="field"><label>海外属性值</label><input class="control" id="mappingAttrFilter" placeholder="例如：马来西亚版" /></div>
-          <div class="field"><label>最终国内定价 SKU</label><input class="control" id="mappingTargetFilter" placeholder="请输入国内 SKU 名称" /></div>
+          <div class="field"><label>站点</label><select class="control" id="mappingSiteFilter"><option value="">全部</option><option>马来西亚</option><option>中国香港</option><option>新加坡</option></select></div>
+          <div class="field"><label>商品 / 型号</label><input class="control" id="mappingProductFilter" placeholder="请输入商品或型号" /></div>
+          <div class="field"><label>源版本 PPV</label><input class="control" id="mappingSourceFilter" placeholder="请输入源版本名称或 ID" /></div>
+          <div class="field"><label>目标版本 PPV</label><input class="control" id="mappingTargetFilter" placeholder="请输入目标版本名称或 ID" /></div>
           <div class="field"><label>状态</label><select class="control" id="mappingStatusFilter"><option value="">全部</option><option>生效</option><option>停用</option></select></div>
           <div class="filter-actions"><button class="btn" id="resetMappingBtn">↻ 重置</button><button class="btn primary" id="searchMappingBtn">⌕ 查询</button></div>
         </div></div></div>
         <div class="card"><div class="card-head"><div>映射规则列表 <span class="subtle" id="mappingSummary"></span></div><span class="subtle">规则变更仅影响后续标单</span></div><div id="mappingResultArea"></div></div>
-      </section>
-
-      <section class="page" id="candidatePage">
-        <div class="page-title"><h1>候选固化治理</h1></div>
-        <div class="alert warning"><span>!</span><div>候选来自门店店员在标单中人工选择国内 SKU 的结果。候选未经平台授权人员确认，不得供其他标单自动复用。</div></div>
-        <div class="metric-grid" id="candidateMetrics"></div>
-        <div class="card"><div class="card-body"><div class="filters" id="candidateFilters">
-          <div class="field"><label>候选特征</label><input class="control" id="candidateKeyFilter" placeholder="MAX 优先 SKU 或海外属性值" /></div>
-          <div class="field"><label>来源标单</label><input class="control" id="candidateOrderFilter" placeholder="请输入标单号" /></div>
-          <div class="field"><label>状态</label><select class="control" id="candidateStatusFilter"><option value="">全部</option><option>待确认</option><option>冲突</option><option>已固化</option></select></div>
-          <div class="field"><label>门店店员</label><input class="control" id="candidateClerkFilter" placeholder="请输入门店店员姓名" /></div>
-          <div class="filter-actions"><button class="btn" id="resetCandidateBtn">↻ 重置</button><button class="btn primary" id="searchCandidateBtn">⌕ 查询</button></div>
-        </div></div></div>
-        <div class="card"><div class="card-head"><div>候选列表 <span class="subtle" id="candidateSummary"></span></div><span class="subtle">确认固化后仅供后续相同特征标单使用</span></div><div id="candidateResultArea"></div></div>
       </section>
 
       <section class="page" id="bidListPage"><div id="bidListBody"></div></section>
@@ -231,11 +217,19 @@
     <div class="form-grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>所属商家 *</label><select class="control" id="newStoreMerchant"></select></div><div class="field"><label>店铺名称 *</label><input class="control" id="newStoreName" placeholder="请输入店铺名称" /></div><div class="field"><label>店铺主账号 *</label><select class="control" id="newStoreManager"></select></div><div class="field"><label>联系电话</label><input class="control" id="newStorePhone" placeholder="默认继承商家账号" /></div><div class="field span-2"><label>店铺地址 *</label><input class="control" id="newStoreAddress" placeholder="请输入店铺地址" /></div></div><div class="error-text" id="storeError"></div>
   </div><div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn primary" id="saveStore">创建店铺</button></div></div>
   <div class="modal wide" id="mappingRuleModal"><div class="modal-head"><h2 id="mappingRuleTitle">新增映射规则</h2><button class="close" data-close>×</button></div><div class="modal-body">
-    <div class="alert"><span>ⓘ</span><div>只配置海外平台的差异映射，不在此页面维护或操作 MAX。</div></div>
-    <div class="form-grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>MAX 优先 SKU *</label><select class="control" id="ruleMaxSku"><option>iPhone 15 / 256GB</option><option>iPhone 14 Pro / 256GB</option><option>Samsung Galaxy S24 / 256GB</option></select></div><div class="field"><label>MAX SKU 版本 *</label><input class="control" id="ruleMaxVersion" value="SKU-v12" /></div><div class="field"><label>参与定价的海外属性 *</label><select class="control" id="ruleAttribute"><option>销售地区/版本：马来西亚版</option><option>销售地区/版本：新加坡版</option><option>销售地区/版本：中国香港版</option></select></div><div class="field"><label>最终国内定价 SKU *</label><select class="control" id="ruleTargetSku"><option>iPhone 15 国行 / 256GB</option><option>iPhone 14 Pro 国行 / 256GB</option><option>Samsung Galaxy S24 国行 / 256GB</option></select></div><div class="field"><label>目标 SKU 版本 *</label><input class="control" id="ruleTargetVersion" value="CN-v8" /></div><div class="field"><label>状态 *</label><select class="control" id="ruleStatus"><option>生效</option><option>停用</option></select></div></div>
+    <div class="alert"><span>ⓘ</span><div>商品、版本 PPN及源/目标版本 PPV均从 PMS 目录选择；平台仅维护站点转化和价格策略。</div></div>
+    <div class="form-grid" style="grid-template-columns:1fr 1fr">
+      <div class="field"><label>站点 *</label><select class="control" id="ruleSite"><option>马来西亚</option><option>中国香港</option><option>新加坡</option></select></div>
+      <div class="field"><label>商品 / 型号 *</label><select class="control" id="ruleProduct"></select></div>
+      <div class="field"><label>版本 PPN *</label><select class="control" id="rulePpn"></select></div>
+      <div class="field"><label>源版本 PPV *</label><select class="control" id="ruleSourcePpv"></select></div>
+      <div class="field"><label>目标版本 PPV *</label><select class="control" id="ruleTargetPpv"></select></div>
+      <div class="field"><label>海外价格系数 *</label><input class="control" id="ruleCoefficient" type="number" min="0.0001" step="0.0001" value="1" /></div>
+      <div class="field"><label>MYR 固定调整值 *</label><input class="control" id="ruleFixedAdjustment" type="number" step="0.01" value="0" /></div>
+      <div class="field"><label>状态 *</label><select class="control" id="ruleStatus"><option>生效</option><option>停用</option></select></div>
+    </div>
     <div class="field" style="margin-top:14px"><label>变更原因 *</label><textarea class="control" id="ruleReason" placeholder="请填写新增或调整原因，将记录到历史版本"></textarea></div><div class="error-text" id="mappingRuleError"></div>
   </div><div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn primary" id="saveMappingRule">保存新版本</button></div></div>
-  <div class="modal wide" id="candidateModal"><div class="modal-head"><h2>候选固化确认</h2><button class="close" data-close>×</button></div><div class="modal-body" id="candidateModalBody"></div><div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn primary" id="confirmCandidateBtn">确认固化</button></div></div>
   <div class="modal xwide" id="businessModal"><div class="modal-head"><h2 id="businessModalTitle">业务操作</h2><button class="close" data-close>×</button></div><div class="modal-body" id="businessModalBody"></div><div class="modal-foot" id="businessModalFoot"></div></div>
   <div class="toast" id="toast"></div>
 
@@ -286,16 +280,42 @@
       {id:'MAX-881420',name:'Max-SJ-01',storeId:'S2003',model:'Max Pro',status:'停用',boundAt:'2026-08-19 14:05',updatedAt:'2026-08-21 11:30'},
       {id:'MAX-881308',name:'Max-JB-01',storeId:'S2005',model:'Max Pro',status:'启用',boundAt:'2026-08-17 15:10',updatedAt:'2026-08-17 15:10'}
     ];
-    const mappingRules=[
-      {id:'MAP-0008',maxSku:'iPhone 15 / 256GB',maxVersion:'SKU-v12',attribute:'销售地区/版本：马来西亚版',targetSku:'iPhone 15 国行 / 256GB',targetVersion:'CN-v8',status:'生效',version:'MAP-v3',operator:'贾瑞真',updatedAt:'2026-08-20 18:40'},
-      {id:'MAP-0007',maxSku:'iPhone 14 Pro / 256GB',maxVersion:'SKU-v18',attribute:'销售地区/版本：中国香港版',targetSku:'iPhone 14 Pro 国行 / 256GB',targetVersion:'CN-v11',status:'生效',version:'MAP-v2',operator:'李敏',updatedAt:'2026-08-19 16:20'},
-      {id:'MAP-0003',maxSku:'Samsung Galaxy S24 / 256GB',maxVersion:'SKU-v6',attribute:'销售地区/版本：新加坡版',targetSku:'Samsung Galaxy S24 国行 / 256GB',targetVersion:'CN-v4',status:'停用',version:'MAP-v4',operator:'王杰',updatedAt:'2026-08-18 11:08'}
+    const pmsVersionCatalog=[
+      {
+        product:'iPhone 15 / 256GB',
+        ppnId:'PPN-REGION-001',
+        ppnName:'销售地区/版本',
+        ppvs:[
+          {id:'PPV-OTHER-001',name:'海外其他版本',legal:true},
+          {id:'PPV-MY-001',name:'马来版本',legal:true},
+          {id:'PPV-CN-001',name:'国行版本',legal:true}
+        ]
+      },
+      {
+        product:'iPhone 14 Pro / 256GB',
+        ppnId:'PPN-REGION-002',
+        ppnName:'销售地区/版本',
+        ppvs:[
+          {id:'PPV-HK-001',name:'中国香港版本',legal:true},
+          {id:'PPV-OTHER-002',name:'海外其他版本',legal:true},
+          {id:'PPV-CN-002',name:'国行版本',legal:true}
+        ]
+      },
+      {
+        product:'Samsung Galaxy S24 / 256GB',
+        ppnId:'PPN-REGION-003',
+        ppnName:'销售地区/版本',
+        ppvs:[
+          {id:'PPV-SG-001',name:'新加坡版本',legal:true},
+          {id:'PPV-OTHER-003',name:'海外其他版本',legal:true},
+          {id:'PPV-CN-003',name:'国行版本',legal:true}
+        ]
+      }
     ];
-    const candidates=[
-      {id:'CAN-1024',maxSku:'iPhone 15 / 256GB',maxVersion:'SKU-v12',attribute:'销售地区/版本：新加坡版',selectedSku:'iPhone 15 国行 / 256GB',selectedVersion:'CN-v8',order:'LOT-MY-20260820-0186',clerk:'Aina Rahman',selectedAt:'2026-08-20 17:35',sameCount:6,status:'待确认'},
-      {id:'CAN-1021',maxSku:'Samsung Galaxy S24 / 256GB',maxVersion:'SKU-v6',attribute:'销售地区/版本：马来西亚版',selectedSku:'Samsung Galaxy S24 国行 / 256GB',selectedVersion:'CN-v4',order:'LOT-MY-20260820-0153',clerk:'Jason Lee',selectedAt:'2026-08-20 15:12',sameCount:4,status:'待确认'},
-      {id:'CAN-1018',maxSku:'iPhone 14 Pro / 256GB',maxVersion:'SKU-v18',attribute:'销售地区/版本：马来西亚版',selectedSku:'iPhone 14 Pro 国行 / 256GB',selectedVersion:'CN-v11',order:'LOT-MY-20260819-0098',clerk:'Farid Hakim',selectedAt:'2026-08-19 19:04',sameCount:3,status:'冲突'},
-      {id:'CAN-1012',maxSku:'iPhone 13 / 128GB',maxVersion:'SKU-v21',attribute:'销售地区/版本：马来西亚版',selectedSku:'iPhone 13 国行 / 128GB',selectedVersion:'CN-v14',order:'LOT-MY-20260818-0061',clerk:'Wong Jia',selectedAt:'2026-08-18 14:26',sameCount:8,status:'已固化'}
+    const mappingRules=[
+      {id:'MAP-0008',site:'马来西亚',product:'iPhone 15 / 256GB',ppnId:'PPN-REGION-001',ppnName:'销售地区/版本',sourcePpvId:'PPV-MY-001',sourcePpvName:'马来版本',targetPpvId:'PPV-CN-001',targetPpvName:'国行版本',coefficient:1,fixedAdjustment:0,pmsValidation:'校验通过',status:'生效',version:'MAP-v3',operator:'贾瑞真',updatedAt:'2026-08-30 14:20'},
+      {id:'MAP-0007',site:'中国香港',product:'iPhone 14 Pro / 256GB',ppnId:'PPN-REGION-002',ppnName:'销售地区/版本',sourcePpvId:'PPV-HK-001',sourcePpvName:'中国香港版本',targetPpvId:'PPV-CN-002',targetPpvName:'国行版本',coefficient:1.02,fixedAdjustment:0,pmsValidation:'校验通过',status:'生效',version:'MAP-v2',operator:'李敏',updatedAt:'2026-08-30 11:10'},
+      {id:'MAP-0003',site:'新加坡',product:'Samsung Galaxy S24 / 256GB',ppnId:'PPN-REGION-003',ppnName:'销售地区/版本',sourcePpvId:'PPV-SG-001',sourcePpvName:'新加坡版本',targetPpvId:'PPV-CN-003',targetPpvName:'国行版本',coefficient:.98,fixedAdjustment:15,pmsValidation:'校验通过',status:'停用',version:'MAP-v4',operator:'王杰',updatedAt:'2026-08-29 18:05'}
     ];
     const bids=[
       {id:'LOT-MY-20260821-0216',recycle:'RCY-20260821-7812',product:'iPhone 15 Pro',sku:'iPhone 15 Pro 国行 / 256GB',merchant:'AR Mobile Sdn Bhd',store:'KL Sentral 店',operator:'Aina Rahman',round:'R3',roundId:'AUC-20260821-0316',roundStatus:'待成交确认',status:'待成交确认',published:'2026-08-21 08:10',updated:'2026-08-21 08:23',report:'PMS-240821-118',max:'MAX-881920 / v4',language:'英文',order:null},
@@ -376,7 +396,7 @@
     function settlementBillById(id){return settlementBills.find(function(x){return x.id===id})}
     let currentBid=bids[0],currentRound=rounds[0],currentOrder=orders[0],currentPrivacy=privacyRecords[0],currentReturn=returnRecords[0],currentAdjustment=adjustments[0],businessAction=null,orderBatchMode=null;
     const selectedOrderIds=new Set();
-    let filtered=users.filter(u=>u.type!=='供货商家'),filteredStoreMerchants=[...employeeAccounts],filteredEmployees=[...employeeAccounts],filteredStores=[...stores],filteredMappings=[...mappingRules],filteredCandidates=[...candidates],currentUser=users[0],currentStoreMerchant=null,currentStoreUser=null,currentStore=stores[0],currentMapping=null,currentCandidate=null,pending=null,activeState='normal';
+    let filtered=users.filter(u=>u.type!=='供货商家'),filteredStoreMerchants=[...employeeAccounts],filteredEmployees=[...employeeAccounts],filteredStores=[...stores],filteredMappings=[...mappingRules],currentUser=users[0],currentStoreMerchant=null,currentStoreUser=null,currentStore=stores[0],currentMapping=null,pending=null,activeState='normal';
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     let currentLanguage='zh';
     const I18N_EXACT={
