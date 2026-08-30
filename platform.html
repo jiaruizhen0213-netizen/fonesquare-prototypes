@@ -53,7 +53,7 @@
       <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
       <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
       <div class="nav-group">商品映射管理</div>
-      <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 版本映射规则</span></div>
+      <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 属性映射规则</span></div>
       <div class="nav-group">竞拍运营</div>
       <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
       <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
@@ -157,14 +157,14 @@
       </section>
 
       <section class="page" id="mappingRulePage">
-        <div class="page-title"><h1>PMS 版本映射转化规则</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
-        <div class="alert"><span>ⓘ</span><div>版本 PPN、源版本 PPV和目标版本 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。</div></div>
+        <div class="page-title"><h1>PMS 属性映射转化规则</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
+        <div class="alert"><span>ⓘ</span><div>属性项 PPN、源属性值 PPV和目标属性值 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。</div></div>
         <div class="metric-grid" id="mappingMetrics"></div>
         <div class="card"><div class="card-body"><div class="filters" id="mappingFilters">
           <div class="field"><label>站点</label><select class="control" id="mappingSiteFilter"><option value="">全部</option><option>马来西亚</option><option>中国香港</option><option>新加坡</option></select></div>
           <div class="field"><label>商品 / 型号</label><input class="control" id="mappingProductFilter" placeholder="请输入商品或型号" /></div>
-          <div class="field"><label>源版本 PPV</label><input class="control" id="mappingSourceFilter" placeholder="请输入源版本名称或 ID" /></div>
-          <div class="field"><label>目标版本 PPV</label><input class="control" id="mappingTargetFilter" placeholder="请输入目标版本名称或 ID" /></div>
+          <div class="field"><label>源属性值 PPV</label><input class="control" id="mappingSourceFilter" placeholder="请输入源属性值名称或 ID" /></div>
+          <div class="field"><label>目标属性值 PPV</label><input class="control" id="mappingTargetFilter" placeholder="请输入目标属性值名称或 ID" /></div>
           <div class="field"><label>状态</label><select class="control" id="mappingStatusFilter"><option value="">全部</option><option>生效</option><option>停用</option></select></div>
           <div class="filter-actions"><button class="btn" id="resetMappingBtn">↻ 重置</button><button class="btn primary" id="searchMappingBtn">⌕ 查询</button></div>
         </div></div></div>
@@ -217,15 +217,13 @@
     <div class="form-grid" style="grid-template-columns:1fr 1fr"><div class="field"><label>所属商家 *</label><select class="control" id="newStoreMerchant"></select></div><div class="field"><label>店铺名称 *</label><input class="control" id="newStoreName" placeholder="请输入店铺名称" /></div><div class="field"><label>店铺主账号 *</label><select class="control" id="newStoreManager"></select></div><div class="field"><label>联系电话</label><input class="control" id="newStorePhone" placeholder="默认继承商家账号" /></div><div class="field span-2"><label>店铺地址 *</label><input class="control" id="newStoreAddress" placeholder="请输入店铺地址" /></div></div><div class="error-text" id="storeError"></div>
   </div><div class="modal-foot"><button class="btn" data-close>取消</button><button class="btn primary" id="saveStore">创建店铺</button></div></div>
   <div class="modal wide" id="mappingRuleModal"><div class="modal-head"><h2 id="mappingRuleTitle">新增映射规则</h2><button class="close" data-close>×</button></div><div class="modal-body">
-    <div class="alert"><span>ⓘ</span><div>商品、版本 PPN及源/目标版本 PPV均从 PMS 目录选择；平台仅维护站点转化和价格策略。</div></div>
+    <div class="alert"><span>ⓘ</span><div>商品、属性项 PPN及源/目标属性值 PPV均从 PMS 目录选择；平台仅维护站点下的属性值转化关系。</div></div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr">
       <div class="field"><label>站点 *</label><select class="control" id="ruleSite"><option>马来西亚</option><option>中国香港</option><option>新加坡</option></select></div>
       <div class="field"><label>商品 / 型号 *</label><select class="control" id="ruleProduct"></select></div>
-      <div class="field"><label>版本 PPN *</label><select class="control" id="rulePpn"></select></div>
-      <div class="field"><label>源版本 PPV *</label><select class="control" id="ruleSourcePpv"></select></div>
-      <div class="field"><label>目标版本 PPV *</label><select class="control" id="ruleTargetPpv"></select></div>
-      <div class="field"><label>海外价格系数 *</label><input class="control" id="ruleCoefficient" type="number" min="0.0001" step="0.0001" value="1" /></div>
-      <div class="field"><label>MYR 固定调整值 *</label><input class="control" id="ruleFixedAdjustment" type="number" step="0.01" value="0" /></div>
+      <div class="field"><label>属性项 PPN *</label><select class="control" id="rulePpn"></select></div>
+      <div class="field"><label>源属性值 PPV *</label><select class="control" id="ruleSourcePpv"></select></div>
+      <div class="field"><label>目标属性值 PPV *</label><select class="control" id="ruleTargetPpv"></select></div>
       <div class="field"><label>状态 *</label><select class="control" id="ruleStatus"><option>生效</option><option>停用</option></select></div>
     </div>
     <div class="field" style="margin-top:14px"><label>变更原因 *</label><textarea class="control" id="ruleReason" placeholder="请填写新增或调整原因，将记录到历史版本"></textarea></div><div class="error-text" id="mappingRuleError"></div>
@@ -280,42 +278,63 @@
       {id:'MAX-881420',name:'Max-SJ-01',storeId:'S2003',model:'Max Pro',status:'停用',boundAt:'2026-08-19 14:05',updatedAt:'2026-08-21 11:30'},
       {id:'MAX-881308',name:'Max-JB-01',storeId:'S2005',model:'Max Pro',status:'启用',boundAt:'2026-08-17 15:10',updatedAt:'2026-08-17 15:10'}
     ];
-    const pmsVersionCatalog=[
+    const pmsAttributeCatalog=[
       {
         product:'iPhone 15 / 256GB',
-        ppnId:'PPN-REGION-001',
-        ppnName:'销售地区/版本',
-        ppvs:[
-          {id:'PPV-OTHER-001',name:'海外其他版本',legal:true},
-          {id:'PPV-MY-001',name:'马来版本',legal:true},
-          {id:'PPV-CN-001',name:'国行版本',legal:true}
+        attributes:[
+          {
+            ppnId:'PPN-REGION-001',
+            ppnName:'销售地区/版本',
+            ppvs:[
+              {id:'PPV-OTHER-001',name:'海外其他版本',legal:true},
+              {id:'PPV-MY-001',name:'马来版本',legal:true},
+              {id:'PPV-CN-001',name:'国行版本',legal:true}
+            ]
+          },
+          {
+            ppnId:'PPN-CHANNEL-001',
+            ppnName:'购买渠道',
+            ppvs:[
+              {id:'PPV-HK-RETAIL-001',name:'香港零售',legal:true},
+              {id:'PPV-CN-RETAIL-001',name:'大陆国行',legal:true},
+              {id:'PPV-OVERSEAS-001',name:'海外版本',legal:true}
+            ]
+          }
         ]
       },
       {
         product:'iPhone 14 Pro / 256GB',
-        ppnId:'PPN-REGION-002',
-        ppnName:'销售地区/版本',
-        ppvs:[
-          {id:'PPV-HK-001',name:'中国香港版本',legal:true},
-          {id:'PPV-OTHER-002',name:'海外其他版本',legal:true},
-          {id:'PPV-CN-002',name:'国行版本',legal:true}
+        attributes:[
+          {
+            ppnId:'PPN-REGION-002',
+            ppnName:'销售地区/版本',
+            ppvs:[
+              {id:'PPV-HK-001',name:'中国香港版本',legal:true},
+              {id:'PPV-OTHER-002',name:'海外其他版本',legal:true},
+              {id:'PPV-CN-002',name:'国行版本',legal:true}
+            ]
+          }
         ]
       },
       {
         product:'Samsung Galaxy S24 / 256GB',
-        ppnId:'PPN-REGION-003',
-        ppnName:'销售地区/版本',
-        ppvs:[
-          {id:'PPV-SG-001',name:'新加坡版本',legal:true},
-          {id:'PPV-OTHER-003',name:'海外其他版本',legal:true},
-          {id:'PPV-CN-003',name:'国行版本',legal:true}
+        attributes:[
+          {
+            ppnId:'PPN-REGION-003',
+            ppnName:'销售地区/版本',
+            ppvs:[
+              {id:'PPV-SG-001',name:'新加坡版本',legal:true},
+              {id:'PPV-OTHER-003',name:'海外其他版本',legal:true},
+              {id:'PPV-CN-003',name:'国行版本',legal:true}
+            ]
+          }
         ]
       }
     ];
     const mappingRules=[
-      {id:'MAP-0008',site:'马来西亚',product:'iPhone 15 / 256GB',ppnId:'PPN-REGION-001',ppnName:'销售地区/版本',sourcePpvId:'PPV-MY-001',sourcePpvName:'马来版本',targetPpvId:'PPV-CN-001',targetPpvName:'国行版本',coefficient:1,fixedAdjustment:0,pmsValidation:'校验通过',status:'生效',version:'MAP-v3',operator:'贾瑞真',updatedAt:'2026-08-30 14:20'},
-      {id:'MAP-0007',site:'中国香港',product:'iPhone 14 Pro / 256GB',ppnId:'PPN-REGION-002',ppnName:'销售地区/版本',sourcePpvId:'PPV-HK-001',sourcePpvName:'中国香港版本',targetPpvId:'PPV-CN-002',targetPpvName:'国行版本',coefficient:1.02,fixedAdjustment:0,pmsValidation:'校验通过',status:'生效',version:'MAP-v2',operator:'李敏',updatedAt:'2026-08-30 11:10'},
-      {id:'MAP-0003',site:'新加坡',product:'Samsung Galaxy S24 / 256GB',ppnId:'PPN-REGION-003',ppnName:'销售地区/版本',sourcePpvId:'PPV-SG-001',sourcePpvName:'新加坡版本',targetPpvId:'PPV-CN-003',targetPpvName:'国行版本',coefficient:.98,fixedAdjustment:15,pmsValidation:'校验通过',status:'停用',version:'MAP-v4',operator:'王杰',updatedAt:'2026-08-29 18:05'}
+      {id:'MAP-0008',site:'马来西亚',product:'iPhone 15 / 256GB',ppnId:'PPN-REGION-001',ppnName:'销售地区/版本',sourcePpvId:'PPV-MY-001',sourcePpvName:'马来版本',targetPpvId:'PPV-CN-001',targetPpvName:'国行版本',pmsValidation:'校验通过',status:'生效',version:'MAP-v3',operator:'贾瑞真',updatedAt:'2026-08-30 14:20'},
+      {id:'MAP-0007',site:'中国香港',product:'iPhone 14 Pro / 256GB',ppnId:'PPN-REGION-002',ppnName:'销售地区/版本',sourcePpvId:'PPV-HK-001',sourcePpvName:'中国香港版本',targetPpvId:'PPV-CN-002',targetPpvName:'国行版本',pmsValidation:'校验通过',status:'生效',version:'MAP-v2',operator:'李敏',updatedAt:'2026-08-30 11:10'},
+      {id:'MAP-0003',site:'新加坡',product:'Samsung Galaxy S24 / 256GB',ppnId:'PPN-REGION-003',ppnName:'销售地区/版本',sourcePpvId:'PPV-SG-001',sourcePpvName:'新加坡版本',targetPpvId:'PPV-CN-003',targetPpvName:'国行版本',pmsValidation:'校验通过',status:'停用',version:'MAP-v4',operator:'王杰',updatedAt:'2026-08-29 18:05'}
     ];
     const bids=[
       {id:'LOT-MY-20260821-0216',recycle:'RCY-20260821-7812',product:'iPhone 15 Pro',sku:'iPhone 15 Pro 国行 / 256GB',merchant:'AR Mobile Sdn Bhd',store:'KL Sentral 店',operator:'Aina Rahman',round:'R3',roundId:'AUC-20260821-0316',roundStatus:'待成交确认',status:'待成交确认',published:'2026-08-21 08:10',updated:'2026-08-21 08:23',report:'PMS-240821-118',max:'MAX-881920 / v4',language:'英文',order:null},
@@ -400,7 +419,7 @@
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     let currentLanguage='zh';
     const I18N_EXACT={
-      '语言切换':'Language switch','首页':'Home','商家管理':'Merchant Management','商家列表':'Merchant List','门店管理':'Store Management','门店用户':'Store Users','店铺列表':'Store List','默认分账规则':'Default Revenue Share Rules','商品映射管理':'Product Mapping','PMS 版本映射规则':'PMS Version Mapping Rules','PMS 版本映射转化规则':'PMS Version Conversion Rules','竞拍运营':'Auction Operations','标单列表':'Lot List','标单详情':'Lot Details','竞拍轮次':'Auction Rounds','竞拍轮次详情':'Auction Round Details','订单中心':'Order Center','成交订单':'Completed Orders','订单详情':'Order Details','财务管理':'Finance','资金台账':'Fund Ledger','结算账单':'Settlement Bills','结算账单详情':'Settlement Bill Details','下载中心':'Downloads','我的文件':'My Files',
+      '语言切换':'Language switch','首页':'Home','商家管理':'Merchant Management','商家列表':'Merchant List','门店管理':'Store Management','门店用户':'Store Users','店铺列表':'Store List','默认分账规则':'Default Revenue Share Rules','商品映射管理':'Product Mapping','PMS 属性映射规则':'PMS Attribute Mapping Rules','PMS 属性映射转化规则':'PMS Attribute Conversion Rules','竞拍运营':'Auction Operations','标单列表':'Lot List','标单详情':'Lot Details','竞拍轮次':'Auction Rounds','竞拍轮次详情':'Auction Round Details','订单中心':'Order Center','成交订单':'Completed Orders','订单详情':'Order Details','财务管理':'Finance','资金台账':'Fund Ledger','结算账单':'Settlement Bills','结算账单详情':'Settlement Bill Details','下载中心':'Downloads','我的文件':'My Files',
       '导出':'Export','添加商家':'Add Merchant','查询':'Search','重置':'Reset','查看':'View','编辑':'Edit','保存':'Save','取消':'Cancel','关闭':'Close','确认':'Confirm','提交':'Submit','删除':'Delete','返回':'Back','启用':'Enable','停用':'Disable','开启':'Enabled','创建':'Create','新增':'Add','更正':'Correct','冲正':'Reverse','驳回':'Reject','处理':'Process','详情':'Details','操作':'Actions','状态':'Status','全部':'All','请选择':'Select','选填':'Optional','必填':'Required','是':'Yes','否':'No','无':'None','未分配':'Unassigned','正常':'Active','异常':'Exception','成功':'Success','失败':'Failed','有效':'Valid','无效':'Invalid',
       '商家名称':'Merchant Name','商家名称 / ID':'Merchant Name / ID','商家类型':'Merchant Type','商家状态':'Merchant Status','商家账号':'Merchant Account','商家主账号':'Merchant Primary Account','所属商家':'Merchant','商家 / 店铺':'Merchant / Store','商家 / 店铺 / 操作人':'Merchant / Store / Operator','商家 / ID':'Merchant / ID','店铺':'Store','店铺名称':'Store Name','店铺地址':'Store Address','店铺状态':'Store Status','店铺主账号':'Store Primary Account','门店用户应收':'Store User Receivable','维护人':'Owner','操作人':'Operator','确认人':'Confirmed By','创建人':'Created By','卖家':'Seller','供货卖家':'Supplier','回收商':'Recycler','付款方':'Payer','收款方':'Payee','付款方 / 收款方':'Payer / Payee',
       '账号状态':'Account Status','认证状态':'Verification Status','出价权限':'Bidding Permission','建拍权限':'Listing Permission','联系电话':'Contact Number','创建时间':'Created At','更新时间':'Updated At','处理时间':'Processed At','申请时间':'Requested At','成交时间':'Deal Time','实际取货时间':'Actual Pickup Time','支付时间':'Paid At','发起时间':'Initiated At','完成时间':'Completed At','取消时间':'Cancelled At','检测时间':'Check Time','数据来源':'Data Source','原因':'Reason','原因说明':'Reason Details','变更原因':'Change Reason','调整原因':'Adjustment Reason','备注':'Notes','操作日志':'Activity Log',
@@ -441,12 +460,12 @@
     });
     Object.assign(I18N_EXACT,{'共 8 条，按注册时间倒序':'Total 8 items, sorted by registration time descending','店铺信息与店铺建拍权限由平台端维护':'Store information and store listing permissions are maintained by the platform.','JPG / PNG，单张不超过 5MB':'JPG / PNG, up to 5MB per file','JPG / PNG / PDF，不超过 10MB':'JPG / PNG / PDF, up to 10MB per file','首次进入最后 20% 时按轮次幂等触发一次':'Triggered once per round when first entering the final 20%.','支付凭证（选填）':'Payment Voucher (Optional)'});
     Object.assign(I18N_EXACT,{
-      '版本 PPN、源版本 PPV和目标版本 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。':'Version PPN, source PPV, and target PPV are all sourced from PMS. The overseas system only selects values; it neither creates PPN/PPV values nor configures a target skuId. Rule changes only affect future lots.',
-      '商品、版本 PPN及源/目标版本 PPV均从 PMS 目录选择；平台仅维护站点转化和价格策略。':'Products, version PPNs, and source/target PPVs are selected from the PMS catalog. The platform only maintains site conversion and pricing policies.',
-      '站点':'Site','商品 / 型号':'Product / Model','请输入商品或型号':'Enter a product or model','源版本 PPV':'Source Version PPV','请输入源版本名称或 ID':'Enter a source version name or ID','目标版本 PPV':'Target Version PPV','请输入目标版本名称或 ID':'Enter a target version name or ID','版本 PPN':'Version PPN','海外价格系数':'Overseas Price Coefficient','MYR 固定调整值':'MYR Fixed Adjustment','PMS 校验':'PMS Validation','价格策略':'Pricing Policy',
-      '规则总数':'Total Rules','生效规则':'Active Rules','停用规则':'Disabled Rules','覆盖商品':'Covered Products','映射规则列表':'Mapping Rule List','没有符合当前条件的映射规则':'No mapping rules match the current filters','站点 / 商品':'Site / Product','PPN 名称 / ID':'PPN Name / ID','源 PPV 名称 / ID':'Source PPV Name / ID','目标 PPV 名称 / ID':'Target PPV Name / ID','系数 / 固定调整':'Coefficient / Fixed Adjustment','校验通过':'Validated',
+      '属性项 PPN、源属性值 PPV和目标属性值 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。':'Attribute PPN, source attribute PPV, and target attribute PPV are all sourced from PMS. The overseas system only selects values; it neither creates PPN/PPV values nor configures a target skuId. Rule changes only affect future lots.',
+      '商品、属性项 PPN及源/目标属性值 PPV均从 PMS 目录选择；平台仅维护站点下的属性值转化关系。':'Products, attribute PPNs, and source/target attribute PPVs are selected from the PMS catalog. The platform only maintains site-specific attribute conversion relationships.',
+      '站点':'Site','商品 / 型号':'Product / Model','请输入商品或型号':'Enter a product or model','源属性值 PPV':'Source Attribute PPV','请输入源属性值名称或 ID':'Enter a source attribute value name or ID','目标属性值 PPV':'Target Attribute PPV','请输入目标属性值名称或 ID':'Enter a target attribute value name or ID','属性项 PPN':'Attribute PPN','PMS 校验':'PMS Validation',
+      '规则总数':'Total Rules','生效规则':'Active Rules','停用规则':'Disabled Rules','覆盖商品':'Covered Products','映射规则列表':'Mapping Rule List','没有符合当前条件的映射规则':'No mapping rules match the current filters','站点 / 商品':'Site / Product','PPN 名称 / ID':'PPN Name / ID','源 PPV 名称 / ID':'Source PPV Name / ID','目标 PPV 名称 / ID':'Target PPV Name / ID','校验通过':'Validated','销售地区/版本':'Sales Region / Version','购买渠道':'Purchase Channel','香港零售':'Hong Kong Retail','大陆国行':'Mainland China Retail','海外版本':'Overseas Version','海外其他版本':'Other Overseas Version','马来版本':'Malaysia Version','国行版本':'Mainland China Version','中国香港版本':'Hong Kong Version','新加坡版本':'Singapore Version',
       '销售地区/版本':'Sales Region / Version','海外其他版本':'Other Overseas Version','马来版本':'Malaysia Version','国行版本':'Mainland China Version','中国香港版本':'Hong Kong Version','新加坡版本':'Singapore Version','编辑映射规则':'Edit Mapping Rule',
-      '未找到 PMS 返回的版本 PPN，请重新选择商品。':'The version PPN returned by PMS was not found. Select the product again.','源版本 PPV或目标版本 PPV不属于当前 PMS 版本 PPN。':'The source or target version PPV does not belong to the current PMS version PPN.','目标版本 PPV无法与其他商品属性组成合法 SKU。':'The target version PPV cannot form a valid SKU with the other product attributes.','海外价格系数必须大于 0。':'The overseas price coefficient must be greater than 0.','MYR 固定调整值必须为有效数字。':'The MYR fixed adjustment must be a valid number.','请填写变更原因。':'Enter a change reason.','请填写新增或调整原因，将记录到历史版本':'Enter the reason for adding or changing this rule; it will be recorded in version history.','同一站点、商品、版本 PPN和源版本 PPV已有生效规则。':'An active rule already exists for the same site, product, version PPN, and source version PPV.','映射规则已保存为新版本':'The mapping rule was saved as a new version','映射规则已创建':'The mapping rule was created','映射规则已生效':'The mapping rule is now active','映射规则已停用':'The mapping rule is now disabled','的历史版本已保留（原型演示）':' version history is retained (prototype demo)'
+      '未找到 PMS 返回的属性项 PPN，请重新选择商品。':'The attribute PPN returned by PMS was not found. Select the product again.','源属性值 PPV或目标属性值 PPV不属于当前 PMS 属性项 PPN。':'The source or target attribute PPV does not belong to the current PMS attribute PPN.','目标属性值 PPV无法与其他商品属性组成合法 SKU。':'The target attribute PPV cannot form a valid SKU with the other product attributes.','请填写变更原因。':'Enter a change reason.','请填写新增或调整原因，将记录到历史版本':'Enter the reason for adding or changing this rule; it will be recorded in version history.','同一站点、商品、属性项 PPN和源属性值 PPV已有生效规则。':'An active rule already exists for the same site, product, attribute PPN, and source attribute PPV.','映射规则已保存为新版本':'The mapping rule was saved as a new version','映射规则已创建':'The mapping rule was created','映射规则已生效':'The mapping rule is now active','映射规则已停用':'The mapping rule is now disabled','的历史版本已保留（原型演示）':' version history is retained (prototype demo)'
     });
     const I18N_PHRASES=Object.entries(I18N_EXACT).filter(function(pair){return pair[0].length>1}).sort(function(a,b){return b[0].length-a[0].length});
     const i18nTextSources=new WeakMap(),i18nAttributeSources=new WeakMap();
@@ -559,7 +578,7 @@
       $$('.page').forEach(x=>x.classList.remove('active'));
       const page=$(`#${view}Page`);if(!page)return;
       page.classList.add('active');
-      const names={list:'商家列表',detail:'商家详情',add:'添加商家',storeMerchant:'门店用户',storeMerchantDetail:'门店用户详情',store:'店铺列表',storeDetail:'店铺详情',defaultRatio:'默认分账规则',mappingRule:'PMS 版本映射规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算账单',settlementBillDetail:'结算账单详情'};
+      const names={list:'商家列表',detail:'商家详情',add:'添加商家',storeMerchant:'门店用户',storeMerchantDetail:'门店用户详情',store:'店铺列表',storeDetail:'店铺详情',defaultRatio:'默认分账规则',mappingRule:'PMS 属性映射规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算账单',settlementBillDetail:'结算账单详情'};
       const navKey={storeMerchantDetail:'storeMerchant',storeDetail:'store',detail:'list',add:'list',bidDetail:'bidList',roundDetail:'roundList',orderDetail:'orderList',privacyList:'orderList',returnList:'orderList',adjustmentList:'orderList',adjustmentCreate:'orderList',adjustmentDetail:'orderList',settlementBillDetail:'settlementBill'}[view]||view;
       const group=view==='mappingRule'?'商品映射管理':['bidList','bidDetail','roundList','roundDetail'].includes(view)?'竞拍运营':['orderList','orderDetail','privacyList','returnList','adjustmentList','adjustmentCreate','adjustmentDetail'].includes(view)?'订单中心':['financeLedger','settlementBill','settlementBillDetail'].includes(view)?'财务管理':['storeMerchant','storeMerchantDetail','store','storeDetail','defaultRatio'].includes(view)?'门店管理':'商家管理';
       $('#crumbGroup').textContent=group;$('#crumbCurrent').textContent=names[view]||view;
@@ -686,7 +705,7 @@
       $('#mappingMetrics').innerHTML=[[mappingRules.length,'规则总数'],[active,'生效规则'],[stopped,'停用规则'],[new Set(mappingRules.map(x=>x.product)).size,'覆盖商品']].map(x=>`<div class="metric"><div class="metric-label">${x[1]}</div><div class="metric-value">${x[0]}</div></div>`).join('');
       $('#mappingSummary').textContent=`共 ${filteredMappings.length} 条`;
       if(!filteredMappings.length){$('#mappingResultArea').innerHTML='<div class="empty-compact">没有符合当前条件的映射规则</div>';return}
-      $('#mappingResultArea').innerHTML=`<div class="table-wrap"><table class="table mapping-table"><thead><tr><th>映射编号 / 版本</th><th>站点 / 商品</th><th>PPN 名称 / ID</th><th>源 PPV 名称 / ID</th><th>目标 PPV 名称 / ID</th><th>系数 / 固定调整</th><th>PMS 校验</th><th>状态</th><th>更新人 / 时间</th><th>操作</th></tr></thead><tbody>${filteredMappings.map(r=>`<tr><td><span class="mapping-key">${esc(r.id)}</span><div class="mapping-version">${esc(r.version)}</div></td><td><b>${esc(r.site)}</b><div class="mapping-version">${esc(r.product)}</div></td><td><b>${esc(r.ppnName)}</b><div class="mapping-version">${esc(r.ppnId)}</div></td><td><span class="attribute-chip">${esc(r.sourcePpvName)}</span><div class="mapping-version">${esc(r.sourcePpvId)}</div></td><td><span class="attribute-chip">${esc(r.targetPpvName)}</span><div class="mapping-version">${esc(r.targetPpvId)}</div></td><td><b>${esc(r.coefficient)}</b><div class="mapping-version">MYR ${esc(r.fixedAdjustment)}</div></td><td>${statusTag(r.pmsValidation)}</td><td>${statusTag(r.status)}</td><td>${esc(r.operator)}<div class="mapping-version">${esc(r.updatedAt)}</div></td><td><div class="operations"><button class="btn link" data-rule-edit="${r.id}">编辑</button><button class="btn link ${r.status==='生效'?'danger-link':''}" data-rule-toggle="${r.id}">${r.status==='生效'?'停用':'启用'}</button><button class="btn link" data-rule-history="${r.id}">历史版本</button></div></td></tr>`).join('')}</tbody></table></div>`;
+      $('#mappingResultArea').innerHTML=`<div class="table-wrap"><table class="table mapping-table"><thead><tr><th>映射编号 / 版本</th><th>站点 / 商品</th><th>PPN 名称 / ID</th><th>源 PPV 名称 / ID</th><th>目标 PPV 名称 / ID</th><th>PMS 校验</th><th>状态</th><th>更新人 / 时间</th><th>操作</th></tr></thead><tbody>${filteredMappings.map(r=>`<tr><td><span class="mapping-key">${esc(r.id)}</span><div class="mapping-version">${esc(r.version)}</div></td><td><b>${esc(r.site)}</b><div class="mapping-version">${esc(r.product)}</div></td><td><b>${esc(r.ppnName)}</b><div class="mapping-version">${esc(r.ppnId)}</div></td><td><span class="attribute-chip">${esc(r.sourcePpvName)}</span><div class="mapping-version">${esc(r.sourcePpvId)}</div></td><td><span class="attribute-chip">${esc(r.targetPpvName)}</span><div class="mapping-version">${esc(r.targetPpvId)}</div></td><td>${statusTag(r.pmsValidation)}</td><td>${statusTag(r.status)}</td><td>${esc(r.operator)}<div class="mapping-version">${esc(r.updatedAt)}</div></td><td><div class="operations"><button class="btn link" data-rule-edit="${r.id}">编辑</button><button class="btn link ${r.status==='生效'?'danger-link':''}" data-rule-toggle="${r.id}">${r.status==='生效'?'停用':'启用'}</button><button class="btn link" data-rule-history="${r.id}">历史版本</button></div></td></tr>`).join('')}</tbody></table></div>`;
     }
     function applyMappingFilters(){
       const site=$('#mappingSiteFilter').value,product=$('#mappingProductFilter').value.trim().toLowerCase(),source=$('#mappingSourceFilter').value.trim().toLowerCase(),target=$('#mappingTargetFilter').value.trim().toLowerCase(),status=$('#mappingStatusFilter').value;
@@ -698,18 +717,23 @@
       select.innerHTML=options.map(option=>`<option value="${esc(option.value)}">${esc(option.label)}</option>`).join('');
       if(options.some(option=>option.value===selectedValue))select.value=selectedValue;
     }
-    function pmsCatalogFor(product,ppnId){
-      return pmsVersionCatalog.find(item=>item.product===product&&(!ppnId||item.ppnId===ppnId));
+    function pmsProductFor(product){
+      return pmsAttributeCatalog.find(item=>item.product===product);
     }
-    function syncPmsRuleOptions(rule=null){
-      const products=[...new Set(pmsVersionCatalog.map(item=>item.product))];
+    function pmsCatalogFor(product,ppnId){
+      return pmsProductFor(product)?.attributes.find(attribute=>attribute.ppnId===ppnId);
+    }
+    function syncPmsRuleOptions(rule=null,preservePpn=false){
+      const products=pmsAttributeCatalog.map(item=>item.product);
       const product=rule?.product||$('#ruleProduct').value||products[0];
       setSelectOptions($('#ruleProduct'),products.map(value=>({value,label:value})),product);
-      const catalog=pmsCatalogFor($('#ruleProduct').value,rule?.ppnId)||pmsCatalogFor($('#ruleProduct').value);
-      setSelectOptions($('#rulePpn'),[{value:catalog.ppnId,label:`${catalog.ppnName}（${catalog.ppnId}）`}],catalog.ppnId);
+      const productCatalog=pmsProductFor($('#ruleProduct').value);
+      const selectedPpnId=rule?.ppnId||(preservePpn?$('#rulePpn').value:'')||productCatalog.attributes[0].ppnId;
+      setSelectOptions($('#rulePpn'),productCatalog.attributes.map(attribute=>({value:attribute.ppnId,label:`${attribute.ppnName}（${attribute.ppnId}）`})),selectedPpnId);
+      const catalog=pmsCatalogFor($('#ruleProduct').value,$('#rulePpn').value)||productCatalog.attributes[0];
       const ppvOptions=catalog.ppvs.map(ppv=>({value:ppv.id,label:`${ppv.name}（${ppv.id}）`}));
       const sourceDefault=catalog.ppvs.find(ppv=>ppv.name==='马来版本')?.id||catalog.ppvs[0].id;
-      const targetDefault=catalog.ppvs.find(ppv=>ppv.name==='国行版本')?.id||catalog.ppvs[0].id;
+      const targetDefault=catalog.ppvs.find(ppv=>ppv.name==='国行版本')?.id||catalog.ppvs[1]?.id||catalog.ppvs[0].id;
       setSelectOptions($('#ruleSourcePpv'),ppvOptions,rule?.sourcePpvId||sourceDefault);
       setSelectOptions($('#ruleTargetPpv'),ppvOptions,rule?.targetPpvId||targetDefault);
     }
@@ -717,20 +741,18 @@
       const catalog=pmsCatalogFor($('#ruleProduct').value,$('#rulePpn').value);
       const source=catalog?.ppvs.find(ppv=>ppv.id===$('#ruleSourcePpv').value);
       const target=catalog?.ppvs.find(ppv=>ppv.id===$('#ruleTargetPpv').value);
-      return {site:$('#ruleSite').value,product:$('#ruleProduct').value,ppnId:$('#rulePpn').value,ppnName:catalog?.ppnName||'',sourcePpvId:$('#ruleSourcePpv').value,sourcePpvName:source?.name||'',targetPpvId:$('#ruleTargetPpv').value,targetPpvName:target?.name||'',coefficient:Number($('#ruleCoefficient').value),fixedAdjustment:Number($('#ruleFixedAdjustment').value),pmsValidation:'校验通过',status:$('#ruleStatus').value,reason:$('#ruleReason').value.trim()};
+      return {site:$('#ruleSite').value,product:$('#ruleProduct').value,ppnId:$('#rulePpn').value,ppnName:catalog?.ppnName||'',sourcePpvId:$('#ruleSourcePpv').value,sourcePpvName:source?.name||'',targetPpvId:$('#ruleTargetPpv').value,targetPpvName:target?.name||'',pmsValidation:'校验通过',status:$('#ruleStatus').value,reason:$('#ruleReason').value.trim()};
     }
     function validateMappingDraft(draft,currentRule){
       const catalog=pmsCatalogFor(draft.product,draft.ppnId);
-      if(!catalog)return '未找到 PMS 返回的版本 PPN，请重新选择商品。';
+      if(!catalog)return '未找到 PMS 返回的属性项 PPN，请重新选择商品。';
       const source=catalog.ppvs.find(ppv=>ppv.id===draft.sourcePpvId);
       const target=catalog.ppvs.find(ppv=>ppv.id===draft.targetPpvId);
-      if(!source||!target)return '源版本 PPV或目标版本 PPV不属于当前 PMS 版本 PPN。';
-      if(!target.legal)return '目标版本 PPV无法与其他商品属性组成合法 SKU。';
-      if(!Number.isFinite(draft.coefficient)||draft.coefficient<=0)return '海外价格系数必须大于 0。';
-      if(!Number.isFinite(draft.fixedAdjustment))return 'MYR 固定调整值必须为有效数字。';
+      if(!source||!target)return '源属性值 PPV或目标属性值 PPV不属于当前 PMS 属性项 PPN。';
+      if(!target.legal)return '目标属性值 PPV无法与其他商品属性组成合法 SKU。';
       if(!draft.reason)return '请填写变更原因。';
       const duplicated=draft.status==='生效'&&mappingRules.some(rule=>rule!==currentRule&&rule.status==='生效'&&rule.site===draft.site&&rule.product===draft.product&&rule.ppnId===draft.ppnId&&rule.sourcePpvId===draft.sourcePpvId);
-      if(duplicated)return '同一站点、商品、版本 PPN和源版本 PPV已有生效规则。';
+      if(duplicated)return '同一站点、商品、属性项 PPN和源属性值 PPV已有生效规则。';
       return '';
     }
     function openMappingRuleModal(rule=null){
@@ -738,8 +760,6 @@
       $('#mappingRuleTitle').textContent=rule?'编辑映射规则':'新增映射规则';
       $('#ruleSite').value=rule?.site||'马来西亚';
       syncPmsRuleOptions(rule);
-      $('#ruleCoefficient').value=rule?.coefficient??1;
-      $('#ruleFixedAdjustment').value=rule?.fixedAdjustment??0;
       $('#ruleStatus').value=rule?.status||'生效';
       $('#ruleReason').value='';
       $('#mappingRuleError').textContent='';
@@ -764,7 +784,7 @@
       toast(editing?'映射规则已保存为新版本':'映射规则已创建');
     }
     function toggleMappingRule(rule){
-      if(rule.status==='停用'&&mappingRules.some(item=>item!==rule&&item.status==='生效'&&mappingKey(item)===mappingKey(rule))){toast('同一站点、商品、版本 PPN和源版本 PPV已有生效规则。');return}
+      if(rule.status==='停用'&&mappingRules.some(item=>item!==rule&&item.status==='生效'&&mappingKey(item)===mappingKey(rule))){toast('同一站点、商品、属性项 PPN和源属性值 PPV已有生效规则。');return}
       rule.status=rule.status==='生效'?'停用':'生效';rule.version=`MAP-v${Number((rule.version.match(/v(\d+)$/)||['','0'])[1])+1}`;rule.operator='贾瑞真';rule.updatedAt='2026-08-30 14:32';filteredMappings=[...mappingRules];renderMappingRules();toast(`映射规则已${rule.status}`)
     }
     document.addEventListener('click',e=>{
@@ -1375,7 +1395,7 @@
     $$('.tab[data-tab]').forEach(x=>x.onclick=()=>activateTab(x.dataset.tab));$('#searchBtn').onclick=applyFilters;$('#resetBtn').onclick=resetFilters;$('#searchStoreMerchantBtn').onclick=applyStoreMerchantFilters;$('#resetStoreMerchantBtn').onclick=resetStoreMerchantFilters;$('#exportStoreMerchantBtn').onclick=()=>toast('已按当前筛选条件提交门店用户导出任务（原型演示）');$('#backBtn').onclick=()=>setView('list');$('#addBtn').onclick=()=>setView('add');$('#cancelAdd').onclick=$('#cancelAddTop').onclick=()=>setView('list');$('#permissionConfirm').onclick=confirmPermission;$('#saveRatio').onclick=saveRatio;$('#merchantShareMarket').onchange=loadMerchantShareDraft;$('#addMerchantShareBand').onclick=()=>{merchantShareDraft=readShareRows('merchantShareRuleRows');addShareBand(merchantShareDraft);renderShareEditorRows('merchantShareRuleRows',merchantShareDraft,'merchant',false)};
     $('#searchStoreBtn').onclick=applyStoreFilters;$('#resetStoreBtn').onclick=resetStoreFilters;$('#addStoreBtn').onclick=openNewStoreModal;$('#newStoreMerchant').onchange=syncStoreManager;$('#saveStore').onclick=saveStore;$('#backStoreBtn').onclick=()=>{renderStoreList();setView('store')};$('#editStoreBtn').onclick=()=>toast('店铺资料编辑入口（原型演示）');$('#storeStatusBtn').onclick=()=>{currentStore.status=currentStore.status==='营业中'?'停用':'营业中';openStoreDetail(currentStore);renderStoreList();toast(`店铺已${currentStore.status==='营业中'?'启用':'停用'}`)};
     $('#defaultShareMarket').onchange=loadDefaultRatioForm;$('#addDefaultShareBand').onclick=()=>{defaultShareDraft=readShareRows('defaultShareRuleRows');addShareBand(defaultShareDraft);renderShareEditorRows('defaultShareRuleRows',defaultShareDraft,'default',true)};$('#resetDefaultRatio').onclick=loadDefaultRatioForm;$('#saveDefaultRatio').onclick=saveDefaultRatio;
-    $('#addMappingRuleBtn').onclick=()=>openMappingRuleModal();$('#searchMappingBtn').onclick=applyMappingFilters;$('#resetMappingBtn').onclick=resetMappingFilters;$('#saveMappingRule').onclick=saveMappingRule;$('#ruleProduct').onchange=()=>syncPmsRuleOptions();$('#rulePpn').onchange=()=>syncPmsRuleOptions();
+    $('#addMappingRuleBtn').onclick=()=>openMappingRuleModal();$('#searchMappingBtn').onclick=applyMappingFilters;$('#resetMappingBtn').onclick=resetMappingFilters;$('#saveMappingRule').onclick=saveMappingRule;$('#ruleProduct').onchange=()=>syncPmsRuleOptions();$('#rulePpn').onchange=()=>syncPmsRuleOptions(null,true);
     $('#stateDemo').onchange=e=>{activeState=e.target.value;renderList()};$('#exportBtn').onclick=()=>toast('已按当前筛选条件提交导出任务（原型演示）');$('#editMerchantBtn').onclick=()=>toast('沿用现有商家资料编辑能力（原型演示）');$('#statusBtn').onclick=()=>{currentUser.status=currentUser.status==='正常'?'停用':'正常';openDetail(currentUser,'basic');renderList();toast(`账号已${currentUser.status==='正常'?'启用':'停用'}`)};
     $('#saveAdd').onclick=()=>{const first=$('#addFirst').value.trim(),last=$('#addLast').value.trim(),phone=$('#addPhone').value.trim(),email=$('#addEmail').value.trim();if(!first||!last){toast('请填写名和姓');return}if(!phone&&!email){toast('手机号、邮箱至少填写一项');return}const number=1000836+users.length,u={id:String(number),merchantId:`M${number}`,name:`${first} ${last}`,account:phone||email,rawAccount:phone||email,type:'回收商家',status:'正常',kyc:'未认证',bid:'关闭',build:'关闭',buildEverEnabled:false,ratioStatus:'未配置',ratioSource:'—',ratioVersion:'—',sourceVersion:'—',shareRules:null,merchantMain:true,employeeAppAccess:false,address:'待完善',owner:'贾瑞真',time:'2026-08-26 12:10'};users.unshift(u);filtered=foneSquareMerchants();setView('list');renderList();toast('FoneSquare 商家已创建；未自动进入门店管理或开通建拍权限')};
     const renderRoundDetailBase=renderRoundDetail;
@@ -1386,7 +1406,7 @@
       const platform=20+r.amount*.05,storeFee=10+r.amount*.035,employee=5+r.amount*.01,seller=r.amount-platform-storeFee-employee;
       panel.insertAdjacentHTML("beforeend","<div class=\"alert success\" style=\"margin-top:14px\"><span>✓</span><div><b>成交分账快照已冻结</b><br>后续规则变化不会回改本订单。</div></div><div class=\"snapshot-grid\"><div class=\"snapshot-item\"><label>命中价格段</label><b>MYR 2,000–5,999</b></div><div class=\"snapshot-item\"><label>规则版本 / 币种</label><b>M-v4 / MYR</b></div><div class=\"snapshot-item\"><label>平台规则</label><b>20 + 5%</b></div><div class=\"snapshot-item\"><label>店铺规则</label><b>10 + 3.5%</b></div><div class=\"snapshot-item\"><label>员工规则</label><b>5 + 1%</b></div><div class=\"snapshot-item\"><label>卖家应付</label><b>MYR "+seller.toFixed(2)+"</b></div><div class=\"snapshot-item\"><label>店铺服务费</label><b>MYR "+storeFee.toFixed(2)+"</b></div><div class=\"snapshot-item\"><label>员工佣金</label><b>MYR "+employee.toFixed(2)+"</b></div><div class=\"snapshot-item\"><label>平台收入</label><b>MYR "+platform.toFixed(2)+"</b></div></div>");
     };
-    window.prototypeState={setLanguage:setLanguage,getLanguage:function(){return currentLanguage},translateUiText:translateUiText,users,stores,employeeAccounts,maxDevices,defaultShareRules,pmsVersionCatalog,mappingRules,bids,rounds,orders,settlementLedger,privacyRecords,returnRecords,adjustments,refundRequests,merchantStores,requestPermission,confirmPermission,openDetail,renderStoreMerchantList,openStoreUserDetail,openStorePrimaryModal,handleEmployeeAction,renderStoreList,renderMappingRules,applyMappingFilters,resetMappingFilters,syncPmsRuleOptions,readMappingDraft,validateMappingDraft,openMappingRuleModal,saveMappingRule,renderBidList,renderRoundList,renderOrderList,renderOrderDetail,renderPrivacyList,renderReturnList,renderAdjustmentList,renderFinanceLedger,financialEntries,financeLedgerRows,settlementBatches,settlementBills,settlementBillById,splitSnapshotForOrder,eligibleSettlementOrders,eligibleSettlementAdjustments,settlementAdjustmentByEventId,settlementAdjustmentEvents,settlementEffectRows,buildSettlementPreview,createSettlementBatch,renderSettlementBillList,renderSettlementBillDetail,confirmSettlementPayment,privacyState,returnState,refundState,financeState,startReturn,completeReturn,cancelReturn,openOrderBatchChooser,enterOrderBatchMode,continueOrderBatch,renderAdjustmentCreate,processRefundRequest,reverseAdjustment,loadDefaultRatioForm,saveDefaultRatio,handleDeviceAction};
+    window.prototypeState={setLanguage:setLanguage,getLanguage:function(){return currentLanguage},translateUiText:translateUiText,users,stores,employeeAccounts,maxDevices,defaultShareRules,pmsAttributeCatalog,mappingRules,bids,rounds,orders,settlementLedger,privacyRecords,returnRecords,adjustments,refundRequests,merchantStores,requestPermission,confirmPermission,openDetail,renderStoreMerchantList,openStoreUserDetail,openStorePrimaryModal,handleEmployeeAction,renderStoreList,renderMappingRules,applyMappingFilters,resetMappingFilters,pmsProductFor,pmsCatalogFor,syncPmsRuleOptions,readMappingDraft,validateMappingDraft,openMappingRuleModal,saveMappingRule,renderBidList,renderRoundList,renderOrderList,renderOrderDetail,renderPrivacyList,renderReturnList,renderAdjustmentList,renderFinanceLedger,financialEntries,financeLedgerRows,settlementBatches,settlementBills,settlementBillById,splitSnapshotForOrder,eligibleSettlementOrders,eligibleSettlementAdjustments,settlementAdjustmentByEventId,settlementAdjustmentEvents,settlementEffectRows,buildSettlementPreview,createSettlementBatch,renderSettlementBillList,renderSettlementBillDetail,confirmSettlementPayment,privacyState,returnState,refundState,financeState,startReturn,completeReturn,cancelReturn,openOrderBatchChooser,enterOrderBatchMode,continueOrderBatch,renderAdjustmentCreate,processRefundRequest,reverseAdjustment,loadDefaultRatioForm,saveDefaultRatio,handleDeviceAction};
     filteredStoreMerchants=storeUserAccounts();renderList();renderStoreMerchantList();renderStoreList();renderMappingRules();renderBidList();renderRoundList();renderOrderList();renderPrivacyList();renderReturnList();renderAdjustmentList();renderFinanceLedger();renderSettlementBillList();loadDefaultRatioForm();
   </script>
 </body>
