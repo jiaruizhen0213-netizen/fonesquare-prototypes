@@ -67,3 +67,19 @@ test('merchant permission enable has prerequisites and no implicit child mutatio
   assert.doesNotMatch(platform, /employeesForMerchant\([^)]*\)\.forEach\(e=>e\.(businessAccess|personalBuild)='开启'\)/);
   assert.doesNotMatch(platform, /首次开启且暂无店铺时创建默认/);
 });
+
+test('store management contains no store-level listing permission', () => {
+  for (const obsolete of [
+    '店铺建拍权限', 'storeBuildFilter', 'storeBuildSwitch',
+    'data-store-build', 'buildOn', 'storeTypeFilter'
+  ]) assert.doesNotMatch(platform, new RegExp(obsolete));
+  assert.doesNotMatch(platform, /s\.build/);
+
+  for (const required of [
+    '银行卡尾号', '联系电话', 'Max 设备数', '启用设备数',
+    '店铺编号 / 名称', '所属供货商家'
+  ]) assert.match(platform, new RegExp(required));
+  assert.match(platform, /bankTail:'\d{4}'/);
+  assert.match(platform, /\*\*\*\* \$\{s\.bankTail\}/);
+  assert.match(platform, /enabledDevices=devices\.filter\(d=>d\.status==='启用'\)\.length/);
+});
