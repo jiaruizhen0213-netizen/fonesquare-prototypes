@@ -424,15 +424,15 @@
       </section>
       <section class="hero">
         <div class="eyebrow">供货端 · 门店端 / 员工 App</div>
-        <h2>创建竞拍标单</h2>
-        <p>完成设备质检并生成质检报告后创建竞拍标单。</p>
-        <button class="hero-button" id="homeCreateLot" type="button">开始质检并建标&nbsp; →</button>
+        <h2>扫码创建竞拍标单</h2>
+        <p>直接扫描设备，自动识别型号并带入 IMEI 后开始质检。</p>
+        <button class="hero-button" id="homeCreateLot" type="button">扫码质检并建标&nbsp; →</button>
       </section>
       <section class="section">
         <p class="section-kicker">快速指引</p>
         <h2 class="section-title">两步完成发布</h2>
         <div class="timeline">
-          <div class="timeline-item active"><strong>完成质检</strong><span>扫描 MAX 二维码，核对自动结果并补齐剩余项目。</span></div>
+          <div class="timeline-item active"><strong>扫码并完成质检</strong><span>扫描设备后核对自动结果；折叠屏需补充亮屏、暗屏照片。</span></div>
           <div class="timeline-item"><strong>确认并发布</strong><span>核对质检快照和价格结果后发布，无需预先维护卖家手机号或合同。</span></div>
         </div>
       </section>
@@ -443,42 +443,32 @@
       </section>
     </section>
 
-    <section class="page" data-page="modelSelect" id="modelSelectPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>选择回收物品</h1><span></span></header>
-      <div class="selector-tabs" aria-label="选择品类">
-        <button class="category-tab active" type="button" data-category="手机">手机</button>
-      </div>
-      <p class="selector-context" id="phoneOnlyNote">当前仅支持手机。</p>
-      <div class="model-search-wrap"><input class="model-search" id="modelSearch" type="search" placeholder="搜索型号名称" autocomplete="off"></div>
-      <p class="selector-context" id="selectorContext">请选择手机品牌和型号</p>
-      <p class="selector-context" id="catalogSourceNote">品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。</p>
-      <div class="model-selector-grid">
-        <aside class="brand-list" id="brandList" aria-label="选择品牌"></aside>
-        <div><div class="model-list" id="modelList" aria-live="polite"></div><div class="model-empty show" id="modelEmptyState">请先选择左侧品牌</div></div>
-      </div>
-    </section>
-
     <section class="page with-actions" data-page="inspection" id="inspectionPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="modelSelect" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="扫描 MAX 质检二维码">⌗</button></header>
+      <header class="topbar"><button class="icon-button" type="button" data-back="scan" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="重新扫描设备">⌗</button></header>
       <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
       <section class="section device-summary">
         <div class="device-thumb"><div class="mini-phone"></div></div>
-        <div><h2 class="product-name" id="currentInspectionModel">苹果 iPhone 14 Pro</h2><p class="specs">质检单已创建 · 已加载 PMS 质检模板</p></div>
+        <div><h2 class="product-name" id="currentInspectionModel">等待扫码识别</h2><p class="specs">扫码后自动识别设备并加载质检模板</p></div>
       </section>
-      <div class="inspection-progress" id="inspectionProgress">共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传</div>
+      <div class="inspection-progress" id="inspectionProgress">请先扫描设备</div>
       <p class="selector-context" id="templateSourceNote">质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。</p>
       <div class="callout warning" id="inspectionStatus">必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。</div>
       <section class="section">
         <p class="section-kicker">设备信息</p>
-        <label class="form-field" style="margin-top:0"><span>IMEI <i class="required">*</i></span><input id="imeiInput" type="text" inputmode="numeric" maxlength="15" placeholder="请输入 15 位 IMEI" autocomplete="off"></label>
-        <p class="inline-error" id="imeiError">请输入 15 位数字 IMEI。</p>
+        <div class="summary-row"><span>IMEI（扫码自动带入）</span><strong id="detectedImei">—</strong></div>
       </section>
-      <section class="section">
-        <p class="section-kicker">必填照片</p>
-        <button class="photo-upload" id="aboutDevicePhoto" type="button">
+      <section class="section" id="foldablePhotoSection" hidden>
+        <p class="section-kicker">折叠屏必填照片</p>
+        <p class="permission-note">已识别为折叠屏，请分别上传亮屏和暗屏照片。</p>
+        <button class="photo-upload" id="screenOnPhoto" type="button">
           <span class="photo-icon">＋</span>
-          <span><strong>关于本机照片 <i class="required">*</i></strong><small id="aboutDevicePhotoStatus">点击上传能显示型号与 IMEI 的“关于本机”页面照片</small></span>
-          <span class="remove-photo" id="removeAboutDevicePhoto">删除</span>
+          <span><strong>亮屏照片 <i class="required">*</i></strong><small id="screenOnPhotoStatus">未上传</small></span>
+          <span class="remove-photo" id="removeScreenOnPhoto">删除</span>
+        </button>
+        <button class="photo-upload" id="screenOffPhoto" type="button" style="margin-top:10px">
+          <span class="photo-icon">＋</span>
+          <span><strong>暗屏照片 <i class="required">*</i></strong><small id="screenOffPhotoStatus">未上传</small></span>
+          <span class="remove-photo" id="removeScreenOffPhoto">删除</span>
         </button>
       </section>
       <section class="section inspection-list" aria-label="质检项目">
@@ -519,17 +509,17 @@
     </section>
 
     <section class="page with-actions" data-page="scan" id="scanPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="inspection" aria-label="返回">‹</button><h1>扫描 MAX 质检二维码</h1><span></span></header>
+      <header class="topbar"><button class="icon-button" type="button" data-back="home" aria-label="返回">‹</button><h1>扫描设备</h1><span></span></header>
       <div class="scan-stage">
         <div class="scan-frame" aria-label="二维码扫描模拟区"><div class="qr-code"></div><div class="scan-line"></div></div>
-        <h2>将 MAX 二维码对准扫描框</h2>
-        <p>MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。</p>
+        <h2>扫描设备条码或二维码</h2>
+        <p>扫码后自动识别设备型号并带入 IMEI，无需先选择品类、品牌或型号。</p>
       </div>
       <section class="section">
-        <div class="summary-row"><span>当前质检单型号</span><strong id="scanSelectedModel">苹果 iPhone 14 Pro</strong></div>
-        <p class="permission-note">本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。</p>
+        <p class="section-kicker">原型扫码结果</p>
+        <p class="permission-note">选择一种结果演示普通手机和折叠屏的不同照片规则。</p>
       </section>
-      <nav class="action-bar single"><button class="action-button primary" id="simulateMaxScan" type="button">模拟扫码并导入</button></nav>
+      <nav class="action-bar"><button class="action-button secondary" id="scanStandardDevice" type="button">模拟扫码 · 普通手机</button><button class="action-button primary" id="scanFoldableDevice" type="button">模拟扫码 · 折叠屏手机</button></nav>
     </section>
 
     <section class="page with-actions" data-page="report" id="reportPage">
@@ -745,20 +735,6 @@
     </div>
   </dialog>
 
-  <dialog id="createOrderDialog" aria-labelledby="createOrderTitle">
-    <div class="dialog-body">
-      <div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">＋</div>
-      <h2 id="createOrderTitle">是否确认创建质检单？</h2>
-      <p>请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。</p>
-      <div class="dialog-summary">
-        <div class="summary-row"><span>品类</span><strong id="selectedCategorySummary">手机</strong></div>
-        <div class="summary-row"><span>品牌</span><strong id="selectedBrandSummary">苹果</strong></div>
-        <div class="summary-row"><span>型号</span><strong id="selectedModelSummary">苹果 iPhone 14 Pro</strong></div>
-      </div>
-      <div class="dialog-actions"><button class="secondary" type="button" id="cancelCreateOrder">取消</button><button class="primary" type="button" id="confirmCreateOrderButton">确认创建</button></div>
-    </div>
-  </dialog>
-
   <dialog id="sellerDecisionDialog" aria-labelledby="sellerDecisionTitle">
     <div class="dialog-body">
       <div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">!</div>
@@ -800,7 +776,7 @@
 
   <script>
 
-    const I18N_EN = Object.freeze({"FS Retail Malaysia · 商家主账号":"FS Retail Malaysia · Merchant admin","竞拍中":"Bidding","取消":"Cancel","256GB · 银影蓝":"256GB · Silver Shadow Blue","发布身份":"Publishing identity","确认并发布":"Confirm & Publish","风险标签":"Risk label","待卖家决定":"Pending seller decision","品类":"Category","我已确认与卖家签署线下合同":"I confirm the offline contract with the seller","1 · 质检":"1 · Inspection","FSO-260820-0048 · 中心旗舰店":"FSO-260820-0048 · Central Flagship Store","操作人":"Operator","待结算":"Pending settlement","请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。":"Confirm the price with the seller. Acceptance immediately creates a transaction order; rejection ends the lot as “Seller declined” without an order.","开机情况":"Power-on Status","更换二手部件":"Replacement Parts","店铺调整净额":"Store adjustment net","标单详情":"Auction Lot Details","账单":"Bills","收益与佣金":"Earnings & Commission","等待扫码":"Waiting for scan","请输入 15 位数字 IMEI。":"Enter a 15-digit IMEI.","已取货":"Picked Up","全部":"All","当前竞拍轮次":"Current auction round","门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货结果。":"The Store App does not auto-group, edit or confirm batches and never shows a handover code. A platform supervisor selects the units actually collected at the store and creates a picked-up batch after a second confirmation.","正在发布标单":"Publishing auction lot","供货商家":"Supplier business","MAX 未检查出该项目，需要店员人工选择。":"MAX did not return this item. Store staff must select it manually.","待取货":"Pending Pickup","取货时间":"Picked up","8月21日 11:02":"21 Aug, 11:02","机身外观":"Body Condition","确认结果并继续":"Confirm & Continue","商品":"Product","贾瑞真":"Jia Ruizhen","未记录":"Not recorded","成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。":"A successful result is idempotent. Retrying will return this result and will not create a duplicate lot.","商家主账号":"Store owner","卖家接受预中标价":"Seller accepted pre-winning price","第 1 轮":"Round 1","请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。":"Check the device information selected by store staff. The inspection order will be created and the matching PMS inspection template loaded after confirmation.","合同编号（选填）":"Contract reference (optional)","竞拍开始":"Auction starts","轮次结果":"Round result","报告快照":"Report snapshot","卖家决定":"Seller decision","重新校验":"Revalidate","电池健康度":"Battery health","继续建标":"Create Another","质检单已创建 · 已加载 PMS 质检模板":"Inspection order created · PMS inspection template loaded","灵犀":"Lingxi","主要问题":"Main issues","质检APP":"Inspection App","请先选择左侧品牌":"Select a brand on the left","2026年8月23日 10:18":"23 Aug 2026, 10:18","无高风险问题":"No high-risk issue","店铺收益":"Store Earnings","人工":"Manual","店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。":"Total store receivable = store service fee + store adjustment net. It excludes seller payable and employee commission.","填写质检结果":"Complete Inspection","完成设备质检并生成质检报告后创建竞拍标单。":"Complete the device inspection and generate the inspection report before creating an auction lot.","工具报告":"Tool reports","必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。":"MAX results must be imported successfully before submission. Tap the top-right scan icon.","该项目未从 MAX 工具报告中检查出来，需要店员手动选择。":"MAX did not return this required item. Store staff must select a result manually.","竞拍结束":"Auction ends","存储容量":"Storage","边框 / 后盖":"Frame / back","竞拍轮次":"Round","实际建拍操作人":"Actual operator","功能与显示":"Function and display","无法发布":"Unable to publish","竞拍时长：10分钟":"Auction duration: 10 minutes","确认质检结果":"Confirm Inspection Results","质检 APP 检查设备是否能够正常开机并进入系统。":"The Inspection App checks whether the device powers on and enters the system.","确认":"Confirm","IMEI 尾号 2761":"IMEI ending 2761","竞拍时长":"Auction duration","蓝牙功能":"Bluetooth","创建竞拍标单":"Create Auction Lot","成交来源":"Transaction source","商家主账号":"Merchant admin","竞拍":"Auctions","苹果 iPhone 14 Pro":"Apple iPhone 14 Pro","选择结果":"Select result","中心旗舰店":"Central Flagship Store","轮次执行状态":"Execution status","商家主账号查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders and pickup results.","接受预中标价":"Accept winning price","手机":"Mobile","取货记录":"Pickup batch","点击上传能显示型号与 IMEI 的“关于本机”页面照片":"Upload the About page showing the model and IMEI","成交时间":"Sold","竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。":"When the auction ends with a pre-winner, the actual operator records whether the seller accepts or rejects.","选择质检结果":"Select Inspection Result","发布快照":"Publish snapshot","不通过":"Failed","购买渠道":"Purchase Channel","核对质检快照和价格结果后发布。":"Review the inspection result, seller details and offline contract.","MAX 未返回电池健康度，需要店员查看设备后选择。":"MAX did not return battery health. Store staff must check the device and select a result.","功能正常":"Fully functional","2026年8月23日 10:24":"23 Aug 2026, 10:24","MAX 检查屏幕划痕、碎裂和显示区域外观。":"MAX checks screen scratches, cracks and the visible display area.","工具图片已随质检结果导入，报告信息已由 PMS 保存。":"Tool images were imported with the inspection results, and PMS has saved the report information.","按成交时间 · MYR":"By transaction time · MYR","开始质检并建标 →":"Start Inspection →","执行状态：已结束":"Execution: Ended","品牌":"Brand","结果：— ·":"Result: — ·","质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。":"Inspection item count and content are dynamically returned by the PMS template; the 8 items below are prototype examples only.","苹果 iPhone 14 Pro 512GB 深空黑色":"Apple iPhone 14 Pro 512GB Space Black","贾瑞真 · 员工":"Jia Ruizhen · Staff","标单号":"Auction lot","最近成交":"Latest transaction","将 MAX 二维码对准扫描框":"Align the MAX QR code","512GB · 深空黑色 · 香港版本":"512GB · Space Black · HK Version","屏幕外观":"Screen Condition","取货状态":"Pickup status","是否确认创建质检单？":"Confirm inspection order creation?","本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。":"MAX results must be imported from all three reports in this release. No fully manual fallback is available.","512GB · 星宇橙 · 香港版本":"512GB · Cosmic Orange · HK Version","当前质检单型号":"Inspection order model","FSO-260827-0101 · 中心旗舰店":"FSO-260827-0101 · Central Flagship Store","运营未发起":"Not initiated by Ops","供货端 · 创建标单与在拍商品":"FoneSquare Store App · Create Lots & View Live Auctions","未发起":"Not initiated","完成质检":"Complete inspection","正在执行最终校验…":"Running final validation…","竞拍结果":"Auction result","请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。":"Enter a valid Malaysian mobile number (+60 1X XXXX XXXX).","必填照片":"Required photo","卖家手机号 · 马来西亚（+60）":"Seller mobile number · Malaysia (+60)","正常":"Normal","图片与报告信息":"Images and report information","2 · 确认发布":"2 · Confirm & Publish","确认创建":"Confirm Creation","商家主账号可查看本商家店铺收益和所属员工佣金。":"Merchant admins can view store earnings and employee commission within the merchant account.","可建拍":"Eligible","设备信息":"Device information","查看标单":"View Auction Lot","确认账号和时间将记录在发布快照中。":"The confirmation account and time will be saved in the publishing snapshot.","确认卖家决定":"Confirm seller decision","灵犀 · 质检APP · MAX":"Lingxi · Inspection App · MAX","请确认卖家是否接受中标价格。":"Confirm whether the seller accepts the winning price.","发布时间":"Published","扫描 MAX 质检二维码":"Scan MAX Inspection QR","品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。":"Category, brand and model come from the existing PMS product catalog; this page uses prototype-only sample data.","店铺应收合计":"Total store receivable","整机功能":"Functionality","当前有效关系":"Current relationship","店铺服务费":"Store service fee","10 分钟":"10 minutes","轻微划痕":"Minor scratches","预览发布校验失败状态":"Preview a validation failure","统一门店端工作台":"Unified Store App workspace","订单与取货":"Orders & Pickup","中标价格":"Winning price","标单创建成功":"Auction lot created","预中标详情":"Pre-winner Details","8月21日 17:42":"21 Aug, 17:42","成交后请确认卖家合同。":"Confirm the offline contract before publishing.","不同币种分别汇总；所有金额与处理结果只读。":"Currencies are summarized separately. Amounts and processing results are read-only.","完成时间":"Completed","扫码后由灵犀报告填充。工具已覆盖的结果只读。":"Filled from the Lingxi report after scanning. Imported results are read-only.","订单":"Orders","留在此页":"Stay Here","剩余时间":"Time remaining","隐私结果":"Privacy result","标单号 FS-MY-260823-0197":"Lot FS-MY-260823-0197","两步完成发布":"2 steps to publish","当前仅支持手机。":"Only mobile phones are supported.","质检结果":"Inspection Results","取货规则":"Pickup rule","返回修改":"Edit Results","结果：预中标 · 中标价格 MYR 3,280":"Result: Pre-winner · Winning price MYR 3,280","PMS 质检报告已创建，可继续核对并发布。":"The PMS inspection report was created. Internal processing is complete.","下一步":"Next step","质检报告":"Inspection report","FS-HK-260823-0216 · 贾瑞真":"FS-HK-260823-0216 · Jia Ruizhen","不接受":"Do not accept","当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。":"The store’s auction eligibility changed after this page was opened. No recycle record or auction lot was created. Return and retry after the relationship is restored.","在拍商品":"Live Auction Products","请选择手机品牌和型号":"Select a mobile brand and model","发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。":"Publishing will revalidate account eligibility, store status, relationship, report, product details, contract, seller mobile number, device uniqueness and risk.","商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。":"Merchant admins can view all auction lots in the merchant account. Lots are sorted by the nearest auction deadline.","退回状态":"Return","工具报告未覆盖购买渠道，需要店员向卖家确认。":"Tool reports do not cover the purchase channel. Store staff must confirm it with the seller.","质检 APP 检查蓝牙开关和设备发现能力。":"The Inspection App checks the Bluetooth switch and device discovery.","报告信息":"Report information","扫描 MAX 二维码，核对自动结果并补齐剩余项目。":"Scan the MAX QR code, review imported results and complete the remaining items.","发布成功":"Published","员工":"Employee","回收单号":"Recycle number","店铺":"Store","处理状态":"Processing status","返回":"Back","型号":"Model","FS-MY-260823-0197 · 贾瑞真":"FS-MY-260823-0197 · Jia Ruizhen","发布成功 · 竞拍中 · 默认竞拍 10 分钟":"Published · Bidding · Default duration 10 minutes","执行状态：竞拍中":"Execution: Bidding","MAX 检查边框、背板及机身磕碰情况，并导入对应图片。":"MAX checks the frame, back panel and dents, and imports the related images.","未选择":"Not selected","快速指引":"Quick guide","调整净额":"Adjustment net","MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。":"MAX does not return a model. The model selected by store staff from the PMS product catalog remains unchanged; only results and images from all three inspection reports are imported.","模拟扫码并导入":"Simulate Scan & Import","预中标 · 等待卖家决定":"Pre-winner · Pending seller decision","选择回收物品":"Select Device","中标回收商":"Winning recycler","关于本机照片":"About This Device Photo","删除":"Remove","首页":"Home","屏幕显示":"Screen display","共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传":"8 required · 0 complete · 8 pending · IMEI missing · About This Device Photo missing","所属员工佣金":"Employee Commission","回收单、标单及首轮竞拍已成功创建并立即开始。":"The recycle record, auction lot and first auction round were created and bidding started immediately.","设备与报告":"Device and report","草稿":"Drafts","FSO-260821-0098 · 中心旗舰店":"FSO-260821-0098 · Central Flagship Store","员工佣金 · MYR":"Employee commission · MYR","苹果":"Apple","PMS 质检报告":"PMS inspection report","该示例标单不在本次建标流程范围内":"This sample auction is outside the create-lot flow","搜索型号名称":"Search model name","创建标单进度":"Create auction progress","手动创建标单":"Create auction lot manually","主导航":"Primary navigation","切换演示角色":"Switch demo role","90%以上|80%–89%|低于80%|无法读取":"90% or above|80%–89%|Below 80%|Unavailable","供货端创建标单与经营查看原型":"FoneSquare Store App prototype","请输入 15 位 IMEI":"Enter the 15-digit IMEI","按截止时间升序排列的标单":"Auction lots sorted by deadline ascending","二维码扫描模拟区":"QR scanner simulation","质检项目":"Inspection items","香港零售|大陆国行|海外版本|未知":"Hong Kong Retail|Mainland China|Overseas Version|Unknown","选择品牌":"Select brand","督导到店选择实际取走订单并二次确认后，系统直接生成已取货结果。":"A platform supervisor selected the units actually collected and confirmed the picked-up batch.","通知":"Notifications","扫码查看质检":"Scan to view inspection","无更换|更换屏幕|更换电池|其他部件":"No replacement|Screen replaced|Battery replaced|Other parts","成交订单详情为只读；取货结果由后续流程维护。":"Transaction order details are read-only; pickup is handled by the later flow.","订单状态筛选":"Order status filters","请输入合同编号":"Enter contract number","选择品类":"Select category","订单详情为只读；门店端不组批、不确认取货。":"Order details are read-only. The Store App cannot create or confirm pickup batches."," 512GB 深空黑色":" 512GB Space Black","没有匹配的型号，请清空搜索条件后重试":"No matching model. Clear the search and try again.","当前品类和品牌下暂无型号":"No models under this category and brand.","</strong><span>点击确认创建质检单</span></span><span class=\"select-mark\">›</span>":"</strong><span>Tap to confirm inspection order creation</span></span><span class=\"select-mark\">›</span>","请从 PMS 商品目录选择品类、品牌和型号后创建质检单":"Select a category, brand and model from the PMS product catalog to create an inspection order","正在创建质检单…":"Creating inspection order…","正在预览 about-this-device.jpg":"Previewing about-this-device.jpg","已上传：about-this-device.jpg · 点击预览":"Uploaded: about-this-device.jpg · Tap to preview"," 项 · 待补 ":" complete · "," 项 · IMEI ":" pending · IMEI ","已填写":"entered","未填写":"missing"," · 关于本机照片":" · About This Device Photo ","已上传":"uploaded","未上传":"missing","MAX 三份质检报告已成功导入 5 项结果，仍有 ":"MAX results from all three reports were imported successfully. "," 项需要店员手动选择。":" required items still need a manual selection.","正在导入 MAX 结果…":"Importing MAX results…","选择“":"Select result for “","”结果":"”","重新选择":"Change result","正在创建质检报告…":"Creating inspection report…","确认拒绝":"Confirm rejection","已接受中标价格，成交订单已生成":"Winning price accepted · Order created","已记录卖家拒绝，标单已结束":"Seller declined · Lot ended","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Merchant admins have read-only access and cannot record the seller decision.","中心旗舰店 · 商家主账号":"Central Flagship Store · Store owner","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Store owners have read-only access and cannot record the seller decision.","中心旗舰店 · 员工":"Central Flagship Store · Employee","你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。":"You are the actual operator for this lot and can record accept or reject after a pre-winner is produced.","建拍资格已恢复，可以继续发布":"Auction eligibility restored · You can publish now","我的":"Me","已完成身份认证":"Identity verified","认证地址可用于维护门店地址":"Use the verified address to maintain the store address","快捷入口":"Quick Access","门店地址":"Store Address","维护营业地址和联系电话":"Maintain business address and contact number","银行卡号":"Bank Account","维护收款银行卡信息":"Maintain payout bank details","设置":"Settings","账户、安全与语言":"Account, security & language","帮助与支持":"Help & Support","常见问题、联系我们":"FAQs & contact us","可使用身份认证地址":"Verified address available","你已完成身份认证，可将认证地址一键代入门店地址表单。":"Your identity is verified. Use the verified address to fill the store address form.","使用认证地址":"Use Verified Address","国家/地区":"Country/Region","马来西亚":"Malaysia","默认使用注册时选择的国家":"Defaults to the country selected at registration","具体地址":"Address","联系电话":"Contact Number","默认使用登录手机号":"Defaults to the login mobile number","保存门店地址":"Save Store Address","门店地址已保存":"Store address saved","收款银行卡":"Payout Bank Account","银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。":"Bank details are used only for transaction settlement. After saving, only the bank name and last four digits are shown.","持卡人名称":"Account Holder","请输入持卡人名称":"Enter account holder name","银行名称":"Bank Name","请输入银行名称":"Enter bank name","请输入银行卡号":"Enter bank account number","保存银行卡":"Save Bank Account","请输入8–20位银行卡号。":"Enter an 8–20 digit bank account number.","银行卡信息已保存":"Bank details saved","语言":"Language","语言与显示":"Language & Display","简体中文":"Simplified Chinese","切换后整份原型的页面、弹窗和提示将同步更新。":"All pages, dialogs and messages in this prototype update immediately.","选择语言":"Select Language","点击确认创建质检单":"Tap to confirm inspection order creation","华为":"Huawei","三星":"Samsung","小米":"Xiaomi","✓ 已完成身份认证":"✓ Identity verified","身份认证已完成":"Identity verification complete","请填写完整的门店地址和联系电话。":"Enter the complete store address and contact number.","扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号":"Scanning also requires a category, brand and model selection from the PMS product catalog first","确认接受中标价格？":"Accept the winning price?","确认不接受中标价格？":"Decline the winning price?","确认后立即生成成交订单。":"Confirmation immediately creates a transaction order.","确认后标单以“卖家拒绝”结束，不生成成交订单。":"Confirmation ends the lot as “Seller declined” and does not create an order.","确认接受":"Confirm acceptance","卖家已接受 · 成交订单已生成":"Seller accepted · Transaction order created","卖家拒绝 · 标单已结束":"Seller declined · Auction lot ended","结果：卖家已接受 · MYR 3,280":"Result: Seller accepted · MYR 3,280","结果：卖家拒绝":"Result: Seller declined","中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。":"The winning price was accepted and the transaction order was created immediately. View it under Orders.","卖家不接受中标价格，本标单已结束且未生成成交订单。":"The seller declined the winning price. The lot ended and no transaction order was created.","商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。":"Merchant admins can view all merchant auction lots; lots are sorted by nearest deadline.","商家主账号可查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders; pickup results are read-only.","商家主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。":"Store owners can view all store auction lots; lots are sorted by nearest deadline.","商家主账号可查看本店铺全部订单；取货结果只读。":"Store owners can view all store orders; pickup results are read-only.","商家主账号可查看本店铺收益和本店员工佣金。":"Store owners can view store earnings and employee commission in their store.","员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。":"Employees only see auction lots they created; lots are sorted by nearest deadline.","员工仅查看本人创建的订单；取货结果只读。":"Employees only see orders they created; pickup results are read-only.","员工仅查看本人佣金，不展示店铺收益。":"Employees only see their own commission; store earnings are hidden.","客服热线：+60 3-8899 6688":"Support: +60 3-8899 6688"});
+    const I18N_EN = Object.freeze({"FS Retail Malaysia · 商家主账号":"FS Retail Malaysia · Merchant admin","竞拍中":"Bidding","取消":"Cancel","256GB · 银影蓝":"256GB · Silver Shadow Blue","发布身份":"Publishing identity","确认并发布":"Confirm & Publish","风险标签":"Risk label","待卖家决定":"Pending seller decision","品类":"Category","我已确认与卖家签署线下合同":"I confirm the offline contract with the seller","1 · 质检":"1 · Inspection","FSO-260820-0048 · 中心旗舰店":"FSO-260820-0048 · Central Flagship Store","操作人":"Operator","待结算":"Pending settlement","请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。":"Confirm the price with the seller. Acceptance immediately creates a transaction order; rejection ends the lot as “Seller declined” without an order.","开机情况":"Power-on Status","更换二手部件":"Replacement Parts","店铺调整净额":"Store adjustment net","标单详情":"Auction Lot Details","账单":"Bills","收益与佣金":"Earnings & Commission","等待扫码":"Waiting for scan","已取货":"Picked Up","全部":"All","当前竞拍轮次":"Current auction round","门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货结果。":"The Store App does not auto-group, edit or confirm batches and never shows a handover code. A platform supervisor selects the units actually collected at the store and creates a picked-up batch after a second confirmation.","正在发布标单":"Publishing auction lot","供货商家":"Supplier business","MAX 未检查出该项目，需要店员人工选择。":"MAX did not return this item. Store staff must select it manually.","待取货":"Pending Pickup","取货时间":"Picked up","8月21日 11:02":"21 Aug, 11:02","机身外观":"Body Condition","确认结果并继续":"Confirm & Continue","商品":"Product","贾瑞真":"Jia Ruizhen","未记录":"Not recorded","成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。":"A successful result is idempotent. Retrying will return this result and will not create a duplicate lot.","商家主账号":"Merchant admin","卖家接受预中标价":"Seller accepted pre-winning price","第 1 轮":"Round 1","合同编号（选填）":"Contract reference (optional)","竞拍开始":"Auction starts","轮次结果":"Round result","报告快照":"Report snapshot","卖家决定":"Seller decision","重新校验":"Revalidate","电池健康度":"Battery health","继续建标":"Create Another","质检单已创建 · 已加载 PMS 质检模板":"Inspection order created · PMS inspection template loaded","灵犀":"Lingxi","主要问题":"Main issues","质检APP":"Inspection App","2026年8月23日 10:18":"23 Aug 2026, 10:18","无高风险问题":"No high-risk issue","店铺收益":"Store Earnings","人工":"Manual","店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。":"Total store receivable = store service fee + store adjustment net. It excludes seller payable and employee commission.","填写质检结果":"Complete Inspection","完成设备质检并生成质检报告后创建竞拍标单。":"Complete the device inspection and generate the inspection report before creating an auction lot.","工具报告":"Tool reports","必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。":"MAX results must be imported successfully before submission. Tap the top-right scan icon.","该项目未从 MAX 工具报告中检查出来，需要店员手动选择。":"MAX did not return this required item. Store staff must select a result manually.","竞拍结束":"Auction ends","存储容量":"Storage","边框 / 后盖":"Frame / back","竞拍轮次":"Round","实际建拍操作人":"Actual operator","功能与显示":"Function and display","无法发布":"Unable to publish","竞拍时长：10分钟":"Auction duration: 10 minutes","确认质检结果":"Confirm Inspection Results","质检 APP 检查设备是否能够正常开机并进入系统。":"The Inspection App checks whether the device powers on and enters the system.","确认":"Confirm","IMEI 尾号 2761":"IMEI ending 2761","竞拍时长":"Auction duration","蓝牙功能":"Bluetooth","创建竞拍标单":"Create Auction Lot","成交来源":"Transaction source","竞拍":"Auctions","苹果 iPhone 14 Pro":"Apple iPhone 14 Pro","选择结果":"Select result","中心旗舰店":"Central Flagship Store","轮次执行状态":"Execution status","商家主账号查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders and pickup results.","接受预中标价":"Accept winning price","手机":"Mobile","取货记录":"Pickup batch","点击上传能显示型号与 IMEI 的“关于本机”页面照片":"Upload the About page showing the model and IMEI","成交时间":"Sold","竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。":"When the auction ends with a pre-winner, the actual operator records whether the seller accepts or rejects.","选择质检结果":"Select Inspection Result","发布快照":"Publish snapshot","不通过":"Failed","购买渠道":"Purchase Channel","核对质检快照和价格结果后发布。":"Review the inspection result, seller details and offline contract.","MAX 未返回电池健康度，需要店员查看设备后选择。":"MAX did not return battery health. Store staff must check the device and select a result.","功能正常":"Fully functional","2026年8月23日 10:24":"23 Aug 2026, 10:24","MAX 检查屏幕划痕、碎裂和显示区域外观。":"MAX checks screen scratches, cracks and the visible display area.","工具图片已随质检结果导入，报告信息已由 PMS 保存。":"Tool images were imported with the inspection results, and PMS has saved the report information.","按成交时间 · MYR":"By transaction time · MYR","开始质检并建标 →":"Start Inspection →","执行状态：已结束":"Execution: Ended","品牌":"Brand","结果：— ·":"Result: — ·","质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。":"Inspection item count and content are dynamically returned by the PMS template; the 8 items below are prototype examples only.","苹果 iPhone 14 Pro 512GB 深空黑色":"Apple iPhone 14 Pro 512GB Space Black","贾瑞真 · 员工":"Jia Ruizhen · Staff","标单号":"Auction lot","最近成交":"Latest transaction","将 MAX 二维码对准扫描框":"Align the MAX QR code","512GB · 深空黑色 · 香港版本":"512GB · Space Black · HK Version","屏幕外观":"Screen Condition","取货状态":"Pickup status","本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。":"MAX results must be imported from all three reports in this release. No fully manual fallback is available.","512GB · 星宇橙 · 香港版本":"512GB · Cosmic Orange · HK Version","当前质检单型号":"Inspection order model","FSO-260827-0101 · 中心旗舰店":"FSO-260827-0101 · Central Flagship Store","运营未发起":"Not initiated by Ops","供货端 · 创建标单与在拍商品":"FoneSquare Store App · Create Lots & View Live Auctions","未发起":"Not initiated","完成质检":"Complete inspection","正在执行最终校验…":"Running final validation…","竞拍结果":"Auction result","请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。":"Enter a valid Malaysian mobile number (+60 1X XXXX XXXX).","必填照片":"Required photo","卖家手机号 · 马来西亚（+60）":"Seller mobile number · Malaysia (+60)","正常":"Normal","图片与报告信息":"Images and report information","2 · 确认发布":"2 · Confirm & Publish","确认创建":"Confirm Creation","商家主账号可查看本商家店铺收益和所属员工佣金。":"Merchant admins can view store earnings and employee commission within the merchant account.","可建拍":"Eligible","设备信息":"Device information","查看标单":"View Auction Lot","确认账号和时间将记录在发布快照中。":"The confirmation account and time will be saved in the publishing snapshot.","确认卖家决定":"Confirm seller decision","灵犀 · 质检APP · MAX":"Lingxi · Inspection App · MAX","请确认卖家是否接受中标价格。":"Confirm whether the seller accepts the winning price.","发布时间":"Published","扫描 MAX 质检二维码":"Scan MAX Inspection QR","店铺应收合计":"Total store receivable","整机功能":"Functionality","当前有效关系":"Current relationship","店铺服务费":"Store service fee","10 分钟":"10 minutes","轻微划痕":"Minor scratches","预览发布校验失败状态":"Preview a validation failure","统一门店端工作台":"Unified Store App workspace","订单与取货":"Orders & Pickup","中标价格":"Winning price","标单创建成功":"Auction lot created","预中标详情":"Pre-winner Details","8月21日 17:42":"21 Aug, 17:42","成交后请确认卖家合同。":"Confirm the offline contract before publishing.","不同币种分别汇总；所有金额与处理结果只读。":"Currencies are summarized separately. Amounts and processing results are read-only.","完成时间":"Completed","扫码后由灵犀报告填充。工具已覆盖的结果只读。":"Filled from the Lingxi report after scanning. Imported results are read-only.","订单":"Orders","留在此页":"Stay Here","剩余时间":"Time remaining","隐私结果":"Privacy result","标单号 FS-MY-260823-0197":"Lot FS-MY-260823-0197","两步完成发布":"2 steps to publish","当前仅支持手机。":"Only mobile phones are supported.","质检结果":"Inspection Results","取货规则":"Pickup rule","返回修改":"Edit Results","结果：预中标 · 中标价格 MYR 3,280":"Result: Pre-winner · Winning price MYR 3,280","PMS 质检报告已创建，可继续核对并发布。":"The PMS inspection report was created. Internal processing is complete.","下一步":"Next step","质检报告":"Inspection report","FS-HK-260823-0216 · 贾瑞真":"FS-HK-260823-0216 · Jia Ruizhen","不接受":"Do not accept","当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。":"The store’s auction eligibility changed after this page was opened. No recycle record or auction lot was created. Return and retry after the relationship is restored.","在拍商品":"Live Auction Products","发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。":"Publishing will revalidate account eligibility, store status, relationship, report, product details, contract, seller mobile number, device uniqueness and risk.","商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。":"Merchant admins can view all auction lots in the merchant account. Lots are sorted by the nearest auction deadline.","退回状态":"Return","工具报告未覆盖购买渠道，需要店员向卖家确认。":"Tool reports do not cover the purchase channel. Store staff must confirm it with the seller.","质检 APP 检查蓝牙开关和设备发现能力。":"The Inspection App checks the Bluetooth switch and device discovery.","报告信息":"Report information","扫描 MAX 二维码，核对自动结果并补齐剩余项目。":"Scan the MAX QR code, review imported results and complete the remaining items.","发布成功":"Published","员工":"Employee","回收单号":"Recycle number","店铺":"Store","处理状态":"Processing status","返回":"Back","型号":"Model","FS-MY-260823-0197 · 贾瑞真":"FS-MY-260823-0197 · Jia Ruizhen","发布成功 · 竞拍中 · 默认竞拍 10 分钟":"Published · Bidding · Default duration 10 minutes","执行状态：竞拍中":"Execution: Bidding","MAX 检查边框、背板及机身磕碰情况，并导入对应图片。":"MAX checks the frame, back panel and dents, and imports the related images.","未选择":"Not selected","快速指引":"Quick guide","调整净额":"Adjustment net","模拟扫码并导入":"Simulate Scan & Import","预中标 · 等待卖家决定":"Pre-winner · Pending seller decision","中标回收商":"Winning recycler","删除":"Remove","首页":"Home","屏幕显示":"Screen display","所属员工佣金":"Employee Commission","回收单、标单及首轮竞拍已成功创建并立即开始。":"The recycle record, auction lot and first auction round were created and bidding started immediately.","设备与报告":"Device and report","草稿":"Drafts","FSO-260821-0098 · 中心旗舰店":"FSO-260821-0098 · Central Flagship Store","员工佣金 · MYR":"Employee commission · MYR","苹果":"Apple","PMS 质检报告":"PMS inspection report","该示例标单不在本次建标流程范围内":"This sample auction is outside the create-lot flow","创建标单进度":"Create auction progress","手动创建标单":"Create auction lot manually","主导航":"Primary navigation","切换演示角色":"Switch demo role","90%以上|80%–89%|低于80%|无法读取":"90% or above|80%–89%|Below 80%|Unavailable","供货端创建标单与经营查看原型":"FoneSquare Store App prototype","按截止时间升序排列的标单":"Auction lots sorted by deadline ascending","二维码扫描模拟区":"QR scanner simulation","质检项目":"Inspection items","香港零售|大陆国行|海外版本|未知":"Hong Kong Retail|Mainland China|Overseas Version|Unknown","督导到店选择实际取走订单并二次确认后，系统直接生成已取货结果。":"A platform supervisor selected the units actually collected and confirmed the picked-up batch.","通知":"Notifications","扫码查看质检":"Scan to view inspection","无更换|更换屏幕|更换电池|其他部件":"No replacement|Screen replaced|Battery replaced|Other parts","成交订单详情为只读；取货结果由后续流程维护。":"Transaction order details are read-only; pickup is handled by the later flow.","订单状态筛选":"Order status filters","请输入合同编号":"Enter contract number","订单详情为只读；门店端不组批、不确认取货。":"Order details are read-only. The Store App cannot create or confirm pickup batches."," 512GB 深空黑色":" 512GB Space Black","没有匹配的型号，请清空搜索条件后重试":"No matching model. Clear the search and try again.","当前品类和品牌下暂无型号":"No models under this category and brand.","正在创建质检单…":"Creating inspection order…"," 项 · 待补 ":" complete · "," 项 · IMEI ":" pending · IMEI ","已填写":"entered","未填写":"missing","已上传":"uploaded","未上传":"Not Uploaded","MAX 三份质检报告已成功导入 5 项结果，仍有 ":"MAX results from all three reports were imported successfully. "," 项需要店员手动选择。":" items still require a staff selection.","正在导入 MAX 结果…":"Importing MAX results…","选择“":"Select result for “","”结果":"”","重新选择":"Change result","正在创建质检报告…":"Creating inspection report…","确认拒绝":"Confirm rejection","已接受中标价格，成交订单已生成":"Winning price accepted · Order created","已记录卖家拒绝，标单已结束":"Seller declined · Lot ended","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Store owners have read-only access and cannot record the seller decision.","中心旗舰店 · 商家主账号":"Central Flagship Store · Store owner","中心旗舰店 · 员工":"Central Flagship Store · Employee","你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。":"You are the actual operator for this lot and can record accept or reject after a pre-winner is produced.","建拍资格已恢复，可以继续发布":"Auction eligibility restored · You can publish now","我的":"Me","已完成身份认证":"Identity verified","认证地址可用于维护门店地址":"Use the verified address to maintain the store address","快捷入口":"Quick Access","门店地址":"Store Address","维护营业地址和联系电话":"Maintain business address and contact number","银行卡号":"Bank Account","维护收款银行卡信息":"Maintain payout bank details","设置":"Settings","账户、安全与语言":"Account, security & language","帮助与支持":"Help & Support","常见问题、联系我们":"FAQs & contact us","可使用身份认证地址":"Verified address available","你已完成身份认证，可将认证地址一键代入门店地址表单。":"Your identity is verified. Use the verified address to fill the store address form.","使用认证地址":"Use Verified Address","国家/地区":"Country/Region","马来西亚":"Malaysia","默认使用注册时选择的国家":"Defaults to the country selected at registration","具体地址":"Address","联系电话":"Contact Number","默认使用登录手机号":"Defaults to the login mobile number","保存门店地址":"Save Store Address","门店地址已保存":"Store address saved","收款银行卡":"Payout Bank Account","银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。":"Bank details are used only for transaction settlement. After saving, only the bank name and last four digits are shown.","持卡人名称":"Account Holder","请输入持卡人名称":"Enter account holder name","银行名称":"Bank Name","请输入银行名称":"Enter bank name","请输入银行卡号":"Enter bank account number","保存银行卡":"Save Bank Account","请输入8–20位银行卡号。":"Enter an 8–20 digit bank account number.","银行卡信息已保存":"Bank details saved","语言":"Language","语言与显示":"Language & Display","简体中文":"Simplified Chinese","切换后整份原型的页面、弹窗和提示将同步更新。":"All pages, dialogs and messages in this prototype update immediately.","选择语言":"Select Language","华为":"Huawei","三星":"Samsung","小米":"Xiaomi","✓ 已完成身份认证":"✓ Identity verified","身份认证已完成":"Identity verification complete","请填写完整的门店地址和联系电话。":"Enter the complete store address and contact number.","确认接受中标价格？":"Accept the winning price?","确认不接受中标价格？":"Decline the winning price?","确认后立即生成成交订单。":"Confirmation immediately creates a transaction order.","确认后标单以“卖家拒绝”结束，不生成成交订单。":"Confirmation ends the lot as “Seller declined” and does not create an order.","确认接受":"Confirm acceptance","卖家已接受 · 成交订单已生成":"Seller accepted · Transaction order created","卖家拒绝 · 标单已结束":"Seller declined · Auction lot ended","结果：卖家已接受 · MYR 3,280":"Result: Seller accepted · MYR 3,280","结果：卖家拒绝":"Result: Seller declined","中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。":"The winning price was accepted and the transaction order was created immediately. View it under Orders.","卖家不接受中标价格，本标单已结束且未生成成交订单。":"The seller declined the winning price. The lot ended and no transaction order was created.","商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。":"Merchant admins can view all merchant auction lots; lots are sorted by nearest deadline.","商家主账号可查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders; pickup results are read-only.","商家主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。":"Store owners can view all store auction lots; lots are sorted by nearest deadline.","商家主账号可查看本店铺全部订单；取货结果只读。":"Store owners can view all store orders; pickup results are read-only.","商家主账号可查看本店铺收益和本店员工佣金。":"Store owners can view store earnings and employee commission in their store.","员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。":"Employees only see auction lots they created; lots are sorted by nearest deadline.","员工仅查看本人创建的订单；取货结果只读。":"Employees only see orders they created; pickup results are read-only.","员工仅查看本人佣金，不展示店铺收益。":"Employees only see their own commission; store earnings are hidden.","客服热线：+60 3-8899 6688":"Support: +60 3-8899 6688","扫码创建竞拍标单":"Scan to Create Auction Lot","直接扫描设备，自动识别型号并带入 IMEI 后开始质检。":"Scan the device to identify its model and fill the IMEI before inspection.","扫码质检并建标 →":"Scan, Inspect & Create Lot →","扫码并完成质检":"Scan and Complete Inspection","扫描设备后核对自动结果；折叠屏需补充亮屏、暗屏照片。":"Review the scanned results. Foldables require screen-on and screen-off photos.","重新扫描设备":"Rescan Device","等待扫码识别":"Waiting for Scan","扫码后自动识别设备并加载质检模板":"The device and inspection template load automatically after scanning.","请先扫描设备":"Scan the device first.","IMEI（扫码自动带入）":"IMEI (Filled by Scan)","折叠屏必填照片":"Foldable Required Photos","已识别为折叠屏，请分别上传亮屏和暗屏照片。":"Foldable detected. Upload both screen-on and screen-off photos.","亮屏照片":"Screen-on Photo","暗屏照片":"Screen-off Photo","扫描设备":"Scan Device","扫描设备条码或二维码":"Scan the Device Barcode or QR Code","扫码后自动识别设备型号并带入 IMEI，无需先选择品类、品牌或型号。":"Scanning identifies the model and fills the IMEI without a category, brand or model selection.","原型扫码结果":"Prototype Scan Result","选择一种结果演示普通手机和折叠屏的不同照片规则。":"Choose a result to demonstrate the different photo rules.","模拟扫码 · 普通手机":"Simulate Scan · Standard Phone","模拟扫码 · 折叠屏手机":"Simulate Scan · Foldable Phone","普通手机 · 无需上传本机照片":"Standard Phone · No Device Photos Required","已上传 · 点击预览":"Uploaded · Tap to Preview","正在预览亮屏照片":"Previewing Screen-on Photo","正在预览暗屏照片":"Previewing Screen-off Photo","扫码结果已导入，请核对自动结果并补齐剩余质检项。":"Scan results imported. Review them and complete the remaining inspection items.","扫码和质检工具结果已导入，仍有 ":"Scan and inspection-tool results imported. "});
     const SUPPLIER_I18N_EN = Object.freeze({
       '供货端 · 门店端 / 员工 App': 'Supplier Portal · Store / Employee App',
       '供货端门店端与员工 App 原型': 'Supplier Store and Employee App prototype',
@@ -880,10 +856,12 @@
       if (SUPPLIER_I18N_EN[normalizedValue] !== undefined) return SUPPLIER_I18N_EN[normalizedValue];
       if (I18N_EN[value] !== undefined) return I18N_EN[value];
       if (I18N_EN[normalizedValue] !== undefined) return I18N_EN[normalizedValue];
-      let match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI (已填写|未填写) · 关于本机照片(已上传|未上传)$/);
-      if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI ' + (match[4] === '已填写' ? 'entered' : 'missing') + ' · About This Device Photo ' + (match[5] === '已上传' ? 'uploaded' : 'missing');
-      match = value.match(/^MAX 三份质检报告已成功导入 5 项结果，仍有 (\d+) 项需要店员手动选择。$/);
-      if (match) return 'MAX results from all three reports were imported successfully. ' + match[1] + ' required items still need a manual selection.';
+      let match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI 已自动带入 · 普通手机 · 无需上传本机照片$/);
+      if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI filled by scan · Standard Phone · No Device Photos Required';
+      match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI 已自动带入 · 折叠屏照片 · 亮屏(已上传|未上传) · 暗屏(已上传|未上传)$/);
+      if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI filled by scan · Foldable Photos · Screen-on ' + (match[4] === '已上传' ? 'uploaded' : 'missing') + ' · Screen-off ' + (match[5] === '已上传' ? 'uploaded' : 'missing');
+      match = value.match(/^扫码和质检工具结果已导入，仍有 (\d+) 项需要店员手动选择。$/);
+      if (match) return 'Scan and inspection-tool results imported. ' + match[1] + ' items still require a staff selection.';
       match = value.match(/^选择“(.+)”结果$/);
       if (match) return 'Select result for “' + translateZhToEn(match[1]) + '”';
       if (value.startsWith('马来西亚 · ')) return 'Malaysia · ' + value.slice('马来西亚 · '.length);
@@ -993,132 +971,32 @@
     };
     document.querySelectorAll('[data-toast]').forEach((button) => button.addEventListener('click', () => showToast(button.dataset.toast)));
 
-    const models = [
-      { category: '手机', brand: '苹果', id: 'iphone-14-pro', name: '苹果 iPhone 14 Pro' },
-      { category: '手机', brand: '苹果', id: 'iphone-11-pro', name: '苹果 iPhone 11 Pro' },
-      { category: '手机', brand: '苹果', id: 'iphone-17-pro-max', name: '苹果 iPhone 17 Pro Max' },
-      { category: '手机', brand: '华为', id: 'mate-70-pro', name: '华为 Mate 70 Pro' },
-      { category: '手机', brand: '三星', id: 'galaxy-s25-ultra', name: '三星 Galaxy S25 Ultra' },
-      { category: '手机', brand: '小米', id: 'xiaomi-15-ultra', name: '小米 15 Ultra' },
-      { category: '手机', brand: 'OPPO', id: 'oppo-find-x8', name: 'OPPO Find X8 Pro' },
-      { category: '手机', brand: 'vivo', id: 'vivo-x200', name: 'vivo X200 Pro' }
-    ];
-    const brands = ['苹果', '华为', '小米', '三星', 'OPPO', 'vivo'];
+    const scanProfiles = Object.freeze({
+      standard: { model: '苹果 iPhone 14 Pro', imei: '353276109842761', foldable: false },
+      foldable: { model: '三星 Galaxy Z Fold6', imei: '352981106314782', foldable: true }
+    });
     const lotDraft = {
-      entrySource: null,
-      selectedCategory: '手机',
-      selectedBrand: null,
-      selectedModel: null,
-      templateModel: null,
-      scanImported: false,
-      aboutDevicePhoto: false
+      scanProfile: null,
+      imei: '',
+      foldable: false,
+      foldablePhotos: { screenOn: false, screenOff: false },
+      scanImported: false
     };
 
-    const modelSearch = document.getElementById('modelSearch');
-    const brandList = document.getElementById('brandList');
-    const modelList = document.getElementById('modelList');
-    const modelEmptyState = document.getElementById('modelEmptyState');
-    const selectorContext = document.getElementById('selectorContext');
-    const createOrderDialog = document.getElementById('createOrderDialog');
     const inspectionChoiceDialog = document.getElementById('inspectionChoiceDialog');
     const confirmInspection = document.getElementById('confirmInspection');
     const inspectionStatus = document.getElementById('inspectionStatus');
 
-    const updateModelCopies = () => {
-      if (!lotDraft.selectedModel) return;
-      const name = lotDraft.selectedModel.name;
-      document.getElementById('currentInspectionModel').textContent = name;
-      document.getElementById('scanSelectedModel').textContent = name;
-      document.getElementById('reportModel').textContent = name;
-      document.getElementById('confirmProduct').textContent = name + ' 512GB 深空黑色';
+    const updateDeviceCopies = (profile) => {
+      document.getElementById('currentInspectionModel').textContent = profile.model;
+      document.getElementById('reportModel').textContent = profile.model;
+      document.getElementById('confirmProduct').textContent = profile.model + (profile.foldable ? ' 512GB 银影蓝' : ' 512GB 深空黑色');
+      document.getElementById('detectedImei').textContent = profile.imei;
     };
 
-    const renderBrandList = () => {
-      brandList.innerHTML = '';
-      brands.forEach((brand) => {
-        const button = document.createElement('button');
-        button.className = 'brand-button' + (lotDraft.selectedBrand === brand ? ' active' : '');
-        button.type = 'button';
-        button.textContent = brand;
-        button.addEventListener('click', () => {
-          lotDraft.selectedBrand = brand;
-          lotDraft.selectedModel = null;
-          modelSearch.value = '';
-          renderBrandList();
-          renderModelList();
-        });
-        brandList.appendChild(button);
-      });
-    };
-
-    const renderModelList = () => {
-      modelList.innerHTML = '';
-      const keyword = modelSearch.value.trim().toLowerCase();
-      if (!lotDraft.selectedBrand) {
-        modelEmptyState.textContent = '请先选择左侧品牌';
-        modelEmptyState.classList.add('show');
-        return;
-      }
-      const matched = models.filter((model) =>
-        model.category === lotDraft.selectedCategory &&
-        model.brand === lotDraft.selectedBrand &&
-        model.name.toLowerCase().includes(keyword)
-      );
-      modelEmptyState.textContent = keyword ? '没有匹配的型号，请清空搜索条件后重试' : '当前品类和品牌下暂无型号';
-      modelEmptyState.classList.toggle('show', matched.length === 0);
-      matched.forEach((model) => {
-        const button = document.createElement('button');
-        button.className = 'model-option';
-        button.type = 'button';
-        button.innerHTML = '<span class="model-option-thumb">▣</span><span><strong>' + model.name + '</strong><span>点击确认创建质检单</span></span><span class="select-mark">›</span>';
-        button.addEventListener('click', () => {
-          lotDraft.selectedModel = model;
-          document.getElementById('selectedCategorySummary').textContent = lotDraft.selectedCategory;
-          document.getElementById('selectedBrandSummary').textContent = lotDraft.selectedBrand;
-          document.getElementById('selectedModelSummary').textContent = model.name;
-          createOrderDialog.showModal();
-        });
-        modelList.appendChild(button);
-      });
-    };
-
-    const resetModelSelection = () => {
-      lotDraft.selectedCategory = '手机';
-      lotDraft.selectedBrand = null;
-      lotDraft.selectedModel = null;
-      modelSearch.value = '';
-      document.querySelectorAll('.category-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.category === '手机'));
-      selectorContext.textContent = lotDraft.entrySource === 'scan' ? '扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号' : '请从 PMS 商品目录选择品类、品牌和型号后创建质检单';
-      renderBrandList();
-      renderModelList();
-    };
-
-    const openModelSelector = (source) => {
-      lotDraft.entrySource = source;
-      resetModelSelection();
-      showPage('modelSelect');
-    };
-
-    document.getElementById('homeCreateLot').addEventListener('click', () => openModelSelector('manual'));
-    document.getElementById('createLotFab').addEventListener('click', () => openModelSelector('manual'));
-    document.getElementById('auctionScanEntry').addEventListener('click', () => openModelSelector('scan'));
-    document.querySelectorAll('.category-tab').forEach((tab) => tab.addEventListener('click', () => {
-      lotDraft.selectedCategory = tab.dataset.category;
-      lotDraft.selectedBrand = null;
-      lotDraft.selectedModel = null;
-      modelSearch.value = '';
-      document.querySelectorAll('.category-tab').forEach((item) => item.classList.toggle('active', item === tab));
-      renderBrandList();
-      renderModelList();
-    }));
-    modelSearch.addEventListener('input', renderModelList);
-
-    document.getElementById('cancelCreateOrder').addEventListener('click', () => createOrderDialog.close());
-    const resetInspectionForModel = () => {
+    const resetInspection = () => {
       lotDraft.scanImported = false;
-      lotDraft.aboutDevicePhoto = false;
-      document.getElementById('imeiInput').value = '';
-      document.getElementById('imeiError').classList.remove('show');
+      lotDraft.foldablePhotos = { screenOn: false, screenOff: false };
       document.querySelectorAll('[data-inspection-item]').forEach((row) => {
         row.dataset.complete = 'false';
         row.classList.remove('open');
@@ -1131,84 +1009,62 @@
         const answer = row.querySelector('.manual-answer');
         if (answer) answer.textContent = '选择结果';
       });
-      const photo = document.getElementById('aboutDevicePhoto');
-      photo.classList.remove('has-photo');
-      photo.querySelector('.photo-icon').textContent = '＋';
-      document.getElementById('aboutDevicePhotoStatus').textContent = '点击上传能显示型号与 IMEI 的“关于本机”页面照片';
+      ['screenOn', 'screenOff'].forEach((kind) => {
+        const button = document.getElementById(kind + 'Photo');
+        button.classList.remove('has-photo');
+        button.querySelector('.photo-icon').textContent = '＋';
+        document.getElementById(kind + 'PhotoStatus').textContent = '未上传';
+      });
       inspectionStatus.className = 'callout warning';
-      inspectionStatus.textContent = '必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。';
-      renderInspectionProgress();
+      inspectionStatus.textContent = '扫码结果已导入，请核对自动结果并补齐剩余质检项。';
     };
-
-    const confirmCreateOrder = () => {
-      if (!lotDraft.selectedModel) return;
-      const confirmButton = document.getElementById('confirmCreateOrderButton');
-      const cancelButton = document.getElementById('cancelCreateOrder');
-      if (confirmButton.disabled) return;
-      confirmButton.disabled = true;
-      cancelButton.disabled = true;
-      confirmButton.textContent = '正在创建质检单…';
-      setTimeout(() => {
-        lotDraft.templateModel = lotDraft.selectedModel;
-        updateModelCopies();
-        resetInspectionForModel();
-        confirmButton.disabled = false;
-        cancelButton.disabled = false;
-        confirmButton.textContent = '确认创建';
-        createOrderDialog.close();
-        showPage('inspection');
-      }, 700);
-    };
-    document.getElementById('confirmCreateOrderButton').addEventListener('click', confirmCreateOrder);
-
-    const aboutDevicePhoto = document.getElementById('aboutDevicePhoto');
-    aboutDevicePhoto.addEventListener('click', (event) => {
-      if (event.target.closest('#removeAboutDevicePhoto')) return;
-      if (lotDraft.aboutDevicePhoto) {
-        showToast('正在预览 about-this-device.jpg');
-        return;
-      }
-      lotDraft.aboutDevicePhoto = true;
-      aboutDevicePhoto.classList.add('has-photo');
-      aboutDevicePhoto.querySelector('.photo-icon').textContent = '▣';
-      document.getElementById('aboutDevicePhotoStatus').textContent = '已上传：about-this-device.jpg · 点击预览';
-      renderInspectionProgress();
-    });
-    document.getElementById('removeAboutDevicePhoto').addEventListener('click', (event) => {
-      event.stopPropagation();
-      lotDraft.aboutDevicePhoto = false;
-      aboutDevicePhoto.classList.remove('has-photo');
-      aboutDevicePhoto.querySelector('.photo-icon').textContent = '＋';
-      document.getElementById('aboutDevicePhotoStatus').textContent = '点击上传能显示型号与 IMEI 的“关于本机”页面照片';
-      renderInspectionProgress();
-    });
-
-    const imeiInput = document.getElementById('imeiInput');
-    const imeiError = document.getElementById('imeiError');
-    const isImeiValid = () => /^\d{15}$/.test(imeiInput.value.trim());
-    const validateImei = (showError = true) => {
-      const valid = isImeiValid();
-      if (showError) imeiError.classList.toggle('show', !valid);
-      return valid;
-    };
-    imeiInput.addEventListener('input', () => {
-      imeiInput.value = imeiInput.value.replace(/\D/g, '').slice(0, 15);
-      imeiError.classList.remove('show');
-      renderInspectionProgress();
-    });
-    imeiInput.addEventListener('blur', () => validateImei(true));
 
     const isInspectionItemComplete = (row) => row.dataset.complete === 'true';
+    function isInspectionReady() {
+      const itemsReady = [...document.querySelectorAll('[data-inspection-item][data-required="true"]')]
+        .every(isInspectionItemComplete);
+      const photosReady = !lotDraft.foldable ||
+        (lotDraft.foldablePhotos.screenOn && lotDraft.foldablePhotos.screenOff);
+      return Boolean(lotDraft.imei) && lotDraft.scanImported && itemsReady && photosReady;
+    }
+
     const renderInspectionProgress = () => {
       const requiredItems = [...document.querySelectorAll('[data-inspection-item][data-required="true"]')];
       const completed = requiredItems.filter(isInspectionItemComplete).length;
       const pending = requiredItems.length - completed;
+      const photoCopy = !lotDraft.foldable
+        ? '普通手机 · 无需上传本机照片'
+        : '折叠屏照片 · 亮屏' + (lotDraft.foldablePhotos.screenOn ? '已上传' : '未上传') +
+          ' · 暗屏' + (lotDraft.foldablePhotos.screenOff ? '已上传' : '未上传');
       document.getElementById('inspectionProgress').textContent =
-        '共 ' + requiredItems.length + ' 项 · 已完成 ' + completed + ' 项 · 待补 ' + pending + ' 项 · IMEI ' +
-        (isImeiValid() ? '已填写' : '未填写') + ' · 关于本机照片' +
-        (lotDraft.aboutDevicePhoto ? '已上传' : '未上传');
-      confirmInspection.disabled = !(lotDraft.scanImported && isImeiValid() && lotDraft.aboutDevicePhoto && pending === 0);
+        '共 ' + requiredItems.length + ' 项 · 已完成 ' + completed + ' 项 · 待补 ' + pending + ' 项 · IMEI 已自动带入 · ' + photoCopy;
+      confirmInspection.disabled = !isInspectionReady();
     };
+
+    function setFoldablePhoto(kind, uploaded) {
+      lotDraft.foldablePhotos[kind] = uploaded;
+      const button = document.getElementById(kind + 'Photo');
+      button.classList.toggle('has-photo', uploaded);
+      button.querySelector('.photo-icon').textContent = uploaded ? '▣' : '＋';
+      document.getElementById(kind + 'PhotoStatus').textContent = uploaded ? '已上传 · 点击预览' : '未上传';
+      renderInspectionProgress();
+    }
+
+    ['screenOn', 'screenOff'].forEach((kind) => {
+      const button = document.getElementById(kind + 'Photo');
+      button.addEventListener('click', (event) => {
+        if (event.target.closest('#remove' + kind[0].toUpperCase() + kind.slice(1) + 'Photo')) return;
+        if (lotDraft.foldablePhotos[kind]) {
+          showToast(kind === 'screenOn' ? '正在预览亮屏照片' : '正在预览暗屏照片');
+          return;
+        }
+        setFoldablePhoto(kind, true);
+      });
+      document.getElementById('remove' + kind[0].toUpperCase() + kind.slice(1) + 'Photo').addEventListener('click', (event) => {
+        event.stopPropagation();
+        setFoldablePhoto(kind, false);
+      });
+    });
 
     const importMaxResults = () => {
       document.querySelectorAll('[data-inspection-item][data-kind="tool"]').forEach((row) => {
@@ -1221,22 +1077,28 @@
       lotDraft.scanImported = true;
       const pending = [...document.querySelectorAll('[data-inspection-item][data-kind="manual"][data-complete="false"]')].length;
       inspectionStatus.className = pending ? 'callout warning' : 'callout success';
-      inspectionStatus.textContent = 'MAX 三份质检报告已成功导入 5 项结果，仍有 ' + pending + ' 项需要店员手动选择。';
+      inspectionStatus.textContent = '扫码和质检工具结果已导入，仍有 ' + pending + ' 项需要店员手动选择。';
       renderInspectionProgress();
-      showPage('inspection');
     };
 
+    function applyScanProfile(profileKey) {
+      const profile = scanProfiles[profileKey];
+      lotDraft.scanProfile = profileKey;
+      lotDraft.imei = profile.imei;
+      lotDraft.foldable = profile.foldable;
+      resetInspection();
+      document.getElementById('foldablePhotoSection').hidden = !profile.foldable;
+      updateDeviceCopies(profile);
+      importMaxResults();
+      showPage('inspection');
+    }
+
+    document.getElementById('homeCreateLot').addEventListener('click', () => showPage('scan'));
+    document.getElementById('createLotFab').addEventListener('click', () => showPage('scan'));
+    document.getElementById('auctionScanEntry').addEventListener('click', () => showPage('scan'));
     document.getElementById('inspectionScanEntry').addEventListener('click', () => showPage('scan'));
-    document.getElementById('simulateMaxScan').addEventListener('click', (event) => {
-      const button = event.currentTarget;
-      button.disabled = true;
-      button.textContent = '正在导入 MAX 结果…';
-      setTimeout(() => {
-        importMaxResults();
-        button.disabled = false;
-        button.textContent = '模拟扫码并导入';
-      }, 700);
-    });
+    document.getElementById('scanStandardDevice').addEventListener('click', () => applyScanProfile('standard'));
+    document.getElementById('scanFoldableDevice').addEventListener('click', () => applyScanProfile('foldable'));
 
     document.querySelectorAll('.inspection-toggle').forEach((toggle) => toggle.addEventListener('click', () => {
       const row = toggle.closest('.inspection-row');
@@ -1457,7 +1319,7 @@
     document.getElementById('createAnother').addEventListener('click', () => {
       priceResultAvailable = false;
       renderPriceResult();
-      openModelSelector('manual');
+      showPage('scan');
     });
 
 
@@ -1498,8 +1360,6 @@
 
     initializeAuctionDeadlines();
     setInterval(updateAuctionCountdowns, 1000);
-    renderBrandList();
-    renderModelList();
     renderInspectionProgress();
     applyLanguage(currentLanguage);
   </script>
