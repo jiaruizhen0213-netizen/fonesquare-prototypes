@@ -189,6 +189,21 @@ test('new merchant management and add-flow copy is bilingual', () => {
   }
 });
 
+test('English mode fully translates new merchant management labels and summaries', () => {
+  const translations = {
+    '业务状态':'Business Status',
+    '商家 ID / 名称':'Merchant ID / Name'
+  };
+  for (const [source,target] of Object.entries(translations)) {
+    assert.ok(platform.includes(`'${source}':'${target}'`), `${source} should translate to ${target}`);
+  }
+  for (const pattern of [
+    /\^共\\s\*\(\\d\+\)\\s\*条，按业务开通时间倒序\$/,
+    /\^共\\s\*\(\\d\+\)\\s\*家\$/,
+    /\^共\\s\*\(\\d\+\)\\s\*名店员\$/
+  ]) assert.match(platform, pattern);
+});
+
 test('platform inline script compiles after merchant-management refactor', () => {
   const script=platform.match(/<script>([\s\S]*)<\/script>\s*<\/body>/)?.[1];
   assert.ok(script);
