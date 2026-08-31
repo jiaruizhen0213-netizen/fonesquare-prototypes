@@ -57,3 +57,22 @@ test('return refund entrypoints open the independent editor', () => {
   assert.match(platform, /if\(action==='start-refund'\).*openRefundEditor\(o\)/);
   assert.match(platform, /if\(action==='create-adjustment-from-return'\).*openRefundEditor\(o\)/);
 });
+
+test('settlement splits by account, direction, and currency', () => {
+  for (const text of [
+    '付款主体及账户', '收款主体及账户', '处理方向', '币种',
+    '退款现金方向净额', '预付金抵扣', '预付金恢复', '门店垫付补回', '负数结转',
+    '站点结算配置', '站点时区', '下次生成时间', '最近执行结果',
+    'function buildSettlementDraft', 'function saveSettlementConfig',
+    'function runMonthlySettlementPreview'
+  ]) assert.match(platform, new RegExp(text));
+  assert.doesNotMatch(platform, /一行一张商家账单/);
+});
+
+test('settlement state transitions retain refund locking rules', () => {
+  for (const text of [
+    "status='草稿'", "status='待处理'", "status='已处理'", "status='已冲正'",
+    '提交结算单并锁定退款', '退回草稿并重新开放退款', '退款权限保持关闭',
+    'sourceOrderIds', 'sourceEntryIds'
+  ]) assert.match(platform, new RegExp(text));
+});
