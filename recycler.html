@@ -313,6 +313,25 @@
     .amount-input input { width: 100%; padding: 15px 0; border: 0; outline: 0; font-size: 22px; font-weight: 650; }
     .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
     .dialog-actions button { min-height: 46px; border-radius: 23px; font-weight: 650; }
+    .bid-note { margin-top: 12px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .bid-note strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+    .bid-error { display: none; margin-top: 10px; color: #b33b1b; font-size: 12px; line-height: 1.45; }
+    .bid-error.show { display: block; }
+    .inherited-bid { display: grid; gap: 4px; color: #6f4b00; background: #fff6df; }
+    .inherited-bid[hidden] { display: none; }
+    .inherited-bid strong { color: #7a4d00; font-size: 14px; }
+    .inherited-bid span { font-size: 13px; font-weight: 650; }
+    .inherited-bid small { color: #846c3f; font-size: 12px; line-height: 1.45; }
+    .bid-state-note { margin: 10px 12px 0; padding: 12px 14px; border-radius: 12px; color: #35604e; background: #edf8f2; font-size: 12px; line-height: 1.5; }
+    .bid-state-note strong { display: block; margin-bottom: 3px; color: var(--green); font-size: 13px; }
+    .readonly-note { color: #555; background: #f0f1f3; }
+    .merchant-card { margin: 12px; padding: 18px; border-radius: 18px; background: #fff; }
+    .merchant-card h3 { margin: 0 0 13px; font-size: 16px; }
+    .merchant-status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .merchant-status-item { padding: 12px; border-radius: 12px; background: #f7f8f9; }
+    .merchant-status-item span { display: block; margin-bottom: 5px; color: var(--muted); font-size: 11px; }
+    .merchant-status-item strong { color: var(--green); font-size: 13px; }
+    .merchant-note { margin: 13px 0 0; color: #626262; font-size: 12px; line-height: 1.55; }
     .profile-card { margin: 12px; padding: 20px 18px; border-radius: 18px; background: #fff; }
     .profile-main { display: flex; align-items: center; gap: 14px; }
     .avatar { display: grid; flex: 0 0 auto; width: 68px; height: 68px; place-items: center; border-radius: 50%; color: #fff; background: var(--orange); font-size: 32px; font-weight: 650; }
@@ -338,21 +357,6 @@
     .language-control { display: flex; padding: 3px; border-radius: 10px; background: #f1f2f3; }
     .language-option { min-width: 54px; padding: 7px 9px; border: 0; border-radius: 8px; color: #777; background: transparent; font-size: 12px; }
     .language-option.active { color: var(--orange); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.08); font-weight: 700; }
-    .form-card { margin: 12px; padding: 18px 16px; border-radius: 16px; background: #fff; }
-    .form-field { display: block; margin-bottom: 17px; }
-    .form-field:last-of-type { margin-bottom: 0; }
-    .form-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 650; }
-    .form-hint { display: block; margin-top: 6px; color: var(--muted); font-size: 11px; }
-    .required { color: var(--orange); }
-    .form-control { width: 100%; min-height: 48px; padding: 12px 13px; border: 1px solid #dedede; border-radius: 11px; outline: 0; color: var(--ink); background: #fff; font-size: 14px; }
-    textarea.form-control { min-height: 92px; resize: vertical; line-height: 1.5; }
-    .form-control:focus { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-soft); }
-    .prefill-card { margin: 12px 12px 0; padding: 14px 15px; border: 1px solid #cce9d9; border-radius: 14px; background: #f0faf5; }
-    .prefill-card strong { display: block; color: var(--green); font-size: 14px; }
-    .prefill-card p { margin: 5px 0 12px; color: #557267; font-size: 12px; line-height: 1.5; }
-    .prefill-button { padding: 8px 12px; border: 1px solid #9ed2b7; border-radius: 9px; color: var(--green); background: #fff; font-size: 13px; font-weight: 650; }
-    .page-action { position: sticky; bottom: 0; padding: 12px 14px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(255,255,255,.98); }
-    .save-button { width: 100%; min-height: 48px; border: 0; border-radius: 24px; color: #fff; background: var(--orange); font-weight: 700; }
     .toast { position: fixed; left: 50%; bottom: 90px; z-index: 60; visibility: hidden; padding: 10px 16px; border-radius: 20px; color: #fff; background: rgba(20,20,20,.88); transform: translate(-50%, 12px); opacity: 0; transition: .2s ease; font-size: 13px; }
     .toast.show { visibility: visible; transform: translate(-50%, 0); opacity: 1; }
     html[lang="zh-CN"] .scratch-panel::before { content: "轻微划痕"; }
@@ -371,7 +375,7 @@
       </div>
       <div class="notice">Available this week · 5,678 units</div>
       <div class="card-list">
-        <button class="product-card" type="button" data-open="auction">
+        <button class="product-card" type="button" data-open="auction" data-lot="ordinary">
           <span class="device-thumb"><span class="mini-phone"></span></span>
           <span class="card-body">
             <span class="title-line"><span class="condition-tag">A</span><span class="product-name">iPhone 17 Pro Max 512G Starry Orange</span></span>
@@ -379,15 +383,15 @@
             <span class="card-meta"><span>Ends in 01:28:36</span><span class="my-bid">My bid MYR 2,350</span></span>
           </span>
         </button>
-        <button class="product-card" type="button" data-open="auction">
+        <button class="product-card" type="button" data-open="auction" data-lot="inherited">
           <span class="device-thumb" style="background:linear-gradient(145deg,#e7ddd4,#c6b5a6)"><span class="mini-phone" style="background:linear-gradient(145deg,#d7b193,#8e6b54)"></span></span>
           <span class="card-body">
             <span class="title-line"><span class="condition-tag">B</span><span class="product-name">Huawei Mate 70 Pro 512G Gold</span></span>
             <span class="specs">CN Version · Battery Health 85%–90%</span>
-            <span class="card-meta"><span>Ends in 03:16:08</span><span>Not bid</span></span>
+            <span class="card-meta"><span>Ends in 03:16:08</span><span class="my-bid">Inherited MYR 3,080</span></span>
           </span>
         </button>
-        <button class="product-card" type="button" data-open="auction">
+        <button class="product-card" type="button" data-open="auction" data-lot="no-reference">
           <span class="device-thumb" style="background:linear-gradient(145deg,#dbe2ea,#aeb9c7)"><span class="mini-phone" style="background:linear-gradient(145deg,#344968,#152134)"></span></span>
           <span class="card-body">
             <span class="title-line"><span class="condition-tag">C</span><span class="product-name">Samsung Galaxy S25 Ultra 256G Titanium Blue</span></span>
@@ -409,18 +413,31 @@
         <div class="image-count" id="imageCount" aria-live="polite">1 / 3</div>
       </section>
       <section class="section">
-        <div class="product-title"><span class="condition-tag">A</span><h2 class="detail-name">iPhone 17 Pro Max 512G Starry Orange</h2></div>
-        <p class="specs">CN Version · Battery Health 90%–95% · Dual SIM</p>
+        <div class="product-title"><span class="condition-tag" id="auctionCondition">A</span><h2 class="detail-name" id="auctionProduct">iPhone 17 Pro Max 512G Starry Orange</h2></div>
+        <p class="specs" id="auctionSpecs">CN Version · Battery Health 90%–95% · Dual SIM</p>
       </section>
       <section class="section field-grid">
-        <div><span class="field-label">Lot number</span><span class="field-value">FS-HK-260821-0186</span></div>
+        <div><span class="field-label">Lot number</span><span class="field-value" id="auctionLotNumber">FS-HK-260821-0186</span></div>
         <div><span class="field-label">Execution status</span><span class="field-value status">Bidding</span></div>
         <div><span class="field-label">Round result</span><span class="field-value">—</span></div>
         <div><span class="field-label">Time left</span><span class="field-value countdown" id="countdown">01:28:36</span></div>
         <div><span class="field-label">Currency</span><span class="field-value">MYR</span></div>
-        <div><span class="field-label">My latest bid</span><span class="field-value">MYR 2,350</span></div>
-        <div><span class="field-label">Bid status</span><span class="field-value status">Valid</span></div>
+        <div><span class="field-label">My latest bid</span><span class="field-value" id="latestBid">MYR 2,350</span></div>
+        <div><span class="field-label">Bid status</span><span class="field-value status" id="bidStatus">Valid</span></div>
       </section>
+      <div class="notice inherited-bid" id="inheritedBidCard" hidden>
+        <strong>Highest valid active bid from the previous round has been inherited</strong>
+        <span>From round R1 · MYR 3,080 · Valid until 23 Aug 2026, 09:40</span>
+        <small>Your first new bid must be higher than the inherited bid. The 30-second edit window starts only after a new bid succeeds.</small>
+      </div>
+      <div class="bid-state-note" id="bidStateNote">
+        <strong>Active bid submitted</strong>
+        <span id="bidStateText">30-second edit window: 00:24. Editing does not restart the window and bids cannot be withdrawn.</span>
+      </div>
+      <div class="bid-state-note readonly-note">
+        <strong>Seller decision is read-only</strong>
+        <span>If the seller rejects or times out, the supplier-side actual creator decides whether to re-auction.</span>
+      </div>
       <section class="section inspection" aria-label="Inspection report">
         <div class="inspection-heading"><div><h2>Inspection Report</h2><div class="inspection-time">Completed 21 Aug 2026, 09:30</div></div><div class="inspection-condition" aria-label="Condition A">A</div></div>
         <dl class="inspection-list">
@@ -441,7 +458,6 @@
         <button class="tab active" type="button" data-status="all">All</button>
         <button class="tab" type="button" data-status="pending">Pending Pickup</button>
         <button class="tab" type="button" data-status="complete">Picked Up</button>
-        <button class="tab" type="button" data-status="closed">Closed</button>
       </div>
       <div class="card-list" id="orderList">
         <button class="product-card order-card" type="button" data-order-status="pending" data-open="won">
@@ -464,16 +480,6 @@
             <span class="order-row"><span class="order-label">12 Aug 2026, 16:40</span><span>FSO-260812-0041</span></span>
           </span>
         </button>
-        <button class="product-card order-card" type="button" data-order-status="closed" data-open="won">
-          <span class="device-thumb" style="background:linear-gradient(145deg,#dbe2ea,#aeb9c7)"><span class="mini-phone" style="background:linear-gradient(145deg,#344968,#152134)"></span></span>
-          <span class="card-body">
-            <span class="title-line"><span class="condition-tag">C</span><span class="product-name">Samsung Galaxy S25 Ultra 256G Titanium Blue</span></span>
-            <span class="specs">HK Version · Battery Health 80%–85%</span>
-            <span class="order-row"><span class="order-label">Status</span><span class="order-state closed">Closed</span></span>
-            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 1,620</span></span>
-            <span class="order-row"><span class="order-label">30 Jul 2026, 10:18</span><span>FSO-260730-0117</span></span>
-          </span>
-        </button>
       </div>
     </section>
 
@@ -487,7 +493,7 @@
         </div>
       </section>
       <section class="section amount-panel"><div><span class="field-label">Transaction Amount</span><span class="money">MYR 2,350</span></div><span class="order-state">Pending Pickup</span></section>
-      <div class="notice">Pickup is recorded by the platform supervisor after selecting the units actually collected at the store. The recycler cannot edit the pickup batch or require store confirmation.</div>
+      <div class="notice">Pickup is recorded by the platform supervisor for the units actually collected. The recycler can view the pickup result but cannot edit it.</div>
       <section class="section field-grid">
         <div><span class="field-label">Order number</span><span class="field-value">FSO-260821-0098</span></div>
         <div><span class="field-label">Lot number</span><span class="field-value">FS-HK-260821-0186</span></div>
@@ -513,23 +519,26 @@
         <div class="profile-main">
           <div class="avatar" aria-hidden="true">R</div>
           <div>
-            <h2 class="profile-name">Recycler</h2>
+            <h2 class="profile-name">FoneSquare Recycler</h2>
             <div class="profile-phone">+60 12-345 6789</div>
             <span class="verified-badge">✓ Identity verified</span>
           </div>
         </div>
         <div class="verified-banner">
-          <div><strong>Verification completed</strong><span>Your verified address is available for store setup</span></div>
+          <div><strong>FoneSquare recycler merchant</strong><span>Merchant ID FSR-MY-0088 · Account enabled</span></div>
           <span class="verified-banner-icon" aria-hidden="true">♢</span>
         </div>
       </section>
+      <section class="merchant-card">
+        <h3>Account &amp; bidding access</h3>
+        <div class="merchant-status-grid">
+          <div class="merchant-status-item"><span>Account status</span><strong>Enabled</strong></div>
+          <div class="merchant-status-item"><span>Bidding permission</span><strong>Enabled</strong></div>
+        </div>
+        <p class="merchant-note">You do not need to complete KYC before placing a bid. An enabled account with bidding permission can quote in an active round.</p>
+      </section>
       <section class="menu-card">
         <h2 class="menu-heading">Quick access</h2>
-        <button class="menu-row" type="button" data-open="address">
-          <span class="menu-icon" aria-hidden="true">⌖</span>
-          <span><span class="menu-title">Store address</span><span class="menu-description" id="addressSummary">Country, address and phone number</span></span>
-          <span class="chevron" aria-hidden="true">›</span>
-        </button>
         <button class="menu-row" type="button" data-open="settings">
           <span class="menu-icon" aria-hidden="true">⚙</span>
           <span><span class="menu-title">Settings</span><span class="menu-description">Account, security and language</span></span>
@@ -558,39 +567,6 @@
           <span class="chevron" aria-hidden="true">›</span>
         </div>
       </section>
-    </section>
-
-    <section class="page" id="addressPage" data-page="address">
-      <header class="topbar"><button class="icon-button" type="button" data-back="me" aria-label="Back">‹</button><h1>Store address</h1><span></span></header>
-      <section class="prefill-card">
-        <strong>Verified identity address available</strong>
-        <p>You have completed identity verification. You can fill the verified address into the store address form.</p>
-        <button class="prefill-button" id="useVerifiedAddress" type="button">Use verified address</button>
-      </section>
-      <form id="addressForm" novalidate>
-        <section class="form-card">
-          <label class="form-field">
-            <span class="form-label">Country / region <span class="required">*</span></span>
-            <select class="form-control" id="storeCountry" name="country" required>
-              <option value="Malaysia">Malaysia</option>
-              <option value="Singapore">Singapore</option>
-              <option value="Hong Kong SAR">Hong Kong SAR</option>
-              <option value="Mainland China">Mainland China</option>
-            </select>
-            <span class="form-hint">Defaulted to the country selected at registration</span>
-          </label>
-          <label class="form-field">
-            <span class="form-label">Detailed address <span class="required">*</span></span>
-            <textarea class="form-control" id="storeAddress" name="address" required placeholder="Enter street, building, unit and postal code"></textarea>
-          </label>
-          <label class="form-field">
-            <span class="form-label">Contact phone <span class="required">*</span></span>
-            <input class="form-control" id="storePhone" name="phone" type="tel" value="+60 12-345 6789" required>
-            <span class="form-hint">Defaulted to the login phone number</span>
-          </label>
-        </section>
-        <div class="page-action"><button class="save-button" type="submit">Save store address</button></div>
-      </form>
     </section>
 
     <nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
@@ -626,11 +602,21 @@
   </aside>
 
   <dialog id="quoteDialog" aria-labelledby="quoteTitle">
-    <form class="quote-dialog" method="dialog">
+    <form class="quote-dialog" id="quoteForm">
       <h2 id="quoteTitle">Place Bid</h2>
-      <p>iPhone 17 Pro Max 512G Starry Orange<br>Time left: <span id="dialogCountdown">01:28:36</span></p>
-      <label class="amount-input"><span>MYR</span><input name="amount" type="number" min="0.01" step="0.01" value="2350" aria-label="Bid amount"></label>
-      <div class="dialog-actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" value="confirm">Confirm</button></div>
+      <p><span id="quoteProduct">iPhone 17 Pro Max 512G Starry Orange</span><br>Time left: <span id="dialogCountdown">01:28:36</span></p>
+      <label class="amount-input"><span>MYR</span><input id="bidAmount" name="amount" type="number" min="0.01" step="0.01" value="2350" aria-label="Bid amount"></label>
+      <div class="bid-note" id="quoteNote"></div>
+      <div class="bid-error" id="bidError" role="alert"></div>
+      <div class="dialog-actions"><button class="secondary" id="cancelQuote" type="button">Cancel</button><button class="primary" type="submit">Confirm</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="riskDialog" aria-labelledby="riskTitle">
+    <form class="quote-dialog" method="dialog">
+      <h2 id="riskTitle">Confirm bid risk</h2>
+      <p>This bid differs greatly from the current price reference. Review the amount before submitting. This confirmation does not block your bid.</p>
+      <div class="dialog-actions"><button class="secondary" id="cancelRisk" type="button">Go back</button><button class="primary" id="confirmRisk" type="button">Submit bid</button></div>
     </form>
   </dialog>
 
@@ -660,41 +646,55 @@
       'HK Version · Battery Health 80%–85%': '港版 · 电池健康度 80%–85%',
       'CN Version · Battery Health 90%–95% · Dual SIM': '国行 · 电池健康度 90%–95% · 双卡',
       'Ends in 01:28:36': '距结束 01:28:36', 'Ends in 03:16:08': '距结束 03:16:08', 'Ends in 05:40:21': '距结束 05:40:21',
-      'My bid MYR 2,350': '我的出价 MYR 2,350', 'Not bid': '未出价',
+      'My bid MYR 2,350': '我的出价 MYR 2,350', 'Inherited MYR 3,080': '已沿用 MYR 3,080', 'Not bid': '未出价',
       'Auction Details': '竞拍详情', 'Lot number': '批次号', 'Execution status': '执行状态',
       'Bidding': '竞价中', 'Round result': '本轮结果', 'Time left': '剩余时间', 'Currency': '币种',
-      'My latest bid': '我的最新出价', 'Bid status': '出价状态', 'Valid': '有效',
+      'My latest bid': '我的最新出价', 'Bid status': '出价状态', 'Valid': '有效', 'Not submitted': '未提交', 'Inherited': '已沿用',
+      'Highest valid active bid from the previous round has been inherited': '历史最高有效主动报价已沿用',
+      'From round R1 · MYR 3,080 · Valid until 23 Aug 2026, 09:40': '来源轮次 R1 · MYR 3,080 · 固定 48 小时，有效至 2026年8月23日 09:40',
+      'Your first new bid must be higher than the inherited bid. The 30-second edit window starts only after a new bid succeeds.': '首次新报价须高于沿用价；提交成功后才开启 30 秒改价窗口。',
+      'Active bid submitted': '主动报价已提交',
+      '30-second edit window: 00:24. Editing does not restart the window and bids cannot be withdrawn.': '30 秒改价窗口：00:24。改价不重置窗口，且报价不可撤回。',
+      'No active bid yet': '尚未提交主动报价',
+      'The inherited bid remains valid for a fixed 48 hours. It does not start the 30-second edit window.': '沿用报价固定 48 小时有效，沿用本身不触发 30 秒改价窗口。',
+      'No reference price is available': '当前无参考价格',
+      'You can still place a normal bid. No deviation notice will be shown.': '仍可正常报价，且不会出现价格差异提示。',
+      'Seller decision is read-only': '卖家决定仅供查看',
+      'If the seller rejects or times out, the supplier-side actual creator decides whether to re-auction.': '卖家拒绝或超时后，由供货端本轮实际创建人决定是否重拍。',
       'Inspection Report': '验机报告', 'Completed 21 Aug 2026, 09:30': '完成于 2026年8月21日 09:30',
       'Screen Exterior': '屏幕外观', 'Minor scratches on screen/body': '屏幕/机身有轻微划痕',
       'Frame / Back': '边框 / 后盖', 'Perfect Casing': '外壳完好', 'Screen Display': '屏幕显示',
       'Perfect Display': '显示完好', 'Functionality': '功能情况', 'Fully Functional': '功能正常',
       'Repair Status': '维修情况', 'No Repairs': '无维修', 'Battery Health': '电池健康度', '90%–95% Health': '健康度 90%–95%',
       'View My Bid': '查看我的出价', 'Place Bid': '出价',
-      'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货', 'Closed': '已关闭',
+      'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货',
       'Status': '状态', 'Transaction Amount': '成交金额', 'Order Details': '订单详情', '✓ Formally Won': '✓ 已正式中标',
       '21 Aug 2026, 11:02': '2026年8月21日 11:02', '12 Aug 2026, 16:40': '2026年8月12日 16:40', '30 Jul 2026, 10:18': '2026年7月30日 10:18',
-      'Pickup is recorded by the platform supervisor after selecting the units actually collected at the store. The recycler cannot edit the pickup batch or require store confirmation.': '平台督导在门店选择实际提货设备后记录提货结果。回收商不可编辑提货批次，也无需门店确认。',
+      'Pickup is recorded by the platform supervisor for the units actually collected. The recycler can view the pickup result but cannot edit it.': '平台督导按实际提走设备记录提货结果；回收商可查看结果，但不可修改。',
       'Order number': '订单号', 'Transaction time': '成交时间',
-      'Recycler': '回收商', '✓ Identity verified': '✓ 已完成身份认证', 'Verification completed': '身份认证已完成',
-      'Your verified address is available for store setup': '认证地址可用于维护门店地址', 'Quick access': '快捷入口',
-      'Store address': '门店地址', 'Country, address and phone number': '国家/地区、具体地址、联系电话',
+      'FoneSquare Recycler': 'FoneSquare 回收商', '✓ Identity verified': '✓ 已完成身份认证',
+      'FoneSquare recycler merchant': 'FoneSquare 回收商商家', 'Merchant ID FSR-MY-0088 · Account enabled': '商家 ID FSR-MY-0088 · 账号已启用',
+      'Account & bidding access': '账号与出价权限', 'Account status': '账号状态', 'Bidding permission': '出价权限', 'Enabled': '已启用',
+      'You do not need to complete KYC before placing a bid. An enabled account with bidding permission can quote in an active round.': '无需先完成 KYC；账号已启用、出价权限开启且轮次可报价时即可出价。',
+      'Quick access': '快捷入口',
       'Settings': '设置', 'Account, security and language': '账户、安全与语言', 'Help & support': '帮助与支持',
       'FAQs and contact us': '常见问题、联系我们', 'Language': '语言', 'Switch the display language': '切换界面显示语言',
       'Account & security': '账户与安全', 'Login phone and identity information': '登录手机号与身份信息',
-      'Verified identity address available': '可使用身份认证地址',
-      'You have completed identity verification. You can fill the verified address into the store address form.': '你已完成身份认证，可将认证地址一键代入门店地址表单。',
-      'Use verified address': '使用认证地址', 'Country / region': '国家/地区', 'Detailed address': '具体地址',
-      'Contact phone': '联系电话', 'Save store address': '保存门店地址',
-      'Defaulted to the country selected at registration': '默认使用注册时选择的国家', 'Defaulted to the login phone number': '默认使用登录手机号',
-      'Malaysia': '马来西亚', 'Singapore': '新加坡', 'Hong Kong SAR': '中国香港', 'Mainland China': '中国大陆',
       'Brand': '品牌', 'Apple': '苹果', 'Huawei': '华为', 'Samsung': '三星', 'Storage': '存储容量',
       'Color': '颜色', 'Silver': '银色', 'Starry Orange': '星宇橙', 'Deep Blue': '深蓝色', 'Version': '版本',
       'Battery Health': '电池健康度', 'Below 85%': '低于 85%', 'Inspection Issue': '验机问题',
       'Screen Scratch': '屏幕划痕', 'Body Damage': '机身破损', 'Repair History': '维修记录', 'Sort by': '排序方式',
       'Ending Soon': '即将结束', 'Newest': '最新发布', 'Confirm': '确认', 'Cancel': '取消',
-      'Time left:': '剩余时间：'
+      'Time left:': '剩余时间：', 'Bid amount': '报价金额',
+      'Place a normal bid. A successful first bid starts the fixed 30-second edit window.': '提交普通报价。首次报价成功后开启固定 30 秒改价窗口。',
+      'Enter an amount higher than MYR 3,080. The inherited bid itself has not started an edit window.': '请输入高于 MYR 3,080 的金额；沿用报价本身未开启改价窗口。',
+      'No reference price is available, but you can still place a normal bid.': '当前无参考价格，但仍可正常报价。',
+      'Your first new bid must be higher than the inherited bid of MYR 3,080.': '首次新报价必须高于沿用价 MYR 3,080。',
+      'Confirm bid risk': '确认报价风险',
+      'This bid differs greatly from the current price reference. Review the amount before submitting. This confirmation does not block your bid.': '本次报价与当前价格参考差异较大，请核对金额后提交；该确认不会阻断报价。',
+      'Go back': '返回修改', 'Submit bid': '提交报价'
     };
-    const placeholderZh = { 'Search lot, product, brand or model': '搜索批次、产品、品牌或型号', 'Enter street, building, unit and postal code': '请输入街道、楼栋、单元及邮编' };
+    const placeholderZh = { 'Search lot, product, brand or model': '搜索批次、产品、品牌或型号' };
     const textNodes = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
@@ -708,17 +708,14 @@
     const toast = document.getElementById('toast');
     let toastTimer;
     let currentLanguage = localStorage.getItem('recyclerPrototypeLanguage') === 'zh' ? 'zh' : 'en';
+    const translate = english => currentLanguage === 'zh' ? (zh[english] || english) : english;
+    let renderAuction = () => {};
+    let renderQuoteState = () => {};
     const showToast = (english, chinese) => {
       toast.textContent = currentLanguage === 'zh' ? chinese : english;
       toast.classList.add('show');
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
-    };
-    const addressSummary = document.getElementById('addressSummary');
-    const updateAddressSummary = () => {
-      const saved = JSON.parse(localStorage.getItem('recyclerStoreAddress') || 'null');
-      if (saved?.address) addressSummary.textContent = `${currentLanguage === 'zh' ? (zh[saved.country] || saved.country) : saved.country} · ${saved.address}`;
-      else addressSummary.textContent = currentLanguage === 'zh' ? zh['Country, address and phone number'] : 'Country, address and phone number';
     };
     const setLanguage = language => {
       currentLanguage = language;
@@ -734,41 +731,13 @@
       });
       document.querySelectorAll('[data-language]').forEach(button => button.classList.toggle('active', button.dataset.language === language));
       localStorage.setItem('recyclerPrototypeLanguage', language);
-      updateAddressSummary();
+      renderAuction();
+      renderQuoteState();
     };
     document.querySelectorAll('[data-language]').forEach(button => button.addEventListener('click', () => {
       setLanguage(button.dataset.language);
       showToast('Language switched', '语言已切换');
     }));
-
-    const addressForm = document.getElementById('addressForm');
-    const storeCountry = document.getElementById('storeCountry');
-    const storeAddress = document.getElementById('storeAddress');
-    const storePhone = document.getElementById('storePhone');
-    try {
-      const savedAddress = JSON.parse(localStorage.getItem('recyclerStoreAddress') || 'null');
-      if (savedAddress) {
-        storeCountry.value = savedAddress.country || 'Malaysia';
-        storeAddress.value = savedAddress.address || '';
-        storePhone.value = savedAddress.phone || '+60 12-345 6789';
-      }
-    } catch (error) {
-      localStorage.removeItem('recyclerStoreAddress');
-    }
-    document.getElementById('useVerifiedAddress').addEventListener('click', () => {
-      storeCountry.value = 'Malaysia';
-      storeAddress.value = '18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor';
-      storePhone.value = '+60 12-345 6789';
-      showToast('Verified address filled in', '已代入认证地址');
-    });
-    addressForm.addEventListener('submit', event => {
-      event.preventDefault();
-      if (!addressForm.reportValidity()) return;
-      localStorage.setItem('recyclerStoreAddress', JSON.stringify({ country: storeCountry.value, address: storeAddress.value.trim(), phone: storePhone.value.trim() }));
-      updateAddressSummary();
-      showToast('Store address saved', '门店地址已保存');
-    });
-    setLanguage(currentLanguage);
 
     const imageStrip = document.getElementById('deviceImages');
     const imageCount = document.getElementById('imageCount');
@@ -791,7 +760,141 @@
     };
     renderCountdown();
     setInterval(renderCountdown, 1000);
-    document.getElementById('openQuote').addEventListener('click', () => document.getElementById('quoteDialog').showModal());
+
+    const lots = {
+      ordinary: {
+        product: 'iPhone 17 Pro Max 512G Starry Orange', specs: 'CN Version · Battery Health 90%–95% · Dual SIM',
+        condition: 'A', number: 'FS-HK-260821-0186', bid: 2350, inherited: null, referenceAvailable: true,
+        editSeconds: 24, quoteNote: 'Place a normal bid. A successful first bid starts the fixed 30-second edit window.'
+      },
+      inherited: {
+        product: 'Huawei Mate 70 Pro 512G Gold', specs: 'CN Version · Battery Health 85%–90%',
+        condition: 'B', number: 'FS-HK-260821-0214-R2', bid: null, inherited: 3080, referenceAvailable: true,
+        editSeconds: null, quoteNote: 'Enter an amount higher than MYR 3,080. The inherited bid itself has not started an edit window.'
+      },
+      'no-reference': {
+        product: 'Samsung Galaxy S25 Ultra 256G Titanium Blue', specs: 'HK Version · Battery Health 80%–85%',
+        condition: 'C', number: 'FS-HK-260821-0249', bid: null, inherited: null, referenceAvailable: false,
+        editSeconds: null, quoteNote: 'No reference price is available, but you can still place a normal bid.'
+      }
+    };
+    let currentLotKey = 'ordinary';
+    let pendingBid = null;
+    let quoteErrorKey = '';
+    const currentLot = () => lots[currentLotKey];
+    const formatAmount = amount => amount === null ? '—' : `MYR ${amount.toLocaleString('en-US')}`;
+    const auctionProduct = document.getElementById('auctionProduct');
+    const auctionSpecs = document.getElementById('auctionSpecs');
+    const auctionCondition = document.getElementById('auctionCondition');
+    const auctionLotNumber = document.getElementById('auctionLotNumber');
+    const latestBid = document.getElementById('latestBid');
+    const bidStatus = document.getElementById('bidStatus');
+    const inheritedBidCard = document.getElementById('inheritedBidCard');
+    const bidStateNote = document.getElementById('bidStateNote');
+    const bidStateTitle = bidStateNote.querySelector('strong');
+    const bidStateText = document.getElementById('bidStateText');
+    const quoteDialog = document.getElementById('quoteDialog');
+    const riskDialog = document.getElementById('riskDialog');
+    const quoteProduct = document.getElementById('quoteProduct');
+    const quoteNote = document.getElementById('quoteNote');
+    const bidAmount = document.getElementById('bidAmount');
+    const bidError = document.getElementById('bidError');
+
+    renderAuction = () => {
+      const lot = currentLot();
+      auctionProduct.textContent = translate(lot.product);
+      auctionSpecs.textContent = translate(lot.specs);
+      auctionCondition.textContent = lot.condition;
+      auctionLotNumber.textContent = lot.number;
+      const visibleBid = lot.bid ?? lot.inherited;
+      latestBid.textContent = formatAmount(visibleBid);
+      bidStatus.textContent = translate(lot.bid !== null ? 'Valid' : lot.inherited !== null ? 'Inherited' : 'Not submitted');
+      inheritedBidCard.hidden = lot.inherited === null || lot.bid !== null;
+      if (lot.bid !== null) {
+        bidStateTitle.textContent = translate('Active bid submitted');
+        const seconds = String(Math.max(0, lot.editSeconds ?? 0)).padStart(2, '0');
+        bidStateText.textContent = currentLanguage === 'zh'
+          ? `30 秒改价窗口：00:${seconds}。改价不重置窗口，且报价不可撤回。`
+          : `30-second edit window: 00:${seconds}. Editing does not restart the window and bids cannot be withdrawn.`;
+      } else if (lot.inherited !== null) {
+        bidStateTitle.textContent = translate('No active bid yet');
+        bidStateText.textContent = translate('The inherited bid remains valid for a fixed 48 hours. It does not start the 30-second edit window.');
+      } else {
+        bidStateTitle.textContent = translate('No reference price is available');
+        bidStateText.textContent = translate('You can still place a normal bid. No deviation notice will be shown.');
+      }
+    };
+    renderQuoteState = () => {
+      const lot = currentLot();
+      quoteProduct.textContent = translate(lot.product);
+      quoteNote.innerHTML = `<strong>${translate(lot.referenceAvailable ? (lot.inherited === null ? 'Bid amount' : 'Inherited') : 'No reference price is available')}</strong>${translate(lot.quoteNote)}`;
+      bidError.textContent = quoteErrorKey ? translate(quoteErrorKey) : '';
+      bidError.classList.toggle('show', Boolean(quoteErrorKey));
+    };
+    document.querySelectorAll('[data-lot]').forEach(card => card.addEventListener('click', () => {
+      currentLotKey = card.dataset.lot;
+      quoteErrorKey = '';
+      renderAuction();
+    }));
+    document.getElementById('openQuote').addEventListener('click', () => {
+      const lot = currentLot();
+      if (lot.bid !== null && (lot.editSeconds ?? 0) <= 0) {
+        showToast('The 30-second edit window has ended', '30 秒改价窗口已结束');
+        return;
+      }
+      quoteErrorKey = '';
+      bidAmount.value = lot.bid ?? (lot.inherited !== null ? lot.inherited + 10 : 1600);
+      renderQuoteState();
+      quoteDialog.showModal();
+    });
+    document.getElementById('cancelQuote').addEventListener('click', () => quoteDialog.close());
+
+    const submitBid = amount => {
+      const lot = currentLot();
+      lot.bid = amount;
+      lot.editSeconds = 30;
+      pendingBid = null;
+      quoteErrorKey = '';
+      if (quoteDialog.open) quoteDialog.close();
+      if (riskDialog.open) riskDialog.close();
+      renderAuction();
+      showToast('Bid submitted · 30-second edit window started', '报价已提交 · 30 秒改价窗口已开启');
+    };
+    document.getElementById('quoteForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const amount = Number(bidAmount.value);
+      const lot = currentLot();
+      if (!Number.isFinite(amount) || amount <= 0) return;
+      if (lot.inherited !== null && lot.bid === null && amount <= lot.inherited) {
+        quoteErrorKey = 'Your first new bid must be higher than the inherited bid of MYR 3,080.';
+        renderQuoteState();
+        return;
+      }
+      quoteErrorKey = '';
+      if (lot.referenceAvailable && amount >= 3000) {
+        pendingBid = amount;
+        quoteDialog.close();
+        riskDialog.showModal();
+        return;
+      }
+      submitBid(amount);
+    });
+    document.getElementById('confirmRisk').addEventListener('click', event => {
+      event.preventDefault();
+      if (pendingBid !== null) submitBid(pendingBid);
+    });
+    document.getElementById('cancelRisk').addEventListener('click', () => {
+      riskDialog.close();
+      if (pendingBid !== null) bidAmount.value = pendingBid;
+      renderQuoteState();
+      quoteDialog.showModal();
+    });
+    setInterval(() => {
+      Object.values(lots).forEach(lot => {
+        if (lot.bid !== null && lot.editSeconds > 0) lot.editSeconds -= 1;
+      });
+      renderAuction();
+    }, 1000);
 
     const sheet = document.getElementById('filterSheet');
     const backdrop = document.getElementById('sheetBackdrop');
@@ -813,6 +916,7 @@
       document.querySelectorAll('[data-status]').forEach(item => item.classList.toggle('active', item === tab));
       document.querySelectorAll('[data-order-status]').forEach(card => { card.style.display = status === 'all' || card.dataset.orderStatus === status ? 'grid' : 'none'; });
     }));
+    setLanguage(currentLanguage);
   </script>
 </body>
 </html>

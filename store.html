@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FoneSquare 门店端 · 创建标单与在拍商品</title>
+  <title>供货端 · 门店端 / 员工 App</title>
   <style>
     .role-switch { margin-left:auto; max-width:112px; padding:7px 9px; border:1px solid var(--line); border-radius:10px; color:var(--text); background:#fff; font-size:12px; }
     * { box-sizing: border-box; }
@@ -413,17 +413,17 @@
   </style>
 </head>
 <body>
-  <main class="phone-shell" aria-label="FoneSquare 门店端创建标单与经营查看原型">
+  <main class="phone-shell" aria-label="供货端门店端与员工 App 原型">
     <section class="page active" data-page="home" id="homePage">
       <header class="topbar"><span></span><h1 class="brand">FONESQUARE</h1><button class="icon-button" type="button" aria-label="通知">⋯</button></header>
       <section class="section identity-card">
         <div class="avatar">JR</div>
         <div><strong>贾瑞真</strong><span id="identityScope">FS Retail Malaysia · 商家主账号</span></div>
-        <select class="role-switch" id="roleSwitch" aria-label="切换演示角色"><option value="merchant">商家主账号</option><option value="store">店铺主账号</option><option value="employee" selected>员工</option></select>
+        <select class="role-switch" id="roleSwitch" aria-label="切换演示角色"><option value="merchant">商家主账号</option><option value="employee" selected>员工</option></select>
         <span class="verified">可建拍</span>
       </section>
       <section class="hero">
-        <div class="eyebrow">统一门店端工作台</div>
+        <div class="eyebrow">供货端 · 门店端 / 员工 App</div>
         <h2>创建竞拍标单</h2>
         <p>完成设备质检并生成质检报告后创建竞拍标单。</p>
         <button class="hero-button" id="homeCreateLot" type="button">开始质检并建标&nbsp; →</button>
@@ -433,7 +433,7 @@
         <h2 class="section-title">两步完成发布</h2>
         <div class="timeline">
           <div class="timeline-item active"><strong>完成质检</strong><span>扫描 MAX 二维码，核对自动结果并补齐剩余项目。</span></div>
-          <div class="timeline-item"><strong>确认并发布</strong><span>查看质检结果，核对卖家信息及线下合同。</span></div>
+          <div class="timeline-item"><strong>确认并发布</strong><span>核对质检快照和价格结果后发布，无需预先维护卖家手机号或合同。</span></div>
         </div>
       </section>
       <section class="section">
@@ -535,7 +535,7 @@
     <section class="page with-actions" data-page="report" id="reportPage">
       <header class="topbar"><button class="icon-button" type="button" data-back="inspection" aria-label="返回">‹</button><h1>质检结果</h1><span></span></header>
       <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
-      <div class="callout success">PMS 质检报告已创建，系统已完成后续内部处理。</div>
+      <div class="callout success">PMS 质检报告已创建，可核对质检事实并继续发布。</div>
       <section class="section device-summary">
         <div class="device-thumb"><div class="mini-phone"></div></div>
         <div><span class="condition-tag">A</span><h2 class="product-name" id="reportModel">苹果 iPhone 14 Pro</h2><p class="specs">512GB · 深空黑色 · 香港版本<br>IMEI 尾号 2761</p></div>
@@ -544,6 +544,11 @@
         <h2 class="section-title">报告信息</h2>
         <dl class="meta-list">
           <div class="meta-row"><dt>PMS 质检报告</dt><dd>PMS-HK-260823-0198</dd></div>
+          <div class="meta-row"><dt>PMS 基础产品 / SKU</dt><dd>iPhone 14 Pro / 512GB</dd></div>
+          <div class="meta-row"><dt>最终等级</dt><dd>A</dd></div>
+          <div class="meta-row"><dt>版本 PPN</dt><dd>PPN-HK-IPH14P-512</dd></div>
+          <div class="meta-row"><dt>来源 PPV</dt><dd>PPV-HK-512-SB</dd></div>
+          <div class="meta-row"><dt>事实来源</dt><dd>灵犀 · 质检 APP · MAX · 人工补充</dd></div>
           <div class="meta-row"><dt>工具报告</dt><dd>灵犀 · 质检APP · MAX</dd></div>
           <div class="meta-row"><dt>完成时间</dt><dd>2026年8月23日 10:18</dd></div>
         </dl>
@@ -569,17 +574,19 @@
       <section class="section">
         <p class="section-kicker">发布快照</p>
         <h2 class="section-title">设备与报告</h2>
-        <div class="summary-row"><span>商品</span><strong id="confirmProduct">苹果 iPhone 14 Pro 512GB 深空黑色</strong></div>
+        <div class="summary-row"><span>PMS 基础产品 / SKU</span><strong id="confirmProduct">iPhone 14 Pro / 512GB</strong></div>
+        <div class="summary-row"><span>最终等级</span><strong>A</strong></div>
+        <div class="summary-row"><span>版本 PPN</span><strong>PPN-HK-IPH14P-512</strong></div>
+        <div class="summary-row"><span>来源 PPV</span><strong>PPV-HK-512-SB</strong></div>
+        <div class="summary-row"><span>事实来源</span><strong>灵犀 · 质检 APP · MAX · 人工补充</strong></div>
         <div class="summary-row"><span>质检报告</span><strong>PMS-HK-260823-0198</strong></div>
       </section>
-      <section class="section">
-        <label class="checkbox-row"><input id="contractConfirm" type="checkbox"><span><strong>我已确认与卖家签署线下合同 <i class="required">*</i></strong><span>确认账号和时间将记录在发布快照中。</span></span></label>
-        <p class="inline-error" id="contractError">发布前请先确认线下合同。</p>
-        <label class="form-field"><span>卖家手机号 · 马来西亚（+60） <i class="required">*</i></span><input id="sellerMobile" type="tel" data-country="MY" placeholder="+60 12 345 6789" autocomplete="tel"></label>
-        <p class="inline-error" id="sellerMobileError">请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。</p>
-        <label class="form-field"><span>合同编号（选填）</span><input id="contractNumber" type="text" placeholder="请输入合同编号"></label>
-      </section>
-      <div class="callout warning">发布时将重新校验账号建拍资格、店铺状态、当前关系、报告、商品信息、合同、卖家手机号、设备唯一性及风险。</div>
+      <div class="callout warning" id="priceResultCard" aria-label="价格暂不可用，不影响发布与普通竞价">
+        <strong>价格暂不可用</strong>
+        <span>不影响发布与普通竞价；本轮不提供偏差提示。</span>
+      </div>
+      <button class="wide-button tertiary" id="togglePriceResult" type="button">切换为价格已生成</button>
+      <div class="callout warning">发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。价格失败不阻断发布。</div>
       <button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button>
       <nav class="action-bar"><button class="action-button secondary" type="button" data-back="report">返回</button><button class="action-button primary" id="publishLot" type="button">确认并发布</button></nav>
     </section>
@@ -608,7 +615,7 @@
       <div class="callout success">发布成功 · 竞拍中 · 默认竞拍 10 分钟</div>
       <section class="section device-summary"><div class="device-thumb"><div class="mini-phone"></div></div><div><span class="condition-tag">A</span><h2 class="product-name">iPhone 17 Pro Max</h2><p class="specs">512GB · 星宇橙 · 香港版本<br>IMEI 尾号 2761</p></div></section>
       <section class="section"><h2 class="section-title">当前竞拍轮次</h2><div class="summary-row"><span>标单号</span><strong>FS-HK-260823-0216</strong></div><div class="summary-row"><span>竞拍轮次</span><strong>第 1 轮</strong></div><div class="summary-row"><span>轮次执行状态</span><strong class="status-line"><i class="status-dot"></i>竞拍中</strong></div><div class="summary-row"><span>轮次结果</span><strong>—</strong></div><div class="summary-row"><span>竞拍时长</span><strong>10 分钟</strong></div><div class="summary-row"><span>竞拍开始</span><strong id="lotAuctionStart" data-no-i18n>—</strong></div><div class="summary-row"><span>竞拍结束</span><strong id="lotAuctionEnd" data-no-i18n>—</strong></div><div class="summary-row"><span>剩余时间</span><strong id="lotAuctionCountdown">10:00</strong></div></section>
-      <section class="section"><h2 class="section-title">发布快照</h2><div class="summary-row"><span>报告快照</span><strong>PMS-HK-260823-0198</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div><div class="summary-row"><span>发布时间</span><strong>2026年8月23日 10:24</strong></div></section>
+      <section class="section"><h2 class="section-title">发布快照</h2><div class="summary-row"><span>报告快照</span><strong>PMS-HK-260823-0198</strong></div><div class="summary-row"><span>PMS 基础产品 / SKU</span><strong>iPhone 17 Pro Max / 512GB</strong></div><div class="summary-row"><span>最终等级</span><strong>A</strong></div><div class="summary-row"><span>版本 PPN</span><strong>PPN-HK-IPH17PM-512</strong></div><div class="summary-row"><span>来源 PPV</span><strong>PPV-HK-512-CO</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div><div class="summary-row"><span>发布时间</span><strong>2026年8月23日 10:24</strong></div></section>
       <section class="section"><h2 class="section-title">下一步</h2><p class="small muted" style="margin:0" id="decisionNote">竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。</p></section>
     </section>
 
@@ -617,7 +624,7 @@
       <div class="callout warning" id="preWinnerStatus">预中标 · 等待卖家决定</div>
       <section class="section device-summary"><div class="device-thumb" style="background:linear-gradient(145deg,#e9edf5,#b9c3d5)"><div class="mini-phone" style="background:linear-gradient(145deg,#c8d0dc,#69758a)"></div></div><div><span class="condition-tag">A-</span><h2 class="product-name">Samsung Galaxy S25 Ultra</h2><p class="specs">256GB · 银影蓝<br>标单号 FS-MY-260823-0197</p></div></section>
       <section class="section"><p class="section-kicker">竞拍结果</p><h2 class="section-title">中标价格</h2><div class="summary-row"><span>中标价格</span><strong id="winningPrice">MYR 3,280</strong></div><div class="summary-row"><span>中标回收商</span><strong>Recycle Partner MY</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 员工</strong></div></section>
-      <section class="section"><h2 class="section-title">卖家决定</h2><p class="small muted" style="margin:0" id="preWinnerPermissionNote">请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。</p></section>
+      <section class="section"><h2 class="section-title">卖家决定</h2><p class="small muted" style="margin:0" id="preWinnerPermissionNote">请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。</p></section>
       <nav class="action-bar" id="preWinnerDecisionActions"><button class="action-button secondary" id="rejectPreWinner" type="button">不接受</button><button class="action-button primary" id="acceptPreWinner" type="button">接受预中标价</button></nav>
     </section>
 
@@ -631,16 +638,16 @@
       </div>
       <div class="batch-list">
         <button class="batch-card" id="generatedOrderCard" type="button" data-owner="jia" data-order-card="pending" hidden data-toast="成交订单详情为只读；取货结果由后续流程维护。"><span class="batch-head"><span><strong>Samsung Galaxy S25 Ultra 256GB</strong><small>FSO-260827-0101 · 中心旗舰店</small></span><span class="status-badge warning">待取货</span></span><span class="batch-facts"><span class="batch-fact"><span>中标价格</span><strong>MYR 3,280</strong></span><span class="batch-fact"><span>实际建拍操作人</span><strong>贾瑞真</strong></span><span class="batch-fact"><span>成交来源</span><strong>卖家接受预中标价</strong></span><span class="batch-fact"><span>取货状态</span><strong>待取货</strong></span></span></button>
-        <button class="batch-card" type="button" data-owner="jia" data-order-card="pending" data-toast="订单详情为只读；门店端不组批、不确认取货。">
+        <button class="batch-card" type="button" data-owner="jia" data-order-card="pending" data-toast="订单详情与取货结果只读。">
           <span class="batch-head"><span><strong>iPhone 17 Pro Max 512GB</strong><small>FSO-260821-0098 · 中心旗舰店</small></span><span class="status-badge warning">待取货</span></span>
           <span class="batch-facts"><span class="batch-fact"><span>实际建拍操作人</span><strong>贾瑞真</strong></span><span class="batch-fact"><span>成交时间</span><strong>8月21日 11:02</strong></span><span class="batch-fact"><span>隐私结果</span><strong>未记录</strong></span><span class="batch-fact"><span>退回状态</span><strong>未发起</strong></span></span>
         </button>
-        <button class="batch-card" type="button" data-owner="aina" data-order-card="complete" data-toast="督导到店选择实际取走订单并二次确认后，系统直接生成已取货批次。">
+        <button class="batch-card" type="button" data-owner="aina" data-order-card="complete" data-toast="该订单已由督导现场确认实际取走。">
           <span class="batch-head"><span><strong>Huawei Mate 70 Pro 512GB</strong><small>FSO-260820-0048 · 中心旗舰店</small></span><span class="status-badge complete">已取货</span></span>
-          <span class="batch-facts"><span class="batch-fact"><span>取货批次</span><strong>PB-260821-0029</strong></span><span class="batch-fact"><span>取货时间</span><strong>8月21日 17:42</strong></span><span class="batch-fact"><span>隐私结果</span><strong>不通过</strong></span><span class="batch-fact"><span>退回状态</span><strong>运营未发起</strong></span></span>
+          <span class="batch-facts"><span class="batch-fact"><span>订单号</span><strong>FSO-260820-0048</strong></span><span class="batch-fact"><span>实际取货时间</span><strong>8月21日 17:42</strong></span><span class="batch-fact"><span>隐私结果</span><strong>不通过</strong></span><span class="batch-fact"><span>退回状态</span><strong>运营未发起</strong></span></span>
         </button>
       </div>
-      <section class="section"><h2 class="section-title">取货规则</h2><p class="small muted" style="margin:0">门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货批次。</p></section>
+      <section class="section"><h2 class="section-title">取货结果</h2><p class="small muted" style="margin:0">供货端只读查看每笔订单的待取货或已取货结果，不需要执行取货操作。</p></section>
     </section>
 
      <section class="page" data-page="bills" id="billsPage">
@@ -753,7 +760,32 @@
   </dialog>
 
   <dialog id="sellerDecisionDialog" aria-labelledby="sellerDecisionTitle">
-    <div class="dialog-body"><div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">!</div><h2 id="sellerDecisionTitle">确认卖家决定</h2><p id="sellerDecisionMessage">请确认卖家是否接受中标价格。</p><div class="dialog-summary"><div class="summary-row"><span>中标价格</span><strong>MYR 3,280</strong></div></div><div class="dialog-actions"><button class="secondary" type="button" id="cancelSellerDecision">取消</button><button class="primary" type="button" id="confirmSellerDecisionButton">确认</button></div></div>
+    <div class="dialog-body">
+      <div class="dialog-icon" style="color:var(--orange);background:var(--orange-soft)">!</div>
+      <h2 id="sellerDecisionTitle">确认卖家决定</h2>
+      <p id="sellerDecisionMessage">请确认卖家是否接受中标价格。</p>
+      <div class="dialog-summary"><div class="summary-row"><span>中标价格</span><strong>MYR 3,280</strong></div></div>
+      <section id="sellerAcceptPanel" hidden>
+        <label class="checkbox-row"><input id="acceptContractConfirm" type="checkbox"><span><strong>确认已维护卖家合同 <i class="required">*</i></strong><span>合同仅在卖家接受预中标价后维护。</span></span></label>
+        <p class="inline-error" id="acceptContractError">请先确认已维护卖家合同。</p>
+        <label class="form-field"><span>卖家手机号 · 马来西亚（+60） <i class="required">*</i></span><input id="acceptSellerMobile" type="tel" placeholder="+60 12 345 6789" autocomplete="tel"></label>
+        <p class="inline-error" id="acceptSellerMobileError">请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。</p>
+        <button class="wide-button tertiary" id="sendAcceptOtp" type="button">发送 OTP</button>
+        <label class="form-field"><span>OTP 验证码 <i class="required">*</i></span><input id="acceptOtpCode" type="text" inputmode="numeric" maxlength="6" placeholder="请输入 6 位验证码" autocomplete="one-time-code"></label>
+        <p class="inline-error" id="acceptOtpError">请先发送并输入 6 位 OTP 验证码。</p>
+        <div class="dialog-actions"><button class="secondary" type="button" id="cancelSellerDecision">取消</button><button class="primary" type="button" id="confirmSellerDecisionButton">确认成交</button></div>
+      </section>
+      <section id="sellerRejectPanel" hidden>
+        <p class="permission-note">卖家拒绝后，由本轮实际创建人选择重拍或结束标单。</p>
+        <label class="checkbox-row"><input id="reauctionReportFresh" type="checkbox" checked><span><strong>质检报告完成不超过 1 小时</strong><span>当前已完成 42 分钟。</span></span></label>
+        <label class="checkbox-row"><input id="reauctionDeviceInStore" type="checkbox" checked><span><strong>设备仍在店</strong><span>取消勾选可演示不满足条件。</span></span></label>
+        <div class="dialog-actions"><button class="secondary" type="button" id="chooseEndLot">结束标单</button><button class="primary" type="button" id="chooseReauction">重拍</button></div>
+      </section>
+      <section id="sellerDecisionResult" hidden>
+        <div class="callout success" id="sellerDecisionResultCallout"></div>
+        <div class="dialog-actions" style="grid-template-columns:1fr"><button class="primary" type="button" id="closeSellerDecisionResult">完成</button></div>
+      </section>
+    </div>
   </dialog>
 
   <dialog id="inspectionChoiceDialog" aria-labelledby="inspectionChoiceTitle">
@@ -768,7 +800,70 @@
 
   <script>
 
-    const I18N_EN = Object.freeze({"FS Retail Malaysia · 商家主账号":"FS Retail Malaysia · Merchant admin","竞拍中":"Bidding","取消":"Cancel","256GB · 银影蓝":"256GB · Silver Shadow Blue","发布身份":"Publishing identity","确认并发布":"Confirm & Publish","风险标签":"Risk label","待卖家决定":"Pending seller decision","品类":"Category","我已确认与卖家签署线下合同":"I confirm the offline contract with the seller","1 · 质检":"1 · Inspection","FSO-260820-0048 · 中心旗舰店":"FSO-260820-0048 · Central Flagship Store","操作人":"Operator","待结算":"Pending settlement","请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。":"Confirm the price with the seller. Acceptance immediately creates a transaction order; rejection ends the lot as “Seller declined” without an order.","开机情况":"Power-on Status","更换二手部件":"Replacement Parts","店铺调整净额":"Store adjustment net","标单详情":"Auction Lot Details","账单":"Bills","收益与佣金":"Earnings & Commission","等待扫码":"Waiting for scan","请输入 15 位数字 IMEI。":"Enter a 15-digit IMEI.","已取货":"Picked Up","全部":"All","当前竞拍轮次":"Current auction round","门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货批次。":"The Store App does not auto-group, edit or confirm batches and never shows a handover code. A platform supervisor selects the units actually collected at the store and creates a picked-up batch after a second confirmation.","正在发布标单":"Publishing auction lot","供货商家":"Supplier business","MAX 未检查出该项目，需要店员人工选择。":"MAX did not return this item. Store staff must select it manually.","待取货":"Pending Pickup","取货时间":"Picked up","8月21日 11:02":"21 Aug, 11:02","机身外观":"Body Condition","确认结果并继续":"Confirm & Continue","商品":"Product","贾瑞真":"Jia Ruizhen","未记录":"Not recorded","成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。":"A successful result is idempotent. Retrying will return this result and will not create a duplicate lot.","店铺主账号":"Store owner","卖家接受预中标价":"Seller accepted pre-winning price","第 1 轮":"Round 1","请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。":"Check the device information selected by store staff. The inspection order will be created and the matching PMS inspection template loaded after confirmation.","合同编号（选填）":"Contract reference (optional)","竞拍开始":"Auction starts","轮次结果":"Round result","报告快照":"Report snapshot","卖家决定":"Seller decision","重新校验":"Revalidate","电池健康度":"Battery health","继续建标":"Create Another","质检单已创建 · 已加载 PMS 质检模板":"Inspection order created · PMS inspection template loaded","灵犀":"Lingxi","主要问题":"Main issues","质检APP":"Inspection App","请先选择左侧品牌":"Select a brand on the left","2026年8月23日 10:18":"23 Aug 2026, 10:18","无高风险问题":"No high-risk issue","店铺收益":"Store Earnings","人工":"Manual","店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。":"Total store receivable = store service fee + store adjustment net. It excludes seller payable and employee commission.","填写质检结果":"Complete Inspection","完成设备质检并生成质检报告后创建竞拍标单。":"Complete the device inspection and generate the inspection report before creating an auction lot.","工具报告":"Tool reports","必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。":"MAX results must be imported successfully before submission. Tap the top-right scan icon.","该项目未从 MAX 工具报告中检查出来，需要店员手动选择。":"MAX did not return this required item. Store staff must select a result manually.","竞拍结束":"Auction ends","存储容量":"Storage","边框 / 后盖":"Frame / back","竞拍轮次":"Round","实际建拍操作人":"Actual operator","功能与显示":"Function and display","无法发布":"Unable to publish","竞拍时长：10分钟":"Auction duration: 10 minutes","确认质检结果":"Confirm Inspection Results","质检 APP 检查设备是否能够正常开机并进入系统。":"The Inspection App checks whether the device powers on and enters the system.","确认":"Confirm","IMEI 尾号 2761":"IMEI ending 2761","竞拍时长":"Auction duration","蓝牙功能":"Bluetooth","创建竞拍标单":"Create Auction Lot","成交来源":"Transaction source","商家主账号":"Merchant admin","竞拍":"Auctions","苹果 iPhone 14 Pro":"Apple iPhone 14 Pro","选择结果":"Select result","中心旗舰店":"Central Flagship Store","轮次执行状态":"Execution status","商家主账号查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders and pickup results.","接受预中标价":"Accept winning price","手机":"Mobile","取货批次":"Pickup batch","点击上传能显示型号与 IMEI 的“关于本机”页面照片":"Upload the About page showing the model and IMEI","成交时间":"Sold","竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。":"When the auction ends with a pre-winner, the actual operator records whether the seller accepts or rejects.","选择质检结果":"Select Inspection Result","发布快照":"Publish snapshot","不通过":"Failed","购买渠道":"Purchase Channel","查看质检结果，核对卖家信息及线下合同。":"Review the inspection result, seller details and offline contract.","MAX 未返回电池健康度，需要店员查看设备后选择。":"MAX did not return battery health. Store staff must check the device and select a result.","功能正常":"Fully functional","2026年8月23日 10:24":"23 Aug 2026, 10:24","MAX 检查屏幕划痕、碎裂和显示区域外观。":"MAX checks screen scratches, cracks and the visible display area.","工具图片已随质检结果导入，报告信息已由 PMS 保存。":"Tool images were imported with the inspection results, and PMS has saved the report information.","按成交时间 · MYR":"By transaction time · MYR","开始质检并建标 →":"Start Inspection →","执行状态：已结束":"Execution: Ended","品牌":"Brand","结果：— ·":"Result: — ·","质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。":"Inspection item count and content are dynamically returned by the PMS template; the 8 items below are prototype examples only.","苹果 iPhone 14 Pro 512GB 深空黑色":"Apple iPhone 14 Pro 512GB Space Black","贾瑞真 · 员工":"Jia Ruizhen · Staff","标单号":"Auction lot","最近成交":"Latest transaction","将 MAX 二维码对准扫描框":"Align the MAX QR code","512GB · 深空黑色 · 香港版本":"512GB · Space Black · HK Version","屏幕外观":"Screen Condition","取货状态":"Pickup status","是否确认创建质检单？":"Confirm inspection order creation?","本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。":"MAX results must be imported from all three reports in this release. No fully manual fallback is available.","512GB · 星宇橙 · 香港版本":"512GB · Cosmic Orange · HK Version","当前质检单型号":"Inspection order model","FSO-260827-0101 · 中心旗舰店":"FSO-260827-0101 · Central Flagship Store","运营未发起":"Not initiated by Ops","FoneSquare 门店端 · 创建标单与在拍商品":"FoneSquare Store App · Create Lots & View Live Auctions","未发起":"Not initiated","完成质检":"Complete inspection","正在执行最终校验…":"Running final validation…","竞拍结果":"Auction result","请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。":"Enter a valid Malaysian mobile number (+60 1X XXXX XXXX).","必填照片":"Required photo","卖家手机号 · 马来西亚（+60）":"Seller mobile number · Malaysia (+60)","正常":"Normal","图片与报告信息":"Images and report information","2 · 确认发布":"2 · Confirm & Publish","确认创建":"Confirm Creation","商家主账号可查看本商家店铺收益和所属员工佣金。":"Merchant admins can view store earnings and employee commission within the merchant account.","可建拍":"Eligible","设备信息":"Device information","查看标单":"View Auction Lot","确认账号和时间将记录在发布快照中。":"The confirmation account and time will be saved in the publishing snapshot.","确认卖家决定":"Confirm seller decision","灵犀 · 质检APP · MAX":"Lingxi · Inspection App · MAX","请确认卖家是否接受中标价格。":"Confirm whether the seller accepts the winning price.","发布时间":"Published","扫描 MAX 质检二维码":"Scan MAX Inspection QR","品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。":"Category, brand and model come from the existing PMS product catalog; this page uses prototype-only sample data.","店铺应收合计":"Total store receivable","整机功能":"Functionality","当前有效关系":"Current relationship","店铺服务费":"Store service fee","10 分钟":"10 minutes","轻微划痕":"Minor scratches","预览发布校验失败状态":"Preview a validation failure","统一门店端工作台":"Unified Store App workspace","订单与取货":"Orders & Pickup","中标价格":"Winning price","标单创建成功":"Auction lot created","预中标详情":"Pre-winner Details","8月21日 17:42":"21 Aug, 17:42","发布前请先确认线下合同。":"Confirm the offline contract before publishing.","不同币种分别汇总；所有金额与处理结果只读。":"Currencies are summarized separately. Amounts and processing results are read-only.","完成时间":"Completed","扫码后由灵犀报告填充。工具已覆盖的结果只读。":"Filled from the Lingxi report after scanning. Imported results are read-only.","订单":"Orders","留在此页":"Stay Here","剩余时间":"Time remaining","隐私结果":"Privacy result","标单号 FS-MY-260823-0197":"Lot FS-MY-260823-0197","两步完成发布":"2 steps to publish","当前仅支持手机。":"Only mobile phones are supported.","质检结果":"Inspection Results","取货规则":"Pickup rule","返回修改":"Edit Results","结果：预中标 · 中标价格 MYR 3,280":"Result: Pre-winner · Winning price MYR 3,280","PMS 质检报告已创建，系统已完成后续内部处理。":"The PMS inspection report was created. Internal processing is complete.","下一步":"Next step","质检报告":"Inspection report","FS-HK-260823-0216 · 贾瑞真":"FS-HK-260823-0216 · Jia Ruizhen","不接受":"Do not accept","当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。":"The store’s auction eligibility changed after this page was opened. No recycle record or auction lot was created. Return and retry after the relationship is restored.","在拍商品":"Live Auction Products","请选择手机品牌和型号":"Select a mobile brand and model","发布时将重新校验账号建拍资格、店铺状态、当前关系、报告、商品信息、合同、卖家手机号、设备唯一性及风险。":"Publishing will revalidate account eligibility, store status, relationship, report, product details, contract, seller mobile number, device uniqueness and risk.","商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。":"Merchant admins can view all auction lots in the merchant account. Lots are sorted by the nearest auction deadline.","退回状态":"Return","工具报告未覆盖购买渠道，需要店员向卖家确认。":"Tool reports do not cover the purchase channel. Store staff must confirm it with the seller.","质检 APP 检查蓝牙开关和设备发现能力。":"The Inspection App checks the Bluetooth switch and device discovery.","报告信息":"Report information","扫描 MAX 二维码，核对自动结果并补齐剩余项目。":"Scan the MAX QR code, review imported results and complete the remaining items.","发布成功":"Published","员工":"Employee","回收单号":"Recycle number","店铺":"Store","处理状态":"Processing status","返回":"Back","型号":"Model","FS-MY-260823-0197 · 贾瑞真":"FS-MY-260823-0197 · Jia Ruizhen","发布成功 · 竞拍中 · 默认竞拍 10 分钟":"Published · Bidding · Default duration 10 minutes","执行状态：竞拍中":"Execution: Bidding","MAX 检查边框、背板及机身磕碰情况，并导入对应图片。":"MAX checks the frame, back panel and dents, and imports the related images.","未选择":"Not selected","快速指引":"Quick guide","调整净额":"Adjustment net","MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。":"MAX does not return a model. The model selected by store staff from the PMS product catalog remains unchanged; only results and images from all three inspection reports are imported.","模拟扫码并导入":"Simulate Scan & Import","预中标 · 等待卖家决定":"Pre-winner · Pending seller decision","选择回收物品":"Select Device","中标回收商":"Winning recycler","关于本机照片":"About This Device Photo","删除":"Remove","首页":"Home","屏幕显示":"Screen display","共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传":"8 required · 0 complete · 8 pending · IMEI missing · About This Device Photo missing","所属员工佣金":"Employee Commission","回收单、标单及首轮竞拍已成功创建并立即开始。":"The recycle record, auction lot and first auction round were created and bidding started immediately.","设备与报告":"Device and report","草稿":"Drafts","FSO-260821-0098 · 中心旗舰店":"FSO-260821-0098 · Central Flagship Store","员工佣金 · MYR":"Employee commission · MYR","苹果":"Apple","PMS 质检报告":"PMS inspection report","该示例标单不在本次建标流程范围内":"This sample auction is outside the create-lot flow","搜索型号名称":"Search model name","创建标单进度":"Create auction progress","手动创建标单":"Create auction lot manually","主导航":"Primary navigation","切换演示角色":"Switch demo role","90%以上|80%–89%|低于80%|无法读取":"90% or above|80%–89%|Below 80%|Unavailable","FoneSquare 门店端创建标单与经营查看原型":"FoneSquare Store App prototype","请输入 15 位 IMEI":"Enter the 15-digit IMEI","按截止时间升序排列的标单":"Auction lots sorted by deadline ascending","二维码扫描模拟区":"QR scanner simulation","质检项目":"Inspection items","香港零售|大陆国行|海外版本|未知":"Hong Kong Retail|Mainland China|Overseas Version|Unknown","选择品牌":"Select brand","督导到店选择实际取走订单并二次确认后，系统直接生成已取货批次。":"A platform supervisor selected the units actually collected and confirmed the picked-up batch.","通知":"Notifications","扫码查看质检":"Scan to view inspection","无更换|更换屏幕|更换电池|其他部件":"No replacement|Screen replaced|Battery replaced|Other parts","成交订单详情为只读；取货结果由后续流程维护。":"Transaction order details are read-only; pickup is handled by the later flow.","订单状态筛选":"Order status filters","请输入合同编号":"Enter contract number","选择品类":"Select category","订单详情为只读；门店端不组批、不确认取货。":"Order details are read-only. The Store App cannot create or confirm pickup batches."," 512GB 深空黑色":" 512GB Space Black","没有匹配的型号，请清空搜索条件后重试":"No matching model. Clear the search and try again.","当前品类和品牌下暂无型号":"No models under this category and brand.","</strong><span>点击确认创建质检单</span></span><span class=\"select-mark\">›</span>":"</strong><span>Tap to confirm inspection order creation</span></span><span class=\"select-mark\">›</span>","请从 PMS 商品目录选择品类、品牌和型号后创建质检单":"Select a category, brand and model from the PMS product catalog to create an inspection order","正在创建质检单…":"Creating inspection order…","正在预览 about-this-device.jpg":"Previewing about-this-device.jpg","已上传：about-this-device.jpg · 点击预览":"Uploaded: about-this-device.jpg · Tap to preview"," 项 · 待补 ":" complete · "," 项 · IMEI ":" pending · IMEI ","已填写":"entered","未填写":"missing"," · 关于本机照片":" · About This Device Photo ","已上传":"uploaded","未上传":"missing","MAX 三份质检报告已成功导入 5 项结果，仍有 ":"MAX results from all three reports were imported successfully. "," 项需要店员手动选择。":" required items still need a manual selection.","正在导入 MAX 结果…":"Importing MAX results…","选择“":"Select result for “","”结果":"”","重新选择":"Change result","正在创建质检报告…":"Creating inspection report…","确认拒绝":"Confirm rejection","已接受中标价格，成交订单已生成":"Winning price accepted · Order created","已记录卖家拒绝，标单已结束":"Seller declined · Lot ended","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Merchant admins have read-only access and cannot record the seller decision.","中心旗舰店 · 店铺主账号":"Central Flagship Store · Store owner","本标单由员工贾瑞真创建。店铺主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Store owners have read-only access and cannot record the seller decision.","中心旗舰店 · 员工":"Central Flagship Store · Employee","你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。":"You are the actual operator for this lot and can record accept or reject after a pre-winner is produced.","建拍资格已恢复，可以继续发布":"Auction eligibility restored · You can publish now","我的":"Me","已完成身份认证":"Identity verified","认证地址可用于维护门店地址":"Use the verified address to maintain the store address","快捷入口":"Quick Access","门店地址":"Store Address","维护营业地址和联系电话":"Maintain business address and contact number","银行卡号":"Bank Account","维护收款银行卡信息":"Maintain payout bank details","设置":"Settings","账户、安全与语言":"Account, security & language","帮助与支持":"Help & Support","常见问题、联系我们":"FAQs & contact us","可使用身份认证地址":"Verified address available","你已完成身份认证，可将认证地址一键代入门店地址表单。":"Your identity is verified. Use the verified address to fill the store address form.","使用认证地址":"Use Verified Address","国家/地区":"Country/Region","马来西亚":"Malaysia","默认使用注册时选择的国家":"Defaults to the country selected at registration","具体地址":"Address","联系电话":"Contact Number","默认使用登录手机号":"Defaults to the login mobile number","保存门店地址":"Save Store Address","门店地址已保存":"Store address saved","收款银行卡":"Payout Bank Account","银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。":"Bank details are used only for transaction settlement. After saving, only the bank name and last four digits are shown.","持卡人名称":"Account Holder","请输入持卡人名称":"Enter account holder name","银行名称":"Bank Name","请输入银行名称":"Enter bank name","请输入银行卡号":"Enter bank account number","保存银行卡":"Save Bank Account","请输入8–20位银行卡号。":"Enter an 8–20 digit bank account number.","银行卡信息已保存":"Bank details saved","语言":"Language","语言与显示":"Language & Display","简体中文":"Simplified Chinese","切换后整份原型的页面、弹窗和提示将同步更新。":"All pages, dialogs and messages in this prototype update immediately.","选择语言":"Select Language","点击确认创建质检单":"Tap to confirm inspection order creation","华为":"Huawei","三星":"Samsung","小米":"Xiaomi","✓ 已完成身份认证":"✓ Identity verified","身份认证已完成":"Identity verification complete","请填写完整的门店地址和联系电话。":"Enter the complete store address and contact number.","扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号":"Scanning also requires a category, brand and model selection from the PMS product catalog first","确认接受中标价格？":"Accept the winning price?","确认不接受中标价格？":"Decline the winning price?","确认后立即生成成交订单。":"Confirmation immediately creates a transaction order.","确认后标单以“卖家拒绝”结束，不生成成交订单。":"Confirmation ends the lot as “Seller declined” and does not create an order.","确认接受":"Confirm acceptance","卖家已接受 · 成交订单已生成":"Seller accepted · Transaction order created","卖家拒绝 · 标单已结束":"Seller declined · Auction lot ended","结果：卖家已接受 · MYR 3,280":"Result: Seller accepted · MYR 3,280","结果：卖家拒绝":"Result: Seller declined","中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。":"The winning price was accepted and the transaction order was created immediately. View it under Orders.","卖家不接受中标价格，本标单已结束且未生成成交订单。":"The seller declined the winning price. The lot ended and no transaction order was created.","商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。":"Merchant admins can view all merchant auction lots; lots are sorted by nearest deadline.","商家主账号可查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders; pickup results are read-only.","店铺主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。":"Store owners can view all store auction lots; lots are sorted by nearest deadline.","店铺主账号可查看本店铺全部订单；取货结果只读。":"Store owners can view all store orders; pickup results are read-only.","店铺主账号可查看本店铺收益和本店员工佣金。":"Store owners can view store earnings and employee commission in their store.","员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。":"Employees only see auction lots they created; lots are sorted by nearest deadline.","员工仅查看本人创建的订单；取货结果只读。":"Employees only see orders they created; pickup results are read-only.","员工仅查看本人佣金，不展示店铺收益。":"Employees only see their own commission; store earnings are hidden.","客服热线：+60 3-8899 6688":"Support: +60 3-8899 6688"});
+    const I18N_EN = Object.freeze({"FS Retail Malaysia · 商家主账号":"FS Retail Malaysia · Merchant admin","竞拍中":"Bidding","取消":"Cancel","256GB · 银影蓝":"256GB · Silver Shadow Blue","发布身份":"Publishing identity","确认并发布":"Confirm & Publish","风险标签":"Risk label","待卖家决定":"Pending seller decision","品类":"Category","我已确认与卖家签署线下合同":"I confirm the offline contract with the seller","1 · 质检":"1 · Inspection","FSO-260820-0048 · 中心旗舰店":"FSO-260820-0048 · Central Flagship Store","操作人":"Operator","待结算":"Pending settlement","请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。":"Confirm the price with the seller. Acceptance immediately creates a transaction order; rejection ends the lot as “Seller declined” without an order.","开机情况":"Power-on Status","更换二手部件":"Replacement Parts","店铺调整净额":"Store adjustment net","标单详情":"Auction Lot Details","账单":"Bills","收益与佣金":"Earnings & Commission","等待扫码":"Waiting for scan","请输入 15 位数字 IMEI。":"Enter a 15-digit IMEI.","已取货":"Picked Up","全部":"All","当前竞拍轮次":"Current auction round","门店端不自动组批、不调整批次、不展示交接码、不要求门店确认。督导到店选择同店铺、同回收商的实际取走订单，二次确认后直接创建已取货结果。":"The Store App does not auto-group, edit or confirm batches and never shows a handover code. A platform supervisor selects the units actually collected at the store and creates a picked-up batch after a second confirmation.","正在发布标单":"Publishing auction lot","供货商家":"Supplier business","MAX 未检查出该项目，需要店员人工选择。":"MAX did not return this item. Store staff must select it manually.","待取货":"Pending Pickup","取货时间":"Picked up","8月21日 11:02":"21 Aug, 11:02","机身外观":"Body Condition","确认结果并继续":"Confirm & Continue","商品":"Product","贾瑞真":"Jia Ruizhen","未记录":"Not recorded","成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。":"A successful result is idempotent. Retrying will return this result and will not create a duplicate lot.","商家主账号":"Store owner","卖家接受预中标价":"Seller accepted pre-winning price","第 1 轮":"Round 1","请确认店员手动选择的商品信息。确认后创建质检单，并加载对应的 PMS 质检模板。":"Check the device information selected by store staff. The inspection order will be created and the matching PMS inspection template loaded after confirmation.","合同编号（选填）":"Contract reference (optional)","竞拍开始":"Auction starts","轮次结果":"Round result","报告快照":"Report snapshot","卖家决定":"Seller decision","重新校验":"Revalidate","电池健康度":"Battery health","继续建标":"Create Another","质检单已创建 · 已加载 PMS 质检模板":"Inspection order created · PMS inspection template loaded","灵犀":"Lingxi","主要问题":"Main issues","质检APP":"Inspection App","请先选择左侧品牌":"Select a brand on the left","2026年8月23日 10:18":"23 Aug 2026, 10:18","无高风险问题":"No high-risk issue","店铺收益":"Store Earnings","人工":"Manual","店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。":"Total store receivable = store service fee + store adjustment net. It excludes seller payable and employee commission.","填写质检结果":"Complete Inspection","完成设备质检并生成质检报告后创建竞拍标单。":"Complete the device inspection and generate the inspection report before creating an auction lot.","工具报告":"Tool reports","必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。":"MAX results must be imported successfully before submission. Tap the top-right scan icon.","该项目未从 MAX 工具报告中检查出来，需要店员手动选择。":"MAX did not return this required item. Store staff must select a result manually.","竞拍结束":"Auction ends","存储容量":"Storage","边框 / 后盖":"Frame / back","竞拍轮次":"Round","实际建拍操作人":"Actual operator","功能与显示":"Function and display","无法发布":"Unable to publish","竞拍时长：10分钟":"Auction duration: 10 minutes","确认质检结果":"Confirm Inspection Results","质检 APP 检查设备是否能够正常开机并进入系统。":"The Inspection App checks whether the device powers on and enters the system.","确认":"Confirm","IMEI 尾号 2761":"IMEI ending 2761","竞拍时长":"Auction duration","蓝牙功能":"Bluetooth","创建竞拍标单":"Create Auction Lot","成交来源":"Transaction source","商家主账号":"Merchant admin","竞拍":"Auctions","苹果 iPhone 14 Pro":"Apple iPhone 14 Pro","选择结果":"Select result","中心旗舰店":"Central Flagship Store","轮次执行状态":"Execution status","商家主账号查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders and pickup results.","接受预中标价":"Accept winning price","手机":"Mobile","取货记录":"Pickup batch","点击上传能显示型号与 IMEI 的“关于本机”页面照片":"Upload the About page showing the model and IMEI","成交时间":"Sold","竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。":"When the auction ends with a pre-winner, the actual operator records whether the seller accepts or rejects.","选择质检结果":"Select Inspection Result","发布快照":"Publish snapshot","不通过":"Failed","购买渠道":"Purchase Channel","核对质检快照和价格结果后发布。":"Review the inspection result, seller details and offline contract.","MAX 未返回电池健康度，需要店员查看设备后选择。":"MAX did not return battery health. Store staff must check the device and select a result.","功能正常":"Fully functional","2026年8月23日 10:24":"23 Aug 2026, 10:24","MAX 检查屏幕划痕、碎裂和显示区域外观。":"MAX checks screen scratches, cracks and the visible display area.","工具图片已随质检结果导入，报告信息已由 PMS 保存。":"Tool images were imported with the inspection results, and PMS has saved the report information.","按成交时间 · MYR":"By transaction time · MYR","开始质检并建标 →":"Start Inspection →","执行状态：已结束":"Execution: Ended","品牌":"Brand","结果：— ·":"Result: — ·","质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。":"Inspection item count and content are dynamically returned by the PMS template; the 8 items below are prototype examples only.","苹果 iPhone 14 Pro 512GB 深空黑色":"Apple iPhone 14 Pro 512GB Space Black","贾瑞真 · 员工":"Jia Ruizhen · Staff","标单号":"Auction lot","最近成交":"Latest transaction","将 MAX 二维码对准扫描框":"Align the MAX QR code","512GB · 深空黑色 · 香港版本":"512GB · Space Black · HK Version","屏幕外观":"Screen Condition","取货状态":"Pickup status","是否确认创建质检单？":"Confirm inspection order creation?","本期必须成功导入 MAX 三份质检报告，不提供完全人工降级。":"MAX results must be imported from all three reports in this release. No fully manual fallback is available.","512GB · 星宇橙 · 香港版本":"512GB · Cosmic Orange · HK Version","当前质检单型号":"Inspection order model","FSO-260827-0101 · 中心旗舰店":"FSO-260827-0101 · Central Flagship Store","运营未发起":"Not initiated by Ops","供货端 · 创建标单与在拍商品":"FoneSquare Store App · Create Lots & View Live Auctions","未发起":"Not initiated","完成质检":"Complete inspection","正在执行最终校验…":"Running final validation…","竞拍结果":"Auction result","请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。":"Enter a valid Malaysian mobile number (+60 1X XXXX XXXX).","必填照片":"Required photo","卖家手机号 · 马来西亚（+60）":"Seller mobile number · Malaysia (+60)","正常":"Normal","图片与报告信息":"Images and report information","2 · 确认发布":"2 · Confirm & Publish","确认创建":"Confirm Creation","商家主账号可查看本商家店铺收益和所属员工佣金。":"Merchant admins can view store earnings and employee commission within the merchant account.","可建拍":"Eligible","设备信息":"Device information","查看标单":"View Auction Lot","确认账号和时间将记录在发布快照中。":"The confirmation account and time will be saved in the publishing snapshot.","确认卖家决定":"Confirm seller decision","灵犀 · 质检APP · MAX":"Lingxi · Inspection App · MAX","请确认卖家是否接受中标价格。":"Confirm whether the seller accepts the winning price.","发布时间":"Published","扫描 MAX 质检二维码":"Scan MAX Inspection QR","品类、品牌、型号来自现有 PMS 商品目录；本页数据仅用于原型演示。":"Category, brand and model come from the existing PMS product catalog; this page uses prototype-only sample data.","店铺应收合计":"Total store receivable","整机功能":"Functionality","当前有效关系":"Current relationship","店铺服务费":"Store service fee","10 分钟":"10 minutes","轻微划痕":"Minor scratches","预览发布校验失败状态":"Preview a validation failure","统一门店端工作台":"Unified Store App workspace","订单与取货":"Orders & Pickup","中标价格":"Winning price","标单创建成功":"Auction lot created","预中标详情":"Pre-winner Details","8月21日 17:42":"21 Aug, 17:42","成交后请确认卖家合同。":"Confirm the offline contract before publishing.","不同币种分别汇总；所有金额与处理结果只读。":"Currencies are summarized separately. Amounts and processing results are read-only.","完成时间":"Completed","扫码后由灵犀报告填充。工具已覆盖的结果只读。":"Filled from the Lingxi report after scanning. Imported results are read-only.","订单":"Orders","留在此页":"Stay Here","剩余时间":"Time remaining","隐私结果":"Privacy result","标单号 FS-MY-260823-0197":"Lot FS-MY-260823-0197","两步完成发布":"2 steps to publish","当前仅支持手机。":"Only mobile phones are supported.","质检结果":"Inspection Results","取货规则":"Pickup rule","返回修改":"Edit Results","结果：预中标 · 中标价格 MYR 3,280":"Result: Pre-winner · Winning price MYR 3,280","PMS 质检报告已创建，可继续核对并发布。":"The PMS inspection report was created. Internal processing is complete.","下一步":"Next step","质检报告":"Inspection report","FS-HK-260823-0216 · 贾瑞真":"FS-HK-260823-0216 · Jia Ruizhen","不接受":"Do not accept","当前页面打开后，店铺建拍资格已发生变化。本次未创建回收单或标单，请在关系恢复后重新校验。":"The store’s auction eligibility changed after this page was opened. No recycle record or auction lot was created. Return and retry after the relationship is restored.","在拍商品":"Live Auction Products","请选择手机品牌和型号":"Select a mobile brand and model","发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。":"Publishing will revalidate account eligibility, store status, relationship, report, product details, contract, seller mobile number, device uniqueness and risk.","商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。":"Merchant admins can view all auction lots in the merchant account. Lots are sorted by the nearest auction deadline.","退回状态":"Return","工具报告未覆盖购买渠道，需要店员向卖家确认。":"Tool reports do not cover the purchase channel. Store staff must confirm it with the seller.","质检 APP 检查蓝牙开关和设备发现能力。":"The Inspection App checks the Bluetooth switch and device discovery.","报告信息":"Report information","扫描 MAX 二维码，核对自动结果并补齐剩余项目。":"Scan the MAX QR code, review imported results and complete the remaining items.","发布成功":"Published","员工":"Employee","回收单号":"Recycle number","店铺":"Store","处理状态":"Processing status","返回":"Back","型号":"Model","FS-MY-260823-0197 · 贾瑞真":"FS-MY-260823-0197 · Jia Ruizhen","发布成功 · 竞拍中 · 默认竞拍 10 分钟":"Published · Bidding · Default duration 10 minutes","执行状态：竞拍中":"Execution: Bidding","MAX 检查边框、背板及机身磕碰情况，并导入对应图片。":"MAX checks the frame, back panel and dents, and imports the related images.","未选择":"Not selected","快速指引":"Quick guide","调整净额":"Adjustment net","MAX 不返回型号；系统始终保留店员从 PMS 商品目录选择的型号，仅导入三份质检报告中的结果和图片。":"MAX does not return a model. The model selected by store staff from the PMS product catalog remains unchanged; only results and images from all three inspection reports are imported.","模拟扫码并导入":"Simulate Scan & Import","预中标 · 等待卖家决定":"Pre-winner · Pending seller decision","选择回收物品":"Select Device","中标回收商":"Winning recycler","关于本机照片":"About This Device Photo","删除":"Remove","首页":"Home","屏幕显示":"Screen display","共 8 项 · 已完成 0 项 · 待补 8 项 · IMEI 未填写 · 关于本机照片未上传":"8 required · 0 complete · 8 pending · IMEI missing · About This Device Photo missing","所属员工佣金":"Employee Commission","回收单、标单及首轮竞拍已成功创建并立即开始。":"The recycle record, auction lot and first auction round were created and bidding started immediately.","设备与报告":"Device and report","草稿":"Drafts","FSO-260821-0098 · 中心旗舰店":"FSO-260821-0098 · Central Flagship Store","员工佣金 · MYR":"Employee commission · MYR","苹果":"Apple","PMS 质检报告":"PMS inspection report","该示例标单不在本次建标流程范围内":"This sample auction is outside the create-lot flow","搜索型号名称":"Search model name","创建标单进度":"Create auction progress","手动创建标单":"Create auction lot manually","主导航":"Primary navigation","切换演示角色":"Switch demo role","90%以上|80%–89%|低于80%|无法读取":"90% or above|80%–89%|Below 80%|Unavailable","供货端创建标单与经营查看原型":"FoneSquare Store App prototype","请输入 15 位 IMEI":"Enter the 15-digit IMEI","按截止时间升序排列的标单":"Auction lots sorted by deadline ascending","二维码扫描模拟区":"QR scanner simulation","质检项目":"Inspection items","香港零售|大陆国行|海外版本|未知":"Hong Kong Retail|Mainland China|Overseas Version|Unknown","选择品牌":"Select brand","督导到店选择实际取走订单并二次确认后，系统直接生成已取货结果。":"A platform supervisor selected the units actually collected and confirmed the picked-up batch.","通知":"Notifications","扫码查看质检":"Scan to view inspection","无更换|更换屏幕|更换电池|其他部件":"No replacement|Screen replaced|Battery replaced|Other parts","成交订单详情为只读；取货结果由后续流程维护。":"Transaction order details are read-only; pickup is handled by the later flow.","订单状态筛选":"Order status filters","请输入合同编号":"Enter contract number","选择品类":"Select category","订单详情为只读；门店端不组批、不确认取货。":"Order details are read-only. The Store App cannot create or confirm pickup batches."," 512GB 深空黑色":" 512GB Space Black","没有匹配的型号，请清空搜索条件后重试":"No matching model. Clear the search and try again.","当前品类和品牌下暂无型号":"No models under this category and brand.","</strong><span>点击确认创建质检单</span></span><span class=\"select-mark\">›</span>":"</strong><span>Tap to confirm inspection order creation</span></span><span class=\"select-mark\">›</span>","请从 PMS 商品目录选择品类、品牌和型号后创建质检单":"Select a category, brand and model from the PMS product catalog to create an inspection order","正在创建质检单…":"Creating inspection order…","正在预览 about-this-device.jpg":"Previewing about-this-device.jpg","已上传：about-this-device.jpg · 点击预览":"Uploaded: about-this-device.jpg · Tap to preview"," 项 · 待补 ":" complete · "," 项 · IMEI ":" pending · IMEI ","已填写":"entered","未填写":"missing"," · 关于本机照片":" · About This Device Photo ","已上传":"uploaded","未上传":"missing","MAX 三份质检报告已成功导入 5 项结果，仍有 ":"MAX results from all three reports were imported successfully. "," 项需要店员手动选择。":" required items still need a manual selection.","正在导入 MAX 结果…":"Importing MAX results…","选择“":"Select result for “","”结果":"”","重新选择":"Change result","正在创建质检报告…":"Creating inspection report…","确认拒绝":"Confirm rejection","已接受中标价格，成交订单已生成":"Winning price accepted · Order created","已记录卖家拒绝，标单已结束":"Seller declined · Lot ended","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Merchant admins have read-only access and cannot record the seller decision.","中心旗舰店 · 商家主账号":"Central Flagship Store · Store owner","本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。":"This lot was created by Jia Ruizhen. Store owners have read-only access and cannot record the seller decision.","中心旗舰店 · 员工":"Central Flagship Store · Employee","你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。":"You are the actual operator for this lot and can record accept or reject after a pre-winner is produced.","建拍资格已恢复，可以继续发布":"Auction eligibility restored · You can publish now","我的":"Me","已完成身份认证":"Identity verified","认证地址可用于维护门店地址":"Use the verified address to maintain the store address","快捷入口":"Quick Access","门店地址":"Store Address","维护营业地址和联系电话":"Maintain business address and contact number","银行卡号":"Bank Account","维护收款银行卡信息":"Maintain payout bank details","设置":"Settings","账户、安全与语言":"Account, security & language","帮助与支持":"Help & Support","常见问题、联系我们":"FAQs & contact us","可使用身份认证地址":"Verified address available","你已完成身份认证，可将认证地址一键代入门店地址表单。":"Your identity is verified. Use the verified address to fill the store address form.","使用认证地址":"Use Verified Address","国家/地区":"Country/Region","马来西亚":"Malaysia","默认使用注册时选择的国家":"Defaults to the country selected at registration","具体地址":"Address","联系电话":"Contact Number","默认使用登录手机号":"Defaults to the login mobile number","保存门店地址":"Save Store Address","门店地址已保存":"Store address saved","收款银行卡":"Payout Bank Account","银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。":"Bank details are used only for transaction settlement. After saving, only the bank name and last four digits are shown.","持卡人名称":"Account Holder","请输入持卡人名称":"Enter account holder name","银行名称":"Bank Name","请输入银行名称":"Enter bank name","请输入银行卡号":"Enter bank account number","保存银行卡":"Save Bank Account","请输入8–20位银行卡号。":"Enter an 8–20 digit bank account number.","银行卡信息已保存":"Bank details saved","语言":"Language","语言与显示":"Language & Display","简体中文":"Simplified Chinese","切换后整份原型的页面、弹窗和提示将同步更新。":"All pages, dialogs and messages in this prototype update immediately.","选择语言":"Select Language","点击确认创建质检单":"Tap to confirm inspection order creation","华为":"Huawei","三星":"Samsung","小米":"Xiaomi","✓ 已完成身份认证":"✓ Identity verified","身份认证已完成":"Identity verification complete","请填写完整的门店地址和联系电话。":"Enter the complete store address and contact number.","扫码查看也需要先从 PMS 商品目录选择品类、品牌和型号":"Scanning also requires a category, brand and model selection from the PMS product catalog first","确认接受中标价格？":"Accept the winning price?","确认不接受中标价格？":"Decline the winning price?","确认后立即生成成交订单。":"Confirmation immediately creates a transaction order.","确认后标单以“卖家拒绝”结束，不生成成交订单。":"Confirmation ends the lot as “Seller declined” and does not create an order.","确认接受":"Confirm acceptance","卖家已接受 · 成交订单已生成":"Seller accepted · Transaction order created","卖家拒绝 · 标单已结束":"Seller declined · Auction lot ended","结果：卖家已接受 · MYR 3,280":"Result: Seller accepted · MYR 3,280","结果：卖家拒绝":"Result: Seller declined","中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。":"The winning price was accepted and the transaction order was created immediately. View it under Orders.","卖家不接受中标价格，本标单已结束且未生成成交订单。":"The seller declined the winning price. The lot ended and no transaction order was created.","商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。":"Merchant admins can view all merchant auction lots; lots are sorted by nearest deadline.","商家主账号可查看本商家全部订单；取货结果只读。":"Merchant admins can view all merchant orders; pickup results are read-only.","商家主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。":"Store owners can view all store auction lots; lots are sorted by nearest deadline.","商家主账号可查看本店铺全部订单；取货结果只读。":"Store owners can view all store orders; pickup results are read-only.","商家主账号可查看本店铺收益和本店员工佣金。":"Store owners can view store earnings and employee commission in their store.","员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。":"Employees only see auction lots they created; lots are sorted by nearest deadline.","员工仅查看本人创建的订单；取货结果只读。":"Employees only see orders they created; pickup results are read-only.","员工仅查看本人佣金，不展示店铺收益。":"Employees only see their own commission; store earnings are hidden.","客服热线：+60 3-8899 6688":"Support: +60 3-8899 6688"});
+    const SUPPLIER_I18N_EN = Object.freeze({
+      '供货端 · 门店端 / 员工 App': 'Supplier Portal · Store / Employee App',
+      '供货端门店端与员工 App 原型': 'Supplier Store and Employee App prototype',
+      '核对质检快照和价格结果后发布，无需预先维护卖家手机号或合同。': 'Review the inspection snapshot and price result before publishing. Seller mobile and contract are not required beforehand.',
+      'PMS 质检报告已创建，可核对质检事实并继续发布。': 'The PMS inspection report is ready. Review the inspection facts and continue to publish.',
+      'PMS 基础产品 / SKU': 'PMS base product / SKU',
+      '最终等级': 'Final grade',
+      '版本 PPN': 'Version PPN',
+      '来源 PPV': 'Source PPV',
+      '事实来源': 'Fact sources',
+      '灵犀 · 质检 APP · MAX · 人工补充': 'Lingxi · Inspection App · MAX · Manual completion',
+      '价格暂不可用': 'Price unavailable',
+      '价格暂不可用，不影响发布与普通竞价': 'Price unavailable; publishing and ordinary bidding remain available',
+      '不影响发布与普通竞价；本轮不提供偏差提示。': 'Publishing and ordinary bidding remain available; no deviation warning is shown for this round.',
+      '切换为价格已生成': 'Switch to price available',
+      '本轮价格已生成': 'Price generated for this round',
+      '价格结果已就绪，可以发布标单。': 'The price result is ready and the lot can be published.',
+      '切换为价格暂不可用': 'Switch to price unavailable',
+      '发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。价格失败不阻断发布。': 'Publishing rechecks account eligibility, store assignment, the inspection snapshot, report age, device presence, uniqueness and risk. Price failure does not block publishing.',
+      '订单详情与取货结果只读。': 'Order details and pickup results are read-only.',
+      '该订单已由督导现场确认实际取走。': 'A supervisor confirmed this order as collected on site.',
+      '订单号': 'Order number',
+      '实际取货时间': 'Actual pickup time',
+      '取货结果': 'Pickup results',
+      '供货端只读查看每笔订单的待取货或已取货结果，不需要执行取货操作。': 'The supplier portal only shows each order as pending pickup or picked up; no pickup action is required.',
+      '确认已维护卖家合同': 'Confirm seller contract maintained',
+      '合同仅在卖家接受预中标价后维护。': 'The contract is maintained only after the seller accepts the pre-winning price.',
+      '请先确认已维护卖家合同。': 'Confirm that the seller contract has been maintained.',
+      '发送 OTP': 'Send OTP',
+      'OTP 验证码': 'OTP code',
+      '请输入 6 位验证码': 'Enter the 6-digit code',
+      '请先发送并输入 6 位 OTP 验证码。': 'Send and enter the 6-digit OTP code.',
+      '确认成交': 'Confirm transaction',
+      '卖家拒绝后，由本轮实际创建人选择重拍或结束标单。': 'After rejection, the actual creator chooses to re-auction or end the lot.',
+      '质检报告完成不超过 1 小时': 'Inspection report completed within 1 hour',
+      '当前已完成 42 分钟。': 'Currently completed 42 minutes ago.',
+      '设备仍在店': 'Device is still at the store',
+      '取消勾选可演示不满足条件。': 'Clear the checkbox to demo an ineligible result.',
+      '结束标单': 'End lot',
+      '重拍': 'Re-auction',
+      '完成': 'Done',
+      '卖家接受预中标价': 'Seller accepts the pre-winning price',
+      '卖家拒绝预中标价': 'Seller rejects the pre-winning price',
+      '接受后维护合同和 +60 手机号，并完成 OTP 验证。': 'After acceptance, maintain the contract and +60 mobile number, then complete OTP verification.',
+      '请选择重拍或结束标单；系统不会自动替你决定。': 'Choose to re-auction or end the lot; the system does not decide automatically.',
+      'OTP 已发送': 'OTP sent',
+      'OTP 已发送到卖家手机号': 'OTP sent to the seller mobile number',
+      '成交订单已存在，已返回同一订单': 'The transaction order already exists; the same order was returned.',
+      '卖家接受，唯一成交订单已生成': 'Seller accepted; the single transaction order was created.',
+      '卖家已接受 · 成交订单已生成': 'Seller accepted · Transaction order created',
+      '合同、手机号和 OTP 已校验，唯一成交订单已生成；重复确认返回同一订单。': 'Contract, mobile and OTP verified. One transaction order was created; repeat confirmation returns the same order.',
+      '卖家拒绝 · 已创建第 2 轮': 'Seller declined · Round 2 created',
+      '结果：卖家拒绝 · 已重拍': 'Result: Seller declined · Re-auctioned',
+      '重拍条件已通过，新轮次已创建。历史最高有效主动报价自动沿用。': 'Re-auction checks passed and a new round was created. The highest valid active bid is inherited automatically.',
+      '卖家拒绝 · 标单已结束': 'Seller declined · Lot ended',
+      '结果：卖家拒绝 · 已结束': 'Result: Seller declined · Ended',
+      '本轮实际创建人已选择结束标单，未生成成交订单。': 'The actual creator ended the lot; no transaction order was created.',
+      '重拍条件已通过 · 新轮次第 2 轮已创建。每个回收商最近一轮最高有效主动报价自动沿用，固定 48 小时（自原轮次结束起）；沿用价不触发 30 秒窗口。': 'Re-auction checks passed · Round 2 was created. Each recycler’s latest highest valid active bid is inherited automatically for a fixed 48 hours from the original round end; an inherited bid does not trigger the 30-second window.',
+      '不满足重拍条件，标单已结束。请重新质检后再发布新标单。': 'Re-auction conditions failed and the lot ended. Complete a new inspection before publishing a new lot.',
+      '已按实际创建人的选择结束标单，未创建新轮次。': 'The lot ended by the actual creator’s choice; no new round was created.',
+      '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。': 'Confirm the winning price with the seller. After acceptance maintain contract, +60 mobile and OTP; after rejection choose re-auction or end lot.',
+      '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。': 'This lot was created by Jia Ruizhen. The merchant admin has read-only access and cannot record the seller decision for the actual creator.'
+    });
     const I18N_TEXT_SOURCE = new WeakMap();
     const I18N_ATTRIBUTE_SOURCE = new WeakMap();
     const I18N_ATTRIBUTES = ['placeholder', 'aria-label', 'title', 'data-toast', 'data-options'];
@@ -781,6 +876,8 @@
     const translateZhToEn = (source) => {
       const value = String(source);
       const normalizedValue = value.replace(/\u00a0/g, ' ');
+      if (SUPPLIER_I18N_EN[value] !== undefined) return SUPPLIER_I18N_EN[value];
+      if (SUPPLIER_I18N_EN[normalizedValue] !== undefined) return SUPPLIER_I18N_EN[normalizedValue];
       if (I18N_EN[value] !== undefined) return I18N_EN[value];
       if (I18N_EN[normalizedValue] !== undefined) return I18N_EN[normalizedValue];
       let match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI (已填写|未填写) · 关于本机照片(已上传|未上传)$/);
@@ -808,7 +905,7 @@
       currentLanguage = language === 'en' ? 'en' : 'zh';
       if (languageObserver) languageObserver.disconnect();
       document.documentElement.lang = currentLanguage === 'en' ? 'en' : 'zh-CN';
-      document.title = currentLanguage === 'en' ? 'FoneSquare Store Auction Prototype' : 'FoneSquare 门店端创建标单与经营查看原型';
+      document.title = currentLanguage === 'en' ? 'Supplier Store and Employee App Prototype' : '供货端 · 门店端 / 员工 App';
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       const nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -1185,31 +1282,22 @@
       }, 850);
     });
 
-    const contractConfirm = document.getElementById('contractConfirm');
-    const contractError = document.getElementById('contractError');
-    const sellerMobile = document.getElementById('sellerMobile');
-    const sellerMobileError = document.getElementById('sellerMobileError');
-    contractConfirm.addEventListener('change', () => contractError.classList.remove('show'));
-    const validateSellerMobile = () => {
-      const value = sellerMobile.value.trim().replace(/[\s-]/g, '');
-      const valid = /^\+601\d{8,9}$/.test(value);
-      sellerMobileError.classList.toggle('show', !valid);
-      return valid;
-    };
-    sellerMobile.addEventListener('blur', validateSellerMobile);
-    sellerMobile.addEventListener('input', () => sellerMobileError.classList.remove('show'));
-
     const loadingOverlay = document.getElementById('loadingOverlay');
+    let priceResultAvailable = false;
+    const renderPriceResult = () => {
+      const card = document.getElementById('priceResultCard');
+      card.className = priceResultAvailable ? 'callout success' : 'callout warning';
+      card.setAttribute('aria-label', priceResultAvailable ? '本轮价格已生成' : '价格暂不可用，不影响发布与普通竞价');
+      card.innerHTML = priceResultAvailable
+        ? '<strong>本轮价格已生成</strong><span>价格结果已就绪，可以发布标单。</span>'
+        : '<strong>价格暂不可用</strong><span>不影响发布与普通竞价；本轮不提供偏差提示。</span>';
+      document.getElementById('togglePriceResult').textContent = priceResultAvailable ? '切换为价格暂不可用' : '切换为价格已生成';
+    };
+    document.getElementById('togglePriceResult').addEventListener('click', () => {
+      priceResultAvailable = !priceResultAvailable;
+      renderPriceResult();
+    });
     document.getElementById('publishLot').addEventListener('click', () => {
-      if (!contractConfirm.checked) {
-        contractError.classList.add('show');
-        contractConfirm.focus();
-        return;
-      }
-      if (!validateSellerMobile()) {
-        sellerMobile.focus();
-        return;
-      }
       loadingOverlay.classList.add('show');
       setTimeout(() => {
         loadingOverlay.classList.remove('show');
@@ -1232,18 +1320,97 @@
     function openPreWinnerDetail() { showPage('preWinnerDetail'); }
     document.getElementById('preWinnerAuctionCard').addEventListener('click', openPreWinnerDetail);
     const sellerDecisionDialog = document.getElementById('sellerDecisionDialog');
-    let pendingSellerDecision = null;
-    const requestSellerDecision = (decision) => { pendingSellerDecision = decision; document.getElementById('sellerDecisionTitle').textContent = decision === 'accept' ? '确认接受中标价格？' : '确认不接受中标价格？'; document.getElementById('sellerDecisionMessage').textContent = decision === 'accept' ? '确认后立即生成成交订单。' : '确认后标单以“卖家拒绝”结束，不生成成交订单。'; document.getElementById('confirmSellerDecisionButton').textContent = decision === 'accept' ? '确认接受' : '确认拒绝'; sellerDecisionDialog.showModal(); };
-    document.getElementById('acceptPreWinner').addEventListener('click', () => requestSellerDecision('accept'));
-    document.getElementById('rejectPreWinner').addEventListener('click', () => requestSellerDecision('reject'));
+    const sellerAcceptPanel = document.getElementById('sellerAcceptPanel');
+    const sellerRejectPanel = document.getElementById('sellerRejectPanel');
+    const sellerDecisionResult = document.getElementById('sellerDecisionResult');
+    let acceptOtpSent = false;
+    let transactionOrderCreated = false;
+    const showSellerDecisionPanel = (decision) => {
+      sellerAcceptPanel.hidden = decision !== 'accept';
+      sellerRejectPanel.hidden = decision !== 'reject';
+      sellerDecisionResult.hidden = true;
+      document.getElementById('sellerDecisionTitle').textContent = decision === 'accept' ? '卖家接受预中标价' : '卖家拒绝预中标价';
+      document.getElementById('sellerDecisionMessage').textContent = decision === 'accept' ? '接受后维护合同和 +60 手机号，并完成 OTP 验证。' : '请选择重拍或结束标单；系统不会自动替你决定。';
+      sellerDecisionDialog.showModal();
+    };
+    document.getElementById('acceptPreWinner').addEventListener('click', () => showSellerDecisionPanel('accept'));
+    document.getElementById('rejectPreWinner').addEventListener('click', () => showSellerDecisionPanel('reject'));
     document.getElementById('cancelSellerDecision').addEventListener('click', () => sellerDecisionDialog.close());
-    function confirmSellerDecision() { if (!pendingSellerDecision) return; const accepted = pendingSellerDecision === 'accept'; document.getElementById('preWinnerStatus').className = accepted ? 'callout success' : 'callout warning'; document.getElementById('preWinnerStatus').textContent = accepted ? '卖家已接受 · 成交订单已生成' : '卖家拒绝 · 标单已结束'; document.getElementById('preWinnerCardResult').textContent = accepted ? '结果：卖家已接受 · MYR 3,280' : '结果：卖家拒绝'; document.getElementById('preWinnerPermissionNote').textContent = accepted ? '中标价格已接受，系统已立即生成成交订单，可在“订单”页查看。' : '卖家不接受中标价格，本标单已结束且未生成成交订单。'; document.getElementById('preWinnerDecisionActions').dataset.decided = 'true'; document.getElementById('preWinnerDecisionActions').style.display = 'none'; if (accepted) document.getElementById('generatedOrderCard').removeAttribute('hidden'); sellerDecisionDialog.close(); showToast(accepted ? '已接受中标价格，成交订单已生成' : '已记录卖家拒绝，标单已结束'); pendingSellerDecision = null; applyRoleScope(); }
-    document.getElementById('confirmSellerDecisionButton').addEventListener('click', confirmSellerDecision);
+    const acceptContractConfirm = document.getElementById('acceptContractConfirm');
+    const acceptSellerMobile = document.getElementById('acceptSellerMobile');
+    const acceptOtpCode = document.getElementById('acceptOtpCode');
+    acceptContractConfirm.addEventListener('change', () => document.getElementById('acceptContractError').classList.remove('show'));
+    acceptSellerMobile.addEventListener('input', () => document.getElementById('acceptSellerMobileError').classList.remove('show'));
+    acceptOtpCode.addEventListener('input', () => {
+      acceptOtpCode.value = acceptOtpCode.value.replace(/\D/g, '').slice(0, 6);
+      document.getElementById('acceptOtpError').classList.remove('show');
+    });
+    document.getElementById('sendAcceptOtp').addEventListener('click', () => {
+      const validMobile = /^\+601\d{8,9}$/.test(acceptSellerMobile.value.trim().replace(/[\s-]/g, ''));
+      document.getElementById('acceptSellerMobileError').classList.toggle('show', !validMobile);
+      if (!validMobile) { acceptSellerMobile.focus(); return; }
+      acceptOtpSent = true;
+      document.getElementById('sendAcceptOtp').textContent = 'OTP 已发送';
+      showToast('OTP 已发送到卖家手机号');
+    });
+    const completeSellerDecision = (result) => {
+      const status = document.getElementById('preWinnerStatus');
+      status.className = result === 'accepted' || result === 'reauction' ? 'callout success' : 'callout warning';
+      const copies = {
+        accepted: ['卖家已接受 · 成交订单已生成', '结果：卖家已接受 · MYR 3,280', '合同、手机号和 OTP 已校验，唯一成交订单已生成；重复确认返回同一订单。'],
+        reauction: ['卖家拒绝 · 已创建第 2 轮', '结果：卖家拒绝 · 已重拍', '重拍条件已通过，新轮次已创建。历史最高有效主动报价自动沿用。'],
+        ended: ['卖家拒绝 · 标单已结束', '结果：卖家拒绝 · 已结束', '本轮实际创建人已选择结束标单，未生成成交订单。']
+      };
+      const copy = copies[result];
+      status.textContent = copy[0];
+      document.getElementById('preWinnerCardResult').textContent = copy[1];
+      document.getElementById('preWinnerPermissionNote').textContent = copy[2];
+      document.getElementById('preWinnerDecisionActions').dataset.decided = 'true';
+      document.getElementById('preWinnerDecisionActions').style.display = 'none';
+      applyRoleScope();
+    };
+    document.getElementById('confirmSellerDecisionButton').addEventListener('click', () => {
+      if (transactionOrderCreated) { showToast('成交订单已存在，已返回同一订单'); sellerDecisionDialog.close(); return; }
+      const validContract = acceptContractConfirm.checked;
+      const validMobile = /^\+601\d{8,9}$/.test(acceptSellerMobile.value.trim().replace(/[\s-]/g, ''));
+      const validOtp = acceptOtpSent && /^\d{6}$/.test(acceptOtpCode.value);
+      document.getElementById('acceptContractError').classList.toggle('show', !validContract);
+      document.getElementById('acceptSellerMobileError').classList.toggle('show', !validMobile);
+      document.getElementById('acceptOtpError').classList.toggle('show', !validOtp);
+      if (!validContract || !validMobile || !validOtp) return;
+      transactionOrderCreated = true;
+      document.getElementById('generatedOrderCard').removeAttribute('hidden');
+      completeSellerDecision('accepted');
+      sellerDecisionDialog.close();
+      showToast('卖家接受，唯一成交订单已生成');
+    });
+    const showDecisionResult = (copy, successful) => {
+      sellerAcceptPanel.hidden = true;
+      sellerRejectPanel.hidden = true;
+      sellerDecisionResult.hidden = false;
+      const callout = document.getElementById('sellerDecisionResultCallout');
+      callout.className = successful ? 'callout success' : 'callout warning';
+      callout.textContent = copy;
+    };
+    document.getElementById('chooseReauction').addEventListener('click', () => {
+      const eligible = document.getElementById('reauctionReportFresh').checked && document.getElementById('reauctionDeviceInStore').checked;
+      if (eligible) {
+        completeSellerDecision('reauction');
+        showDecisionResult('重拍条件已通过 · 新轮次第 2 轮已创建。每个回收商最近一轮最高有效主动报价自动沿用，固定 48 小时（自原轮次结束起）；沿用价不触发 30 秒窗口。', true);
+      } else {
+        completeSellerDecision('ended');
+        showDecisionResult('不满足重拍条件，标单已结束。请重新质检后再发布新标单。', false);
+      }
+    });
+    document.getElementById('chooseEndLot').addEventListener('click', () => {
+      completeSellerDecision('ended');
+      showDecisionResult('已按实际创建人的选择结束标单，未创建新轮次。', false);
+    });
+    document.getElementById('closeSellerDecisionResult').addEventListener('click', () => sellerDecisionDialog.close());
 
     const roleSwitch = document.getElementById('roleSwitch');
     const roleCopy = {
       merchant: { identity: 'FS Retail Malaysia · 商家主账号', auction: '商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。', order: '商家主账号可查看本商家全部订单；取货结果只读。', bill: '商家主账号可查看本商家店铺收益和所属员工佣金。', decision: '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。' },
-      store: { identity: '中心旗舰店 · 店铺主账号', auction: '店铺主账号可查看本店铺全部竞拍标单；列表按截止时间从近到远排列。', order: '店铺主账号可查看本店铺全部订单；取货结果只读。', bill: '店铺主账号可查看本店铺收益和本店员工佣金。', decision: '本标单由员工贾瑞真创建。店铺主账号只读，不能替实际建拍操作人记录卖家决定。' },
       employee: { identity: '中心旗舰店 · 员工', auction: '员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。', order: '员工仅查看本人创建的订单；取货结果只读。', bill: '员工仅查看本人佣金，不展示店铺收益。', decision: '你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。' }
     };
     let currentOrderTab = 'all';
@@ -1264,7 +1431,7 @@
       const decisionActions = document.getElementById('preWinnerDecisionActions');
       if (decisionActions.dataset.decided !== 'true') {
         decisionActions.style.display = canDecidePreWinner ? 'grid' : 'none';
-        document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后立即生成成交订单；拒绝后标单以“卖家拒绝”结束且不生成订单。' : copy.decision;
+        document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。' : copy.decision;
       }
       document.getElementById('storeRevenueCard').style.display = role === 'employee' ? 'none' : 'block';
       document.querySelectorAll('#employeeCommissionCard .summary-row').forEach((row, index) => row.style.display = role === 'employee' && index === 1 ? 'none' : 'flex');
@@ -1288,10 +1455,8 @@
     });
 
     document.getElementById('createAnother').addEventListener('click', () => {
-      contractConfirm.checked = false;
-      contractError.classList.remove('show');
-      sellerMobile.value = '';
-      sellerMobileError.classList.remove('show');
+      priceResultAvailable = false;
+      renderPriceResult();
       openModelSelector('manual');
     });
 

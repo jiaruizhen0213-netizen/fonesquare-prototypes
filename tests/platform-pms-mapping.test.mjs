@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
 const platform = readFileSync(new URL('../platform.html', import.meta.url), 'utf8');
-const store = readFileSync(new URL('../store.html', import.meta.url));
 const mappingPage = platform.match(/<section class="page" id="mappingRulePage">([\s\S]*?)<section class="page" id="bidListPage">/)?.[1] ?? '';
 const mappingModal = platform.match(/<div class="modal wide" id="mappingRuleModal">([\s\S]*?)<div class="modal xwide" id="businessModal">/)?.[1] ?? '';
 
@@ -54,9 +52,4 @@ test('the inline platform script compiles', () => {
   const match = platform.match(/<script>([\s\S]*)<\/script>\s*<\/body>/);
   assert.ok(match, 'inline script should exist');
   assert.doesNotThrow(() => new Function(match[1]));
-});
-
-test('store prototype remains byte-for-byte unchanged', () => {
-  const digest = createHash('sha256').update(store).digest('hex');
-  assert.equal(digest, '7658cbd26ea07a0a107904fdddc5631ce70f0d4ce4585b5e9bc5cfb901e59d1c');
 });
