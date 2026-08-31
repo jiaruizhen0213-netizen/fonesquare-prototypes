@@ -28,10 +28,9 @@ test('finance has read-only refund directions and required pages', () => {
 
 test('settlement has the required lifecycle', () => {
   for (const text of [
-    '草稿', '待处理', '已处理', '已冲正', '提交结算单', '退回草稿',
+    '待处理', '已处理', '已冲正',
     '标记已收款', '标记已打款', '结算单冲正', '付款主体及账户', '收款主体及账户',
     '结算方向', '收付款状态', '预付金恢复', '门店垫付补回',
-    'function submitSettlementBill', 'function returnSettlementToDraft',
     'function markSettlementReceived', 'function markSettlementPaid', 'function reverseSettlementBill'
   ]) assert.match(platform, new RegExp(text));
   for (const oldText of ['待支付', '已支付', '确认已支付', '结算后退款进入下一期']) {
@@ -62,9 +61,12 @@ test('settlement splits by account, direction, and currency', () => {
   for (const text of [
     '付款主体及账户', '收款主体及账户', '结算方向', '结算类型', '对方账户', '币种',
     '退款现金方向净额', '预付金抵扣', '预付金恢复', '门店垫付补回', '负数结转',
-    '站点结算配置', '站点时区', '下次生成时间', '最近执行结果',
+    '站点结算配置', '站点时区', '结算周期', '半月结', '月结',
+    '每月 1–15 日、16 日–月末', '每月 1 日–月末', '自动生成时间',
+    '下次生成时间', '最近执行结果',
     'function buildSettlementDraft', 'function saveSettlementConfig',
-    'function runMonthlySettlementPreview'
+    'function settlementPeriodWindow', 'function nextSettlementRunAt',
+    'function runSettlementSchedulePreview', 'function rerunSettlementTask'
   ]) assert.match(platform, new RegExp(text));
   assert.doesNotMatch(platform, /一行一张商家账单/);
 });
@@ -103,10 +105,21 @@ test('finance ledger exposes winning quote and four-party frozen amounts', () =>
   ]) assert.match(platform, new RegExp(text));
 });
 
-test('settlement state transitions retain refund locking rules', () => {
+test('automated settlement skips draft and exposes list operations', () => {
   for (const text of [
-    "status='草稿'", "status='待处理'", "status='已处理'", "status='已冲正'",
-    '提交结算单并锁定退款', '退回草稿并重新开放退款', '退款权限保持关闭',
-    'sourceOrderIds', 'sourceEntryIds'
+    "status:'待处理'", "status='已处理'", "status='已冲正'",
+    '按结算配置自动生成并冻结对方账户快照',
+    'function settlementBillListAction', 'data-origin="list"',
+    'reverse-settlement-list', '补跑自动任务', 'sourceOrderIds', 'sourceEntryIds'
   ]) assert.match(platform, new RegExp(text));
+
+  const latestListStart = platform.lastIndexOf('renderSettlementBillList=function()');
+  const latestListEnd = platform.indexOf('function settlementBillListAction', latestListStart);
+  const activeListRenderer = platform.slice(latestListStart, latestListEnd);
+  assert.doesNotMatch(activeListRenderer, /创建结算单|提交结算单|退回草稿|<option>草稿<\/option>/);
+
+  const latestDetailStart = platform.lastIndexOf('renderSettlementBillDetail=function');
+  const latestDetailEnd = platform.indexOf('function openSettlementCompletionModal', latestDetailStart);
+  const activeDetailRenderer = platform.slice(latestDetailStart, latestDetailEnd);
+  assert.doesNotMatch(activeDetailRenderer, /提交结算单|退回草稿/);
 });
