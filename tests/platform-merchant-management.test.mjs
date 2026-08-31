@@ -119,3 +119,21 @@ test('staff relationship actions preserve personal configuration and remove mixe
     'data-store-user-view', 'data-employee-action', 'data-merchant-employee-picker'
   ]) assert.doesNotMatch(platform, new RegExp(obsolete));
 });
+
+test('staff detail exposes context actions and refreshes after personal permission changes', () => {
+  assert.match(platform, /function staffDetailActions\(staff\)/);
+  assert.match(platform, /\$\{staffDetailActions\(staff\)\}/);
+  for (const action of ['bind', 'transfer', 'unbind', 'toggle-personal']) {
+    assert.match(platform, new RegExp(`data-staff-action="${action}"`));
+  }
+  assert.match(platform, /if\(\$\('#businessModal'\)\.classList\.contains\('show'\)\)openStaffDetail\(id\)/);
+});
+
+test('dead legacy detail and implicit store creation copy are absent', () => {
+  assert.doesNotMatch(platform, /function renderLegacyDetail\(/);
+  for (const obsolete of [
+    '首次开启权限自动创建',
+    '无店铺的商家首次开启时创建默认业务归属店铺',
+    "'首次开启权限自动创建':'Auto-created When Permission Was First Enabled'"
+  ]) assert.doesNotMatch(platform, new RegExp(obsolete));
+});
