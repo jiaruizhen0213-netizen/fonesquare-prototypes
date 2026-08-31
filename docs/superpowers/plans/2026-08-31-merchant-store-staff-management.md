@@ -141,6 +141,7 @@ git commit -m "feat: split merchant store and staff routes"
   - `merchantSource(user): 'FoneSquare' | '门店端'`
   - `merchantStoreCount(user): number | null`
   - `merchantStaffCount(user): number | null`
+  - `merchantDetailFields(user): Array<[string,string]>`
   - App-scoped merchant row identity based on `merchantId`; `id` remains the reusable unified-account identity.
   - existing `renderList()`, `applyFilters()`, and `resetFilters()` operating on all merchant records.
 
@@ -167,6 +168,15 @@ test('merchant rows use merchant record identity rather than reusable account id
   assert.match(platform, /data-view="\$\{u\.merchantId\}"/);
   assert.match(platform, /merchantById\(view\.dataset\.view\)/);
   assert.doesNotMatch(platform, /data-view="\$\{u\.id\}"/);
+});
+
+test('merchant detail renders only the selected App record business data', () => {
+  assert.match(platform, /function merchantDetailFields\(u\)/);
+  assert.match(platform, /merchantSource\(u\)==='FoneSquare'/);
+  for (const required of [
+    '注册国家 / 地区', '可访问站点', '出价权限',
+    '商家建拍权限', '商家分账规则', '来源 App'
+  ]) assert.match(platform, new RegExp(required.replace(/[()]/g, '\\$&')));
 });
 
 test('merchant permission enable has prerequisites and no implicit child mutation', () => {
@@ -220,6 +230,8 @@ const business=source==='FoneSquare'
 Headers must include `商家 ID / 名称`, `统一账号`, `来源 App`, `账号状态`, `业务状态 / 权限`, `店铺数`, `店员数`, `业务开通时间`, `操作`.
 
 Render each row action as `data-view="${u.merchantId}"` and resolve it with `merchantById(view.dataset.view)`. Never use `u.id` as a row or detail key: two App-scoped merchant records may deliberately share the same unified-account `id`.
+
+Add `registrationRegion` and `accessibleSites` to FoneSquare demo records. Implement `merchantDetailFields(u)` so FoneSquare records expose KYC, registration region, accessible sites, and bidding permission, while store-app records expose merchant listing permission, revenue-share rule, store count, and staff count. Include source App and unified account in both cases. Update `openDetail()`/`renderDetail()` to use these source-specific fields and a source badge; do not render or edit another App's business fields in the selected record.
 
 - [ ] **Step 5: Correct merchant-permission enable behavior**
 
