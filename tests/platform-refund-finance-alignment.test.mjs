@@ -19,9 +19,9 @@ test('business refunds are immediate and independent', () => {
 
 test('finance has read-only refund directions and required pages', () => {
   for (const text of [
-    '分账明细', '结算单', '结算配置', '登记预付金', '登记门店付款',
+    '分账明细', '结算单', '结算配置', '平台资金账户', '登记预付金', '登记门店付款',
     '前置款不足，建议关注', '创建人工补充批次',
-    'function renderLedger', 'function renderSettlementConfig'
+    'function renderLedger', 'function renderSettlementConfig', 'function renderPlatformFundAccounts'
   ]) assert.match(platform, new RegExp(text));
   assert.doesNotMatch(platform, /退款处理状态|退款申请与资金记录|财务按申请一次性处理/);
 });
@@ -29,10 +29,10 @@ test('finance has read-only refund directions and required pages', () => {
 test('settlement has the required lifecycle', () => {
   for (const text of [
     '草稿', '待处理', '已处理', '已冲正', '提交结算单', '退回草稿',
-    '标记已处理', '结算单冲正', '付款主体及账户', '收款主体及账户',
-    '处理方向', '预付金恢复', '门店垫付补回',
+    '标记已收款', '标记已打款', '结算单冲正', '付款主体及账户', '收款主体及账户',
+    '结算方向', '收付款状态', '预付金恢复', '门店垫付补回',
     'function submitSettlementBill', 'function returnSettlementToDraft',
-    'function processSettlementBill', 'function reverseSettlementBill'
+    'function markSettlementReceived', 'function markSettlementPaid', 'function reverseSettlementBill'
   ]) assert.match(platform, new RegExp(text));
   for (const oldText of ['待支付', '已支付', '确认已支付', '结算后退款进入下一期']) {
     assert.doesNotMatch(platform, new RegExp(oldText));
@@ -60,13 +60,47 @@ test('return refund entrypoints open the independent editor', () => {
 
 test('settlement splits by account, direction, and currency', () => {
   for (const text of [
-    '付款主体及账户', '收款主体及账户', '处理方向', '币种',
+    '付款主体及账户', '收款主体及账户', '结算方向', '结算类型', '对方账户', '币种',
     '退款现金方向净额', '预付金抵扣', '预付金恢复', '门店垫付补回', '负数结转',
     '站点结算配置', '站点时区', '下次生成时间', '最近执行结果',
     'function buildSettlementDraft', 'function saveSettlementConfig',
     'function runMonthlySettlementPreview'
   ]) assert.match(platform, new RegExp(text));
   assert.doesNotMatch(platform, /一行一张商家账单/);
+});
+
+test('settlement uses platform-perspective receivable and payable states', () => {
+  for (const text of [
+    '平台应收（回收商付款）', '平台应付（门店收款）', '平台应付（店员收款）',
+    '待收款', '已收款', '待打款', '已打款',
+    'settlementDirection', 'settlementType', 'counterpartyAccount', 'paymentStatus'
+  ]) assert.match(platform, new RegExp(text));
+  assert.doesNotMatch(platform, /<th>门店应付<\/th>|<th>店员应付<\/th>/);
+});
+
+test('platform fund accounts are maintained and frozen into settlement history', () => {
+  for (const text of [
+    'const platformFundAccounts', '平台主体', '账户用途', '收款账户', '打款账户',
+    '默认账户', '启用', '停用', 'SWIFT',
+    'function defaultPlatformFundAccount', 'function savePlatformFundAccount',
+    'function togglePlatformFundAccount', 'function setDefaultPlatformFundAccount',
+    'platformAccountSnapshot', 'counterpartyAccountSnapshot'
+  ]) assert.match(platform, new RegExp(text));
+});
+
+test('offline settlement records exact amount, accounts, voucher and operator', () => {
+  for (const text of [
+    '实际收付款金额', '收付款时间', '平台实际账户', '对方实际账户', '凭证', '操作人',
+    'actualAmount', 'actualAt', 'actualPlatformAccount', 'actualCounterpartyAccount',
+    '实际收付款金额必须等于结算金额', '无有效默认平台账户'
+  ]) assert.match(platform, new RegExp(text));
+});
+
+test('finance ledger exposes winning quote and four-party frozen amounts', () => {
+  for (const text of [
+    '中标报价', '卖家应得金额', '商家分成', '店员分成', '平台分成',
+    'winningQuote', 'sellerAmount', 'merchantAmount', 'employeeAmount', 'platformAmount'
+  ]) assert.match(platform, new RegExp(text));
 });
 
 test('settlement state transitions retain refund locking rules', () => {
