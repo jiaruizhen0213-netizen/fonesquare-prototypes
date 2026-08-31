@@ -39,6 +39,18 @@ test('merchant rows use merchant record identity rather than reusable account id
   assert.doesNotMatch(platform, /data-view="\$\{u\.id\}"/);
 });
 
+test('all merchant cross-navigation resolves App records by merchantId', () => {
+  assert.match(platform, /data-store-merchant-view="\$\{m\?\.merchantId\|\|''\}"/);
+  assert.doesNotMatch(platform, /data-store-merchant-view="\$\{(?:m\?\.|merchant\.)id/);
+  assert.match(platform, /if\(smv\)\{const u=merchantById\(smv\.dataset\.storeMerchantView\);if\(u\)openDetail\(u\)\}/);
+  assert.match(platform, /if\(sms\)\{const u=merchantById\(sms\.dataset\.storeMerchantStores\)/);
+  assert.match(platform, /if\(vp\)openDetail\(merchantById\(vp\.dataset\.viewPermission\),'permission'\)/);
+  assert.match(platform, /if\(vs\)\{const u=merchantById\(vs\.dataset\.viewStores\);if\(u\)openDetail\(u\)\}/);
+  assert.match(platform, /<option value="\$\{u\.merchantId\}">/);
+  assert.match(platform, /function syncNewStoreMerchant\(\)\{const u=merchantById\(/);
+  assert.match(platform, /function saveStore\(\)\{const u=merchantById\(/);
+});
+
 test('merchant detail renders only the selected App record business data', () => {
   assert.match(platform, /function merchantDetailFields\(u\)/);
   assert.match(platform, /merchantSource\(u\)==='FoneSquare'/);
