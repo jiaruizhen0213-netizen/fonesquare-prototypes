@@ -6,6 +6,11 @@ const platform = readFileSync(new URL('../platform.html', import.meta.url), 'utf
 const store = readFileSync(new URL('../store.html', import.meta.url), 'utf8');
 const recycler = readFileSync(new URL('../recycler.html', import.meta.url), 'utf8');
 
+test('order center group heading navigates to completed orders', () => {
+  assert.match(platform, /class="nav-group nav-group-link" data-nav="orderList">订单中心<\/div>/);
+  assert.match(platform, /\.nav-group-link\{[^}]*cursor:pointer/);
+});
+
 test('merchant management exposes three independent page routes', () => {
   for (const required of [
     'data-nav="list"', 'data-nav="store"', 'data-nav="staff"',

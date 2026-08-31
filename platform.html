@@ -15,7 +15,7 @@
     button,input,select,textarea{font:inherit} button{cursor:pointer} button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid rgba(22,119,255,.35);outline-offset:1px}
     .app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:220px;background:var(--nav);color:rgba(255,255,255,.68);z-index:10;overflow:auto}
     .brand{height:64px;padding:0 18px;display:flex;align-items:center;gap:10px;color:#fff;font-size:16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)}
-    .brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:6px;background:var(--primary);font-size:11px}.nav-group{padding:18px 18px 7px;color:rgba(255,255,255,.34);font-size:10px;letter-spacing:1px}
+    .brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:6px;background:var(--primary);font-size:11px}.nav-group{padding:18px 18px 7px;color:rgba(255,255,255,.34);font-size:10px;letter-spacing:1px}.nav-group-link{cursor:pointer}.nav-group-link:hover{color:rgba(255,255,255,.76)}
     .nav-item{margin:0 8px;padding:11px 13px;border-left:3px solid transparent;border-radius:3px;display:flex;gap:9px;align-items:center;color:rgba(255,255,255,.7)}
     .nav-item.active{color:#fff;background:var(--primary);border-left-color:#fff}.nav-item.muted{cursor:default;color:rgba(255,255,255,.42)}
     .main{margin-left:220px;min-width:980px}.topbar{height:56px;padding:0 24px;background:#fff;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:8}
@@ -57,7 +57,7 @@
       <div class="nav-group">竞拍运营</div>
       <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
       <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
-      <div class="nav-group">订单中心</div>
+      <div class="nav-group nav-group-link" data-nav="orderList">订单中心</div>
       <div class="nav-item" data-nav="orderList">▦ <span>成交订单</span></div>
       <div class="nav-group">财务管理</div>
       <div class="nav-item" data-nav="financeLedger">▤ <span>分账明细</span></div>
