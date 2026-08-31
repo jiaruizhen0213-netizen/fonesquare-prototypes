@@ -43,7 +43,8 @@ test('all merchant cross-navigation resolves App records by merchantId', () => {
   assert.match(platform, /data-store-merchant-view="\$\{m\?\.merchantId\|\|''\}"/);
   assert.doesNotMatch(platform, /data-store-merchant-view="\$\{(?:m\?\.|merchant\.)id/);
   assert.match(platform, /if\(smv\)\{const u=merchantById\(smv\.dataset\.storeMerchantView\);if\(u\)openDetail\(u\)\}/);
-  assert.match(platform, /if\(sms\)\{const u=merchantById\(sms\.dataset\.storeMerchantStores\)/);
+  assert.match(platform, /if\(staffMerchant\)\{const merchant=merchantById\(staffMerchant\.dataset\.staffMerchant\);if\(merchant\)openDetail\(merchant\)\}/);
+  assert.doesNotMatch(platform, /data-store-merchant-stores/);
   assert.match(platform, /if\(vp\)openDetail\(merchantById\(vp\.dataset\.viewPermission\),'permission'\)/);
   assert.match(platform, /if\(vs\)\{const u=merchantById\(vs\.dataset\.viewStores\);if\(u\)openDetail\(u\)\}/);
   assert.match(platform, /<option value="\$\{u\.merchantId\}">/);
@@ -82,4 +83,39 @@ test('store management contains no store-level listing permission', () => {
   assert.match(platform, /bankTail:'\d{4}'/);
   assert.match(platform, /\*\*\*\* \$\{s\.bankTail\}/);
   assert.match(platform, /enabledDevices=devices\.filter\(d=>d\.status==='启用'\)\.length/);
+});
+
+test('staff list excludes merchant primary accounts and exposes relation history', () => {
+  for (const required of [
+    'function staffAccounts()', 'function staffRelationStatus(',
+    'function renderStaffList()', 'function openStaffDetail(',
+    '当前所属商家', '关联状态', '历史所属商家', '已解除'
+  ]) assert.match(platform, new RegExp(required.replace(/[()]/g, '\\$&')));
+  assert.doesNotMatch(platform, /employeeAccounts\.unshift/);
+  assert.doesNotMatch(platform, /isMerchantMain:true/);
+});
+
+test('staff listing permission keeps configuration separate from effective state', () => {
+  for (const required of [
+    'function memberBuildState(', 'personalBuild', '个人配置', '实际状态',
+    '已生效', '已关闭', '未生效（商家权限关闭）'
+  ]) assert.match(platform, new RegExp(required.replace(/[()]/g, '\\$&')));
+  assert.match(platform, /merchant\.build==='开启'/);
+  assert.match(platform, /staff\.personalBuild==='开启'/);
+});
+
+test('staff relationship actions preserve personal configuration and remove mixed-page handlers', () => {
+  for (const required of [
+    'function applyStaffFilters()', 'function resetStaffFilters()',
+    'function handleStaffAction(', 'data-staff-view', 'data-staff-action',
+    "staff.relationStatus='已关联'", "staff.relationStatus='已解除'"
+  ]) assert.match(platform, new RegExp(required.replace(/[()]/g, '\\$&')));
+
+  assert.ok(platform.includes("staff.personalBuild=staff.personalBuild==='开启'?'关闭':'开启'"));
+  assert.match(platform, /staff\.merchantId=null;staff\.relationStatus='已解除';staff\.unlinkedAt=now/);
+  assert.doesNotMatch(platform, /staff\.personalBuild='关闭'/);
+  for (const obsolete of [
+    'renderStoreMerchantList', 'openStoreUserDetail', 'handleEmployeeAction',
+    'data-store-user-view', 'data-employee-action', 'data-merchant-employee-picker'
+  ]) assert.doesNotMatch(platform, new RegExp(obsolete));
 });
