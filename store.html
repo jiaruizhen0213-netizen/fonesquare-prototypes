@@ -686,14 +686,15 @@
     <section class="page" data-page="my" id="myPage">
       <header class="topbar"><span></span><h1>我的</h1><span></span></header>
       <section class="section account-profile">
-        <div class="account-profile-head"><div class="account-avatar">FS</div><div><strong class="account-name">FS Retail Malaysia</strong><span class="account-phone">+60 12-*** 8821</span><span class="verification-badge">✓ 已完成身份认证</span></div></div>
-        <div class="verification-banner"><div><strong>身份认证已完成</strong><span>认证地址可用于维护门店地址</span></div><span class="verification-symbol">◇</span></div>
+        <div class="account-profile-head"><div class="account-avatar">FS</div><div><strong class="account-name" id="profileAccountName">FS Retail Malaysia</strong><span class="account-phone" id="profileAccountPhone">+60 12-*** 8821</span><span class="verification-badge">✓ 已完成身份认证</span></div></div>
+        <div class="verification-banner"><div><strong>身份认证已完成</strong><span id="profileVerificationHint">认证地址可用于维护门店地址</span></div><span class="verification-symbol">◇</span></div>
       </section>
+      <section class="section" id="storeProfileScope" style="display:none"><p class="section-kicker">当前店铺</p><label class="form-field" style="margin-top:0"><span>选择要维护资料的店铺</span><select id="profileStoreSelector"><option value="central">中心旗舰店</option><option value="north">北区门店</option></select><small class="form-hint">每个店铺独立维护一个地址和一张银行卡，切换店铺不会同步修改资料。</small></label></section>
       <section class="section">
         <h2 class="section-title">快捷入口</h2>
         <div class="quick-list">
-          <button class="quick-entry" type="button" data-open="storeAddress"><span class="entry-icon">⌖</span><span><strong>门店地址</strong><small id="storeAddressSummary">马来西亚 · 18, Jalan Teknologi 3/6, Kota Damansara</small></span><span class="entry-chevron">›</span></button>
-          <button class="quick-entry" id="bankAccountEntry" type="button" data-open="bankAccount"><span class="entry-icon">▤</span><span><strong>银行卡号</strong><small id="bankAccountSummary" data-no-i18n>Maybank · •••• 9012</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" id="storeAddressEntry" type="button" data-open="storeAddress"><span class="entry-icon">⌖</span><span><strong>门店地址</strong><small id="storeAddressSummary">马来西亚 · 18, Jalan Teknologi 3/6, Kota Damansara</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" id="bankAccountEntry" type="button" data-open="bankAccount"><span class="entry-icon">▤</span><span><strong id="bankAccountEntryTitle">银行卡号</strong><small id="bankAccountSummary" data-no-i18n>Maybank · •••• 9012</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" type="button" data-open="settings"><span class="entry-icon">⚙</span><span><strong>设置</strong><small>账户、安全与语言</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" id="supervisorAppEntry" type="button"><span class="entry-icon">✓</span><span><strong>督导 App 演示</strong><small>使用独立 OB 账号进入现场提货工作台</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" id="helpSupportEntry" type="button"><span class="entry-icon">?</span><span><strong>帮助与支持</strong><small>常见问题、联系我们</small></span><span class="entry-chevron">›</span></button>
@@ -703,6 +704,7 @@
 
     <section class="page with-actions" data-page="storeAddress" id="storeAddressPage">
       <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1>门店地址</h1><span></span></header>
+      <div class="callout success" id="storeAddressOwner">当前店铺：中心旗舰店。本页修改仅影响该店铺。</div>
       <div class="identity-address-callout"><strong>可使用身份认证地址</strong><p>你已完成身份认证，可将认证地址一键代入门店地址表单。</p><button class="outline-button" id="useVerifiedAddress" type="button">使用认证地址</button></div>
       <section class="section">
         <label class="form-field" style="margin-top:0"><span>国家/地区 <i class="required">*</i></span><select id="storeCountry"><option value="MY">马来西亚</option></select><small class="form-hint">默认使用注册时选择的国家</small></label>
@@ -714,8 +716,8 @@
     </section>
 
     <section class="page with-actions" data-page="bankAccount" id="bankAccountPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1>收款银行卡</h1><span></span></header>
-      <div class="callout success">银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。</div>
+      <header class="topbar"><button class="icon-button" type="button" data-back="my" aria-label="返回">‹</button><h1 id="bankAccountPageTitle">收款银行卡</h1><span></span></header>
+      <div class="callout success" id="bankAccountOwner">银行卡信息仅用于成交款项结算。保存后仅展示银行名称和卡号尾号。</div>
       <section class="section">
         <label class="form-field" style="margin-top:0"><span>持卡人名称 <i class="required">*</i></span><input id="bankAccountHolder" type="text" value="FS Retail Malaysia Sdn. Bhd." placeholder="请输入持卡人名称"></label>
         <label class="form-field"><span>银行名称 <i class="required">*</i></span><input id="bankNameInput" type="text" value="Maybank" placeholder="请输入银行名称"></label>
@@ -978,7 +980,17 @@
       '当前 OB 账号未配置督导角色，不能进入现场取货工作台。': 'This OB account has no supervisor role and cannot access the on-site pickup workspace.',
       '督导角色有效，但尚未分配负责区域或门店。': 'The supervisor role is active, but no region or store has been assigned.',
       '当前 OB 账号已停用或锁定，请联系管理员。': 'This OB account is disabled or locked. Contact an administrator.',
-      '已退出督导 App': 'Exited Supervisor App'
+      '已退出督导 App': 'Exited Supervisor App',
+      '当前店铺': 'Current Store',
+      '选择要维护资料的店铺': 'Select a store to maintain',
+      '每个店铺独立维护一个地址和一张银行卡，切换店铺不会同步修改资料。': 'Each store independently owns one address and one bank account. Switching stores does not synchronize profile changes.',
+      '北区门店': 'North District Store',
+      '身份资料用于维护本人收款银行卡': 'Identity information is used to maintain your personal payout bank account',
+      '认证地址可用于维护当前店铺地址': 'The verified address can be used for the selected store address',
+      '店铺收款银行卡': 'Store Payout Bank Account',
+      '员工个人收款银行卡': 'Employee Personal Payout Bank Account',
+      '本页修改仅影响该店铺。': 'Changes on this page affect only this store.',
+      '银行卡仅用于本人或当前店铺的成交款项结算，保存后只展示卡号尾号。': 'The bank account is used only for personal or selected-store settlement. After saving, only the last four digits are shown.'
     });
     const I18N_TEXT_SOURCE = new WeakMap();
     const I18N_ATTRIBUTE_SOURCE = new WeakMap();
@@ -996,6 +1008,11 @@
       if (SUPPLIER_I18N_EN[normalizedValue] !== undefined) return SUPPLIER_I18N_EN[normalizedValue];
       if (I18N_EN[value] !== undefined) return I18N_EN[value];
       if (I18N_EN[normalizedValue] !== undefined) return I18N_EN[normalizedValue];
+      let profileMatch = value.match(/^当前店铺：(.+)。本页修改仅影响该店铺。$/);
+      if (profileMatch) return 'Current store: ' + translateZhToEn(profileMatch[1]) + '. Changes on this page affect only this store.';
+      profileMatch = value.match(/^当前店铺：(.+)。银行卡仅用于本人或当前店铺的成交款项结算，保存后只展示卡号尾号。$/);
+      if (profileMatch) return 'Current store: ' + translateZhToEn(profileMatch[1]) + '. The bank account is used only for selected-store settlement; only the last four digits are shown after saving.';
+      if (value === '员工个人收款银行卡。银行卡仅用于本人或当前店铺的成交款项结算，保存后只展示卡号尾号。') return 'Employee personal payout bank account. It is used only for personal settlement; only the last four digits are shown after saving.';
       let match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI 已自动带入 · 普通手机 · 无需上传本机照片$/);
       if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI filled by scan · Standard Phone · No Device Photos Required';
       match = value.match(/^共 (\d+) 项 · 已完成 (\d+) 项 · 待补 (\d+) 项 · IMEI 已自动带入 · 折叠屏照片 · 亮屏(已上传|未上传) · 暗屏(已上传|未上传)$/);
@@ -1577,6 +1594,32 @@
     document.getElementById('exitSupervisorApp').addEventListener('click', () => { supervisorState.selectedIds.clear(); showPage('my'); showToast('已退出督导 App'); });
 
     const roleSwitch = document.getElementById('roleSwitch');
+    const storeProfiles=[
+      {id:'central',name:'中心旗舰店',country:'MY',countryName:'马来西亚',address:'18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor',phone:'+60 12-345 6789',bank:{holder:'FS Retail Malaysia Sdn. Bhd.',bankName:'Maybank',accountNumber:'1122334455669012'}},
+      {id:'north',name:'北区门店',country:'MY',countryName:'马来西亚',address:'26, Jalan Metro Perdana Barat 2, Kepong, 52100 Kuala Lumpur',phone:'+60 12-778 2210',bank:{holder:'FS Retail Malaysia Sdn. Bhd.',bankName:'CIMB Bank',accountNumber:'800122662266'}}
+    ];
+    const employeeBankProfile={holder:'贾瑞真',bankName:'Public Bank',accountNumber:'320070487048'};
+    const storeProfileScope=document.getElementById('storeProfileScope');
+    const profileStoreSelector=document.getElementById('profileStoreSelector');
+    const storeAddressEntry=document.getElementById('storeAddressEntry');
+    function selectedStoreProfile(){return storeProfiles.find((store)=>store.id===profileStoreSelector.value)||storeProfiles[0]}
+    function activeBankProfile(){const role=roleSwitch.value;return role==='employee'?employeeBankProfile:selectedStoreProfile().bank}
+    function maskedProfileBank(bank){return bank&&bank.bankName&&bank.accountNumber?bank.bankName+' · •••• '+bank.accountNumber.slice(-4):'未维护银行卡'}
+    function loadStoreAddressForm(){const store=selectedStoreProfile();document.getElementById('storeCountry').value=store.country;document.getElementById('storeAddressInput').value=store.address;document.getElementById('storePhoneInput').value=store.phone;document.getElementById('storeAddressOwner').textContent='当前店铺：'+store.name+'。本页修改仅影响该店铺。';document.getElementById('storeAddressError').classList.remove('show')}
+    function loadBankAccountForm(){const role=roleSwitch.value,target=activeBankProfile(),owner=role==='employee'?'员工个人收款银行卡':'当前店铺：'+selectedStoreProfile().name;document.getElementById('bankAccountHolder').value=target.holder;document.getElementById('bankNameInput').value=target.bankName;document.getElementById('bankAccountNumber').value=target.accountNumber;document.getElementById('bankAccountPageTitle').textContent=role==='employee'?'员工个人收款银行卡':'店铺收款银行卡';document.getElementById('bankAccountOwner').textContent=owner+'。银行卡仅用于本人或当前店铺的成交款项结算，保存后只展示卡号尾号。';document.getElementById('bankAccountError').classList.remove('show')}
+    function renderProfileScope(){
+      const role=roleSwitch.value,store=selectedStoreProfile(),bank=activeBankProfile();
+      storeProfileScope.style.display=role==='merchant'?'block':'none';
+      storeAddressEntry.style.display=role==='merchant'?'grid':'none';
+      document.getElementById('profileAccountName').textContent=role==='employee'?'贾瑞真':'FS Retail Malaysia';
+      document.getElementById('profileAccountPhone').textContent=role==='employee'?'+60 12-*** 2761':'+60 12-*** 8821';
+      document.getElementById('profileVerificationHint').textContent=role==='employee'?'身份资料用于维护本人收款银行卡':'认证地址可用于维护当前店铺地址';
+      document.getElementById('bankAccountEntryTitle').textContent=role==='employee'?'员工个人收款银行卡':'店铺收款银行卡';
+      document.getElementById('bankAccountSummary').textContent=maskedProfileBank(bank);
+      if(role==='merchant')document.getElementById('storeAddressSummary').textContent=store.countryName+' · '+store.address;
+      if(document.getElementById('bankAccountPage').classList.contains('active'))loadBankAccountForm();
+      if(role==='employee'&&document.getElementById('storeAddressPage').classList.contains('active'))showPage('my');
+    }
     const roleCopy = {
       merchant: { identity: 'FS Retail Malaysia · 商家主账号', auction: '商家主账号可查看本商家全部竞拍标单；列表按截止时间从近到远排列。', order: '商家主账号可查看本商家全部订单；取货结果只读。', bill: '商家主账号可查看本商家店铺收益和所属员工佣金。', decision: '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。' },
       employee: { identity: '中心旗舰店 · 员工', auction: '员工仅查看本人创建的竞拍标单；列表按截止时间从近到远排列。', order: '员工仅查看本人创建的订单；取货结果只读。', bill: '员工仅查看本人佣金，不展示店铺收益。', decision: '你是本标单实际建拍操作人；产生预中标后可记录卖家接受或拒绝。' }
@@ -1604,9 +1647,11 @@
       document.getElementById('storeRevenueCard').style.display = role === 'employee' ? 'none' : 'block';
       document.querySelectorAll('#employeeCommissionCard .summary-row').forEach((row, index) => row.style.display = role === 'employee' && index === 1 ? 'none' : 'flex');
       document.querySelectorAll('#auctionsPage [data-owner]').forEach((card) => card.style.display = role === 'employee' && card.dataset.owner !== 'jia' ? 'none' : 'grid');
+      renderProfileScope();
       applyOrderScope();
     };
     roleSwitch.addEventListener('change', applyRoleScope);
+    profileStoreSelector.addEventListener('change', renderProfileScope);
     document.querySelectorAll('[data-order-tab]').forEach((tab) => tab.addEventListener('click', () => {
       currentOrderTab = tab.dataset.orderTab;
       document.querySelectorAll('[data-order-tab]').forEach((item) => item.classList.toggle('active', item === tab));
@@ -1629,6 +1674,8 @@
     });
 
 
+    storeAddressEntry.addEventListener('click', loadStoreAddressForm);
+    document.getElementById('bankAccountEntry').addEventListener('click', loadBankAccountForm);
     document.getElementById('useVerifiedAddress').addEventListener('click', () => {
       document.getElementById('storeAddressInput').value = '18, Jalan Teknologi 3/6, Kota Damansara, 47810 Petaling Jaya, Selangor';
       document.getElementById('storePhoneInput').value = '+60 12-345 6789';
@@ -1640,8 +1687,10 @@
       const valid = address.length >= 8 && /^\+60[\s-]?1\d[\d\s-]{7,10}$/.test(phone);
       document.getElementById('storeAddressError').classList.toggle('show', !valid);
       if (!valid) return;
-      document.getElementById('storeAddressSummary').textContent = '马来西亚 · ' + address;
-      showToast('门店地址已保存');
+      selectedStoreProfile().address=address;
+      selectedStoreProfile().phone=phone;
+      renderProfileScope();
+      showToast(selectedStoreProfile().name+'的门店地址已保存');
       showPage('my');
     });
     const bankAccountNumber = document.getElementById('bankAccountNumber');
@@ -1656,8 +1705,12 @@
       const valid = holder.length > 1 && bank.length > 1 && /^\d{8,20}$/.test(number);
       document.getElementById('bankAccountError').classList.toggle('show', !valid);
       if (!valid) return;
-      document.getElementById('bankAccountSummary').textContent = bank + ' · •••• ' + number.slice(-4);
-      showToast('银行卡信息已保存');
+      const target=activeBankProfile();
+      target.holder=holder;
+      target.bankName=bank;
+      target.accountNumber=number;
+      renderProfileScope();
+      showToast(roleSwitch.value==='employee'?'员工个人银行卡已保存':selectedStoreProfile().name+'的银行卡已保存');
       showPage('my');
     });
     document.getElementById('helpSupportEntry').addEventListener('click', () => showToast('客服热线：+60 3-8899 6688'));
@@ -1668,6 +1721,7 @@
     setInterval(updateAuctionCountdowns, 1000);
     renderInspectionProgress();
     applyLanguage(currentLanguage);
+    window.prototypeState=Object.assign(window.prototypeState||{},{storeProfiles,employeeBankProfile,selectedStoreProfile,activeBankProfile,renderProfileScope});
   </script>
 </body>
 </html>
