@@ -137,3 +137,65 @@ test('dead legacy detail and implicit store creation copy are absent', () => {
     "'首次开启权限自动创建':'Auto-created When Permission Was First Enabled'"
   ]) assert.doesNotMatch(platform, new RegExp(obsolete));
 });
+
+test('FoneSquare add form exposes stable required identity and KYC fields', () => {
+  for (const required of [
+    'id="addRegistrationRegion"', 'id="addMerchantProfile"',
+    'id="addDocumentType"', 'id="addDocumentNumber"', 'id="addDocumentExpiry"'
+  ]) assert.match(platform, new RegExp(required));
+  assert.match(platform, /id="addMerchantProfile"[\s\S]{0,240}<option>个人<\/option>[\s\S]{0,120}<option>企业<\/option>/);
+});
+
+test('backend add resolves unified accounts and creates only FoneSquare records', () => {
+  for (const required of [
+    'function normalizedAccount(', 'function accountKeys(', 'function findUnifiedAccount(',
+    'function saveFoneSquareMerchant(', '账号标识冲突，请联系平台处理',
+    '已有有效的 FoneSquare 商家记录', "type:'FoneSquare 回收商'"
+  ]) assert.match(platform, new RegExp(required.replace(/[()]/g, '\\$&')));
+
+  assert.match(platform, /\[user\.rawAccount,user\.rawPhone,user\.rawEmail\]/);
+  assert.match(platform, /conflict:Boolean\(byPhone&&byEmail&&byPhone\.id!==byEmail\.id\)/);
+  assert.match(platform, /id:unifiedUserId/);
+  assert.match(platform, /merchantId:`M\$\{recordNumber\}`/);
+  assert.match(platform, /merchantRecords\(\)\.some\([^)]*m\.id===unifiedUserId[^)]*m\.type==='FoneSquare 回收商'[^)]*m\.status==='正常'/);
+  assert.match(platform, /rawPhone:phone,rawEmail:email/);
+  assert.match(platform, /\$\('#saveAdd'\)\.onclick=saveFoneSquareMerchant/);
+
+  const addImplementation=platform.match(/function saveFoneSquareMerchant\(\)\{([\s\S]*?)\n    \}/)?.[1]||'';
+  assert.ok(addImplementation, 'saveFoneSquareMerchant implementation should be extractable');
+  assert.doesNotMatch(addImplementation, /(stores|employeeAccounts)\.(push|unshift|splice)/);
+  assert.doesNotMatch(addImplementation, /type:'供货商家'/);
+});
+
+test('new merchant management and add-flow copy is bilingual', () => {
+  const translations = {
+    '店员列表':'Staff List',
+    '来源 App':'Source App',
+    '个人建拍权限':'Personal Listing Permission',
+    '实际权限状态':'Effective Permission Status',
+    '已生效':'Effective',
+    '已关闭':'Disabled',
+    '未生效（商家权限关闭）':'Inactive (Merchant Permission Disabled)',
+    '已关联':'Linked',
+    '待关联':'Pending Link',
+    '已解除':'Unlinked',
+    '商家主体':'Merchant Profile',
+    '注册国家 / 地区':'Registration Country / Region',
+    '账号标识冲突，请联系平台处理':'Account identifiers conflict. Contact platform support.',
+    '已有有效的 FoneSquare 商家记录':'An active FoneSquare merchant record already exists.'
+  };
+  for (const [source,target] of Object.entries(translations)) {
+    assert.ok(platform.includes(`'${source}':'${target}'`), `${source} should translate to ${target}`);
+  }
+});
+
+test('platform inline script compiles after merchant-management refactor', () => {
+  const script=platform.match(/<script>([\s\S]*)<\/script>\s*<\/body>/)?.[1];
+  assert.ok(script);
+  assert.doesNotThrow(()=>new Function(script));
+});
+
+test('scope-frozen portal files retain their required entry points', () => {
+  assert.match(store, /id="homePage"/);
+  assert.match(recycler, /FoneSquare/);
+});
