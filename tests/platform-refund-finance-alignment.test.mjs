@@ -44,3 +44,16 @@ test('platform inline script compiles', () => {
   assert.ok(script);
   assert.doesNotThrow(() => new Function(script));
 });
+
+test('refund is not gated by return or after-sales', () => {
+  assert.match(platform, /退款与售后记录/);
+  assert.match(platform, /对门店的退款只恢复预付金/);
+  assert.doesNotMatch(platform, /确认已退回后才能发起需要退回的退款/);
+});
+
+test('return refund entrypoints open the independent editor', () => {
+  assert.match(platform, /function renderReturnRows\(list\).*open-refund-editor/);
+  assert.match(platform, /function viewReturn\(r\).*退回记录不限制退款发起/);
+  assert.match(platform, /if\(action==='start-refund'\).*openRefundEditor\(o\)/);
+  assert.match(platform, /if\(action==='create-adjustment-from-return'\).*openRefundEditor\(o\)/);
+});
