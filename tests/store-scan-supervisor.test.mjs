@@ -36,3 +36,10 @@ test('supervisor supports single and constrained batch pickup without batch arti
     assert.doesNotMatch(store, new RegExp(forbidden));
   }
 });
+
+test('employee scan and supervisor pickup flows include English copy', () => {
+  for (const required of [
+    'Scan Device', 'Standard Phone', 'Foldable Phone', 'Screen-on Photo', 'Screen-off Photo',
+    'Supervisor App', 'OB Account', 'On-site Pickup', 'Confirm Picked Up', 'Pickup cannot be undone'
+  ]) assert.match(store, new RegExp(required));
+});
