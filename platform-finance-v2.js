@@ -3,9 +3,7 @@
 
   const financeViewNames = {
     financeLedger: '资金台账',
-    prepaymentDisbursement: '预付金下拨单',
-    prepaymentDisbursementDetail: '预付金下拨单详情',
-    recyclerReceipt: '回收商收款单',
+    prepaymentDisbursementDetail: '预付金记录详情',
     recyclerReceiptDetail: '回收商收款单详情',
     settlementBill: '结算单',
     settlementBillDetail: '结算单详情',
@@ -13,8 +11,8 @@
     platformFundAccount: '平台资金账户'
   };
   const financeDetailNav = {
-    prepaymentDisbursementDetail: 'prepaymentDisbursement',
-    recyclerReceiptDetail: 'recyclerReceipt',
+    prepaymentDisbursementDetail: 'financeLedger',
+    recyclerReceiptDetail: 'financeLedger',
     settlementBillDetail: 'settlementBill'
   };
   const baseSetView = setView;
@@ -65,9 +63,15 @@
   }
 
   const prepaymentDisbursementOrdersV2 = [
-    {id:'PPD-MY-20260828-003',site:'MY',supplier:'AR Mobile Sdn Bhd',supplierId:'M1006',type:'追加',currency:'MYR',amount:3000,platformAccount:'Maybank Payout / 9988',supplierAccount:'AR Mobile 预付金账户 / 7314',paidAt:'2026-08-28 15:10',reference:'BANK-OUT-20260828-031',voucher:'prepayment-003.pdf',operator:'陈财务',status:'已生效'},
+    {id:'PPR-MY-20260830-004',site:'MY',supplier:'Lim Wei Jian',supplierId:'M1003',type:'实际退回',currency:'MYR',amount:500,platformAccount:'Maybank Collection / 5566',supplierAccount:'Lim Wei Jian 预付金账户 / 4428',paidAt:'2026-08-30 16:20',reference:'BANK-IN-20260830-014',voucher:'prepayment-return-004.pdf',operator:'陈财务',status:'已生效'},
+    {id:'PPD-MY-20260828-003',site:'MY',supplier:'AR Mobile Sdn Bhd',supplierId:'M1006',type:'下拨',currency:'MYR',amount:3000,platformAccount:'Maybank Payout / 9988',supplierAccount:'AR Mobile 预付金账户 / 7314',paidAt:'2026-08-28 15:10',reference:'BANK-OUT-20260828-031',voucher:'prepayment-003.pdf',operator:'陈财务',status:'已生效'},
     {id:'PPD-MY-20260801-002',site:'MY',supplier:'Siti Nur',supplierId:'M1002',type:'下拨',currency:'MYR',amount:11000,platformAccount:'Maybank Payout / 9988',supplierAccount:'Siti Nur 预付金账户 / 8821',paidAt:'2026-08-01 09:15',reference:'BANK-OUT-20260801-002',voucher:'prepayment-002.pdf',operator:'陈财务',status:'已生效'},
     {id:'PPD-MY-20260801-001',site:'MY',supplier:'Lim Wei Jian',supplierId:'M1003',type:'下拨',currency:'MYR',amount:2500,platformAccount:'Maybank Payout / 9988',supplierAccount:'Lim Wei Jian 预付金账户 / 4428',paidAt:'2026-08-01 09:00',reference:'BANK-OUT-20260801-001',voucher:'prepayment-001.pdf',operator:'陈财务',status:'已生效'}
+  ];
+  const prepaymentSummariesV2 = [
+    {supplierId:'M1006',supplier:'AR Mobile Sdn Bhd',prepayment:3000,used:3428.40,returned:0},
+    {supplierId:'M1002',supplier:'Siti Nur',prepayment:11000,used:9857.40,returned:0},
+    {supplierId:'M1003',supplier:'Lim Wei Jian',prepayment:2500,used:1500,returned:500}
   ];
 
   const recyclerReceiptOrdersV2 = [
@@ -77,9 +81,9 @@
   ];
 
   const settlementBillsV2 = [
-    {id:'STL-MY-202608-SUP-003',site:'MY',period:'2026-08 月结',type:'供货商结算单',payee:'AR Mobile Sdn Bhd',payeeAccount:'RHB Bank / ****7314',currency:'MYR',amount:178.20,status:'待付款',deadline:'2026-09-10',createdAt:'2026-09-07 09:00',platformAccount:'Maybank Payout / 9988',paidAt:'—',reference:'—',voucher:'—',operator:'—',voidReason:'—',prepaymentBalance:-428.40,sources:[{order:'ORD-MY-20260819-0021',dealAt:'2026-08-19 11:08',winning:1980,originalShare:178.20,refund:'未退款',currentShare:178.20}]},
-    {id:'STL-MY-202608-STAFF-002',site:'MY',period:'2026-08 月结',type:'店员结算单',payee:'Aina Rahman',payeeAccount:'Maybank / ****1190',currency:'MYR',amount:27.80,status:'已付款',deadline:'2026-09-10',createdAt:'2026-09-07 09:00',platformAccount:'Maybank Payout / 9988',paidAt:'2026-09-08 11:05',reference:'BANK-OUT-20260908-018',voucher:'staff-settlement-002.pdf',operator:'陈财务',voidReason:'—',prepaymentBalance:null,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:27.80,refund:'未退款',currentShare:27.80}]},
-    {id:'STL-MY-202608-SUP-001',site:'MY',period:'2026-08 月结',type:'供货商结算单',payee:'Siti Nur',payeeAccount:'Maybank / ****8821',currency:'MYR',amount:89.80,status:'已作废',deadline:'2026-09-10',createdAt:'2026-09-07 09:00',platformAccount:'Maybank Payout / 9988',paidAt:'—',reference:'—',voucher:'—',operator:'李财务',voidReason:'收款账户配置错误，修复后重新生成',prepaymentBalance:1142.60,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:89.80,refund:'未退款',currentShare:89.80}]}
+    {id:'STL-MY-202608-SUP-003',site:'MY',period:'2026-08 月结',type:'供货商结算单',payee:'AR Mobile Sdn Bhd',payeeAccount:'RHB Bank / ****7314',currency:'MYR',amount:178.20,status:'待付款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',platformAccount:'Maybank Payout / 9988',paidAt:'—',reference:'—',voucher:'—',operator:'—',voidReason:'—',prepaymentBalance:-428.40,sources:[{order:'ORD-MY-20260819-0021',dealAt:'2026-08-19 11:08',winning:1980,originalShare:178.20,refund:'未退款',currentShare:178.20}]},
+    {id:'STL-MY-202608-STAFF-002',site:'MY',period:'2026-08 月结',type:'店员结算单',payee:'Aina Rahman',payeeAccount:'Maybank / ****1190',currency:'MYR',amount:27.80,status:'已付款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',platformAccount:'Maybank Payout / 9988',paidAt:'2026-09-08 11:05',reference:'BANK-OUT-20260908-018',voucher:'staff-settlement-002.pdf',operator:'陈财务',voidReason:'—',prepaymentBalance:null,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:27.80,refund:'未退款',currentShare:27.80}]},
+    {id:'STL-MY-202608-SUP-001',site:'MY',period:'2026-08 月结',type:'供货商结算单',payee:'Siti Nur',payeeAccount:'Maybank / ****8821',currency:'MYR',amount:89.80,status:'已作废',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',platformAccount:'Maybank Payout / 9988',paidAt:'—',reference:'—',voucher:'—',operator:'李财务',voidReason:'收款账户配置错误，修复后重新生成',prepaymentBalance:1142.60,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:89.80,refund:'未退款',currentShare:89.80}]}
   ];
 
   const settlementConfigV2 = {
@@ -88,10 +92,10 @@
     enabled: true,
     cycle: '月结',
     delayDays: 7,
-    generateAt: '09:00',
+    generateAt: '02:00',
     paymentDueDays: 3,
     effectiveDate: '2026-08-01',
-    lastRun: '2026-09-07 09:00：自动生成成功，3 张结算单'
+    lastRun: '2026-09-07 02:00：自动生成成功，3 张结算单'
   };
 
   const fundLedgerRowsV2 = [
@@ -105,15 +109,25 @@
   let visibleRecyclerReceiptsV2 = recyclerReceiptOrdersV2.slice();
   let visibleSettlementsV2 = settlementBillsV2.slice();
 
-  function renderFundsLedgerV2() {
-    const prepaymentBalance = -428.40;
+  function renderFundsLedgerV2(activeTab) {
+    const tab = activeTab || 'details';
     $('#financeLedgerBody').innerHTML =
-      '<div class="page-title"><h1>资金台账</h1><div class="page-actions"><button class="btn" data-finance-v2="open-prepayment-list">预付金下拨单</button><button class="btn" data-finance-v2="open-recycler-receipts">回收商收款单</button><button class="btn" data-finance-v2="export-ledger">⇩ 导出</button></div></div>' +
+      '<div class="page-title"><h1>资金台账</h1><div class="page-actions"><button class="btn" data-finance-v2="export-ledger">⇩ 导出当前页签</button></div></div>' +
       '<div class="alert"><span>ⓘ</span><div>资金台账只记录和展示资金事实。成交、退款、预付金与角色分成分别核算；退款不以取货或送达状态为前置条件。</div></div>' +
-      metricCards([['回收商待收', moneyV2(1980)], ['供货商／店员待付', moneyV2(380.40)], ['退款恢复预付金', moneyV2(3602.40)], ['预付金余额', moneyV2(prepaymentBalance)]]) +
+      '<div class="tabs"><button class="tab ' + (tab === 'details' ? 'active' : '') + '" data-finance-v2="switch-ledger-tab" data-tab="details">资金明细</button><button class="tab ' + (tab === 'prepayment' ? 'active' : '') + '" data-finance-v2="switch-ledger-tab" data-tab="prepayment">门店预付金</button><button class="tab ' + (tab === 'receipts' ? 'active' : '') + '" data-finance-v2="switch-ledger-tab" data-tab="receipts">回收商收款单</button></div>' +
+      '<div class="tab-panel ' + (tab === 'details' ? 'active' : '') + '" id="ledgerV2DetailsPanel"></div>' +
+      '<div class="tab-panel ' + (tab === 'prepayment' ? 'active' : '') + '" id="ledgerV2PrepaymentPanel"></div>' +
+      '<div class="tab-panel ' + (tab === 'receipts' ? 'active' : '') + '" id="ledgerV2ReceiptsPanel"></div>';
+    renderFundDetailsPanelV2();
+    renderPrepaymentListV2();
+    renderRecyclerReceiptListV2();
+  }
+
+  function renderFundDetailsPanelV2() {
+    $('#ledgerV2DetailsPanel').innerHTML =
+      metricCards([['回收商待收', moneyV2(1980)], ['供货商／店员待付', moneyV2(380.40)], ['退款恢复预付金', moneyV2(3602.40)], ['预付金剩余', moneyV2(-428.40)]]) +
       '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>明细号 / 订单号</label><input class="control" id="fundV2Keyword" placeholder="请输入编号" /></div><div class="field"><label>业务类型</label><select class="control" id="fundV2Type"><option value="">全部</option><option>正式成交</option><option>退款恢复</option><option>资金退回</option></select></div><div class="field"><label>回收商收款状态</label><select class="control" id="fundV2Receipt"><option value="">全部</option><option>待收款</option><option>已收款</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-ledger">↻ 重置</button><button class="btn primary" data-finance-v2="search-ledger">⌕ 查询</button></div></div></div></div>' +
-      '<div class="card"><div class="card-head"><div>逐笔资金明细 <span class="subtle" id="fundV2Summary"></span></div><span class="subtle">原始分账快照不可修改；退款后展示当前应结算金额</span></div><div id="fundV2Result"></div></div>' +
-      '<div class="card"><div class="card-head"><div>供货商预付金</div><span class="subtle">只用于向卖家付款，不抵扣供货商或店员分成</span></div><div class="table-wrap"><table class="table"><thead><tr><th>供货商</th><th>币种</th><th>预付金余额</th><th>周期已使用</th><th>退款恢复</th><th>取消退款扣回</th><th>提示</th></tr></thead><tbody><tr><td>AR Mobile Sdn Bhd</td><td>MYR</td><td class="money negative">' + moneyV2(-428.40) + '</td><td class="money">' + moneyV2(3403.60) + '</td><td class="money">' + moneyV2(1450) + '</td><td class="money">' + moneyV2(0) + '</td><td><span class="tag red">预付金不足，建议追加</span></td></tr><tr><td>Siti Nur</td><td>MYR</td><td class="money">' + moneyV2(1142.60) + '</td><td class="money">' + moneyV2(9857.40) + '</td><td class="money">' + moneyV2(2152.40) + '</td><td class="money">' + moneyV2(0) + '</td><td>—</td></tr></tbody></table></div></div>';
+      '<div class="card"><div class="card-head"><div>逐笔资金明细 <span class="subtle" id="fundV2Summary"></span></div><span class="subtle">退款生效恢复预付金，取消退款反向扣减</span></div><div id="fundV2Result"></div></div>';
     filterFundsLedgerV2();
   }
 
@@ -134,13 +148,17 @@
   }
 
   function renderPrepaymentListV2() {
-    const total = prepaymentDisbursementOrdersV2.reduce(function (sum, order) { return sum + order.amount; }, 0);
-    $('#prepaymentDisbursementBody').innerHTML =
-      '<div class="page-title"><h1>预付金下拨单</h1><div class="page-actions"><button class="btn" data-finance-v2="export-prepayment">⇩ 导出</button><button class="btn primary" data-finance-v2="create-prepayment">＋ 登记下拨／追加</button></div></div>' +
-      '<div class="alert"><span>ⓘ</span><div>预付金是平台下拨给供货商、仅用于向卖家付款的受限资金。此处登记已经完成的线下下拨或追加事实，不形成待付款审批流程。</div></div>' +
-      metricCards([['下拨单数量', prepaymentDisbursementOrdersV2.length + ' 张'], ['累计下拨及追加', moneyV2(total)], ['本月追加', moneyV2(3000)], ['异常单据', '0 张']]) +
-      '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>单号 / 供货商</label><input class="control" id="prepaymentV2Keyword" placeholder="请输入单号或供货商" /></div><div class="field"><label>类型</label><select class="control" id="prepaymentV2Type"><option value="">全部</option><option>下拨</option><option>追加</option></select></div><div class="field"><label>站点</label><select class="control" id="prepaymentV2Site"><option value="">全部</option><option>MY</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-prepayment">↻ 重置</button><button class="btn primary" data-finance-v2="search-prepayment">⌕ 查询</button></div></div></div></div>' +
-      '<div class="card"><div class="card-head"><div>下拨单列表 <span class="subtle" id="prepaymentV2Summary"></span></div><span class="subtle">保存后冻结双方账户、金额、时间和凭证</span></div><div id="prepaymentV2Result"></div></div>';
+    const downTotal = prepaymentDisbursementOrdersV2.filter(function (order) { return order.type === '下拨'; }).reduce(function (sum, order) { return sum + order.amount; }, 0);
+    const returnedTotal = prepaymentDisbursementOrdersV2.filter(function (order) { return order.type === '实际退回'; }).reduce(function (sum, order) { return sum + order.amount; }, 0);
+    $('#ledgerV2PrepaymentPanel').innerHTML =
+      '<div class="page-actions" style="margin-bottom:16px"><button class="btn" data-finance-v2="export-prepayment">⇩ 导出</button><button class="btn primary" data-finance-v2="create-prepayment">＋ 登记预付金</button></div>' +
+      '<div class="alert"><span>ⓘ</span><div>预付金仅用于向卖家支付订单款。操作类型只有“下拨”和“实际退回”；退款恢复与取消退款扣减记录在资金明细中。</div></div>' +
+      '<div class="card"><div class="card-head"><div>门店预付金</div><span class="subtle">剩余金额＝预付金金额－已使用金额－已退金额，允许为负数</span></div><div class="table-wrap"><table class="table"><thead><tr><th>门店 / 供货商</th><th>预付金金额</th><th>已使用金额</th><th>剩余金额</th><th>已退金额</th></tr></thead><tbody>' +
+      prepaymentSummariesV2.map(function (item) { const remaining = item.prepayment - item.used - item.returned; return '<tr><td>' + esc(item.supplier) + '</td><td class="money">' + moneyV2(item.prepayment) + '</td><td class="money">' + moneyV2(item.used) + '</td><td class="money ' + (remaining < 0 ? 'negative' : '') + '">' + moneyV2(remaining) + '</td><td class="money">' + moneyV2(item.returned) + '</td></tr>'; }).join('') +
+      '</tbody></table></div></div>' +
+      metricCards([['累计下拨', moneyV2(downTotal)], ['累计实际退回', moneyV2(returnedTotal)], ['操作记录', prepaymentDisbursementOrdersV2.length + ' 条'], ['异常记录', '0 条']]) +
+      '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>单号 / 供货商</label><input class="control" id="prepaymentV2Keyword" placeholder="请输入单号或供货商" /></div><div class="field"><label>操作类型</label><select class="control" id="prepaymentV2Type"><option value="">全部</option><option>下拨</option><option>实际退回</option></select></div><div class="field"><label>站点</label><select class="control" id="prepaymentV2Site"><option value="">全部</option><option>MY</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-prepayment">↻ 重置</button><button class="btn primary" data-finance-v2="search-prepayment">⌕ 查询</button></div></div></div></div>' +
+      '<div class="card"><div class="card-head"><div>预付金记录 <span class="subtle" id="prepaymentV2Summary"></span></div><span class="subtle">确认后冻结账户、金额、时间和凭证</span></div><div id="prepaymentV2Result"></div></div>';
     filterPrepaymentV2();
   }
 
@@ -155,27 +173,29 @@
     });
     $('#prepaymentV2Summary').textContent = '共 ' + visiblePrepaymentOrdersV2.length + ' 张';
     $('#prepaymentV2Result').innerHTML = visiblePrepaymentOrdersV2.length ?
-      '<div class="table-wrap"><table class="table" style="min-width:1750px"><thead><tr><th>下拨单号</th><th>类型</th><th>供货商</th><th>站点 / 币种</th><th>金额</th><th>平台打款账户</th><th>供货商预付金账户</th><th>实际下拨时间</th><th>流水号 / 凭证</th><th>操作人</th><th>操作</th></tr></thead><tbody>' + visiblePrepaymentOrdersV2.map(function (order) {
+      '<div class="table-wrap"><table class="table" style="min-width:1750px"><thead><tr><th>记录单号</th><th>操作类型</th><th>供货商</th><th>站点 / 币种</th><th>金额</th><th>平台资金账户</th><th>供货商预付金账户</th><th>实际发生时间</th><th>流水号 / 凭证</th><th>操作人</th><th>操作</th></tr></thead><tbody>' + visiblePrepaymentOrdersV2.map(function (order) {
         return '<tr><td><button class="btn link" data-finance-v2="view-prepayment" data-id="' + esc(order.id) + '">' + esc(order.id) + '</button></td><td>' + statusTag(order.type) + '</td><td>' + esc(order.supplier) + '<div class="merchant-account">' + esc(order.supplierId) + '</div></td><td>' + esc(order.site + ' / ' + order.currency) + '</td><td class="money">' + moneyV2(order.amount, order.currency) + '</td><td>' + esc(order.platformAccount) + '</td><td>' + esc(order.supplierAccount) + '</td><td>' + esc(order.paidAt) + '</td><td>' + esc(order.reference) + '<div class="merchant-account">' + esc(order.voucher) + '</div></td><td>' + esc(order.operator) + '</td><td><button class="btn link" data-finance-v2="view-prepayment" data-id="' + esc(order.id) + '">查看</button></td></tr>';
-      }).join('') + '</tbody></table></div>' : '<div class="empty-compact">没有符合条件的预付金下拨单</div>';
+      }).join('') + '</tbody></table></div>' : '<div class="empty-compact">没有符合条件的预付金记录</div>';
   }
 
   function renderPrepaymentDetailV2(order) {
     if (!order) return;
+    const actualTimeLabel = order.type === '实际退回' ? '实际退回时间' : '实际下拨时间';
+    const accountLabel = order.type === '实际退回' ? '平台收款账户' : '平台打款账户';
     $('#prepaymentDisbursementDetailBody').innerHTML =
-      '<div class="page-title"><button class="btn" data-finance-v2="back-prepayment">← 返回预付金下拨单</button><div class="page-actions"><button class="btn" data-finance-v2="export-prepayment-detail" data-id="' + esc(order.id) + '">⇩ 导出</button></div></div>' +
+      '<div class="page-title"><button class="btn" data-finance-v2="back-prepayment">← 返回门店预付金</button><div class="page-actions"><button class="btn" data-finance-v2="export-prepayment-detail" data-id="' + esc(order.id) + '">⇩ 导出</button></div></div>' +
       '<div class="card detail-hero"><div><span class="detail-name">' + esc(order.id) + '</span><span class="detail-tags">' + statusTag(order.type) + statusTag(order.status) + '</span><div class="detail-meta">' + esc(order.site + ' · ' + order.supplier + ' · ' + order.currency) + '</div></div></div>' +
-      metricCards([['下拨金额', moneyV2(order.amount, order.currency)], ['业务类型', order.type], ['实际下拨时间', order.paidAt], ['登记结果', order.status]]) +
-      '<div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">资金与账户快照</h3></div><div class="card-body">' + [['供货商',order.supplier],['平台打款账户',order.platformAccount],['供货商预付金账户',order.supplierAccount],['币种',order.currency],['金额',moneyV2(order.amount,order.currency)]].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">线下付款事实</h3></div><div class="card-body">' + [['实际下拨时间',order.paidAt],['资金流水号',order.reference],['付款凭证',order.voucher],['操作人',order.operator],['记录状态','确认后只读']].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div></div>' +
+      metricCards([['金额', moneyV2(order.amount, order.currency)], ['操作类型', order.type], ['实际发生时间', order.paidAt], ['登记结果', order.status]]) +
+      '<div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">资金与账户快照</h3></div><div class="card-body">' + [['供货商',order.supplier],[accountLabel,order.platformAccount],['供货商预付金账户',order.supplierAccount],['币种',order.currency],['金额',moneyV2(order.amount,order.currency)]].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">线下资金事实</h3></div><div class="card-body">' + [[actualTimeLabel,order.paidAt],['资金流水号',order.reference],['资金凭证',order.voucher],['操作人',order.operator],['记录状态','确认后只读']].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div></div>' +
       '<div class="card"><div class="card-head"><h3 class="section-title">审计记录</h3></div><div class="card-body timeline"><div class="event"><b>登记' + esc(order.type) + '并更新预付金余额</b><div class="event-time">' + esc(order.paidAt + ' · ' + order.operator) + '</div></div></div></div>';
     setView('prepaymentDisbursementDetail');
   }
 
   function openPrepaymentCreateV2() {
-    const accounts = payoutAccountsV2();
-    if (!accounts.length) { toast('没有可用的平台打款账户，请先维护平台资金账户。'); return; }
-    openBusinessModal('登记预付金下拨／追加',
-      '<div class="alert"><span>ⓘ</span><div>仅登记已经完成的线下付款事实。保存后立即增加对应供货商的预付金余额，历史成交核销记录不变。</div></div><div class="form-grid"><div class="field"><label>操作类型 *</label><select class="control" id="prepaymentV2CreateType"><option>下拨</option><option>追加</option></select></div><div class="field"><label>供货商 *</label><select class="control" id="prepaymentV2Supplier"><option value="M1002">Siti Nur</option><option value="M1003">Lim Wei Jian</option><option value="M1006">AR Mobile Sdn Bhd</option></select></div><div class="field span-2"><label>平台打款账户 *</label><select class="control" id="prepaymentV2PlatformAccount">' + accountOptionsV2(accounts, accounts.find(function (account) { return account.isDefault; })?.id) + '</select></div><div class="field"><label>金额 *</label><input class="control" id="prepaymentV2Amount" type="number" min="0.01" placeholder="请输入金额" /></div><div class="field"><label>实际下拨时间 *</label><input class="control" id="prepaymentV2PaidAt" value="2026-09-01 14:00" /></div><div class="field"><label>资金流水号 *</label><input class="control" id="prepaymentV2Reference" placeholder="请输入银行流水号" /></div><div class="field"><label>付款凭证 *</label><input class="control" id="prepaymentV2Voucher" placeholder="请输入凭证编号或文件名" /></div></div>',
+    const accounts = platformFundAccounts.filter(function (account) { return account.status === '启用'; });
+    if (!accounts.length) { toast('没有可用的平台资金账户，请先维护平台资金账户。'); return; }
+    openBusinessModal('登记预付金',
+      '<div class="alert"><span>ⓘ</span><div>仅登记已真实发生的资金事实：下拨增加预付金，实际退回减少预付金并计入已退金额。</div></div><div class="form-grid"><div class="field"><label>操作类型 *</label><select class="control" id="prepaymentV2CreateType"><option>下拨</option><option>实际退回</option></select></div><div class="field"><label>供货商 *</label><select class="control" id="prepaymentV2Supplier"><option value="M1002">Siti Nur</option><option value="M1003">Lim Wei Jian</option><option value="M1006">AR Mobile Sdn Bhd</option></select></div><div class="field span-2"><label>平台资金账户 *</label><select class="control" id="prepaymentV2PlatformAccount">' + accountOptionsV2(accounts, accounts.find(function (account) { return account.isDefault; })?.id) + '</select></div><div class="field"><label>金额 *</label><input class="control" id="prepaymentV2Amount" type="number" min="0.01" placeholder="请输入金额" /></div><div class="field"><label>实际发生时间 *</label><input class="control" id="prepaymentV2PaidAt" value="2026-09-01 14:00" /></div><div class="field"><label>资金流水号 *</label><input class="control" id="prepaymentV2Reference" placeholder="请输入银行流水号" /></div><div class="field"><label>资金凭证 *</label><input class="control" id="prepaymentV2Voucher" placeholder="请输入凭证编号或文件名" /></div></div>',
       '保存', function () {
         const amount = Number($('#prepaymentV2Amount').value);
         const supplierId = $('#prepaymentV2Supplier').value;
@@ -184,17 +204,23 @@
         const reference = $('#prepaymentV2Reference').value.trim();
         const voucher = $('#prepaymentV2Voucher').value.trim();
         if (!(amount > 0) || !reference || !voucher) { modalError('请完整填写金额、流水号和付款凭证。'); return; }
-        prepaymentDisbursementOrdersV2.unshift({id:'PPD-MY-20260901-' + String(prepaymentDisbursementOrdersV2.length + 1).padStart(3,'0'),site:'MY',supplier:supplierName,supplierId:supplierId,type:$('#prepaymentV2CreateType').value,currency:'MYR',amount:amount,platformAccount:account.accountName + ' / ' + account.accountNumber.slice(-4),supplierAccount:supplierName + ' 预付金账户',paidAt:$('#prepaymentV2PaidAt').value,reference:reference,voucher:voucher,operator:'贾瑞真',status:'已生效'});
-        closeModals(); renderPrepaymentListV2(); toast('预付金下拨单已登记，余额已更新。');
+        const operationType = $('#prepaymentV2CreateType').value;
+        prepaymentDisbursementOrdersV2.unshift({id:'PPR-MY-20260901-' + String(prepaymentDisbursementOrdersV2.length + 1).padStart(3,'0'),site:'MY',supplier:supplierName,supplierId:supplierId,type:operationType,currency:'MYR',amount:amount,platformAccount:account.accountName + ' / ' + account.accountNumber.slice(-4),supplierAccount:supplierName + ' 预付金账户',paidAt:$('#prepaymentV2PaidAt').value,reference:reference,voucher:voucher,operator:'贾瑞真',status:'已生效'});
+        const summary = prepaymentSummariesV2.find(function (item) { return item.supplierId === supplierId; });
+        if (summary) {
+          if (operationType === '下拨') summary.prepayment += amount;
+          if (operationType === '实际退回') summary.returned += amount;
+        }
+        closeModals(); renderFundsLedgerV2('prepayment'); toast('预付金' + operationType + '已登记，汇总金额已更新。');
       }, 'primary');
   }
 
   function renderRecyclerReceiptListV2() {
     const pending = recyclerReceiptOrdersV2.filter(function (order) { return order.status === '待收款'; });
     const received = recyclerReceiptOrdersV2.filter(function (order) { return order.status === '已收款'; });
-    $('#recyclerReceiptBody').innerHTML =
-      '<div class="page-title"><h1>回收商收款单</h1><div class="page-actions"><button class="btn" data-finance-v2="export-recycler-receipts">⇩ 导出</button></div></div>' +
-      '<div class="alert"><span>ⓘ</span><div>成交后系统按订单生成回收商收款单，应收金额为完整中标价。财务仅在线下款项真实到账后标记已收款；确认后记录不可修改、不可冲正。</div></div>' +
+    $('#ledgerV2ReceiptsPanel').innerHTML =
+      '<div class="page-actions" style="margin-bottom:16px"><button class="btn" data-finance-v2="export-recycler-receipts">⇩ 导出</button></div>' +
+      '<div class="alert"><span>ⓘ</span><div>成交后系统按订单生成回收商收款单，应收金额为完整中标价。财务仅在线下款项真实到账后标记已收款；确认后记录只读保留。</div></div>' +
       metricCards([['待收款单据', pending.length + ' 张'], ['待收金额', moneyV2(pending.reduce(function (sum, order) { return sum + order.amount; }, 0))], ['已收款单据', received.length + ' 张'], ['已收金额', moneyV2(received.reduce(function (sum, order) { return sum + order.amount; }, 0))]]) +
       '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>收款单号 / 订单号 / 回收商</label><input class="control" id="receiptV2Keyword" placeholder="请输入关键词" /></div><div class="field"><label>状态</label><select class="control" id="receiptV2Status"><option value="">全部</option><option>待收款</option><option>已收款</option><option>已作废</option></select></div><div class="field"><label>站点</label><select class="control" id="receiptV2Site"><option value="">全部</option><option>MY</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-receipts">↻ 重置</button><button class="btn primary" data-finance-v2="search-receipts">⌕ 查询</button></div></div></div></div>' +
       '<div class="card"><div class="card-head"><div>收款单列表 <span class="subtle" id="receiptV2Summary"></span></div><span class="subtle">未收款且整单生成错误时可作废</span></div><div id="receiptV2Result"></div></div>';
@@ -242,7 +268,7 @@
         if (!reference || !voucher) { modalError('请填写银行流水号和到账凭证。'); return; }
         const account = platformFundAccounts.find(function (item) { return item.id === $('#receiptV2PlatformAccount').value; });
         Object.assign(order,{status:'已收款',platformAccount:account.accountName + ' / ' + account.accountNumber.slice(-4),receivedAt:$('#receiptV2ReceivedAt').value,reference:reference,voucher:voucher,operator:'贾瑞真'});
-        closeModals(); renderRecyclerReceiptListV2(); toast('已标记收款，到账记录已冻结。');
+        closeModals(); renderFundsLedgerV2('receipts'); toast('已标记收款，到账记录已冻结。');
       }, 'primary');
   }
 
@@ -252,7 +278,7 @@
       const reason = $('#receiptV2VoidReason').value.trim();
       if (!reason) { modalError('请填写作废原因。'); return; }
       order.status = '已作废'; order.voidReason = reason; order.operator = '贾瑞真';
-      closeModals(); renderRecyclerReceiptListV2(); toast('回收商收款单已作废。');
+      closeModals(); renderFundsLedgerV2('receipts'); toast('回收商收款单已作废。');
     }, 'danger');
   }
 
@@ -302,7 +328,7 @@
   function openSettlementPaidV2(bill) {
     const accounts = payoutAccountsV2();
     if (!accounts.length) { toast('没有可用的平台打款账户，请先维护平台资金账户。'); return; }
-    openBusinessModal('标记已付款', '<div class="alert"><span>ⓘ</span><div>仅在线下打款真实完成后确认。当前不支持部分付款；确认后付款记录不可修改、不可冲正，来源订单永久关闭退款。</div></div><div class="form-grid"><div class="field span-2"><label>平台实际打款账户 *</label><select class="control" id="settlementV2PlatformAccount">' + accountOptionsV2(accounts, accounts.find(function (account) { return account.isDefault; })?.id) + '</select></div><div class="field"><label>实际付款金额 *</label><input class="control readonly" value="' + bill.amount + '" readonly /></div><div class="field"><label>实际付款时间 *</label><input class="control" id="settlementV2PaidAt" value="2026-09-08 11:00" /></div><div class="field"><label>银行流水号 *</label><input class="control" id="settlementV2Reference" placeholder="请输入银行流水号" /></div><div class="field"><label>付款凭证 *</label><input class="control" id="settlementV2Voucher" placeholder="请输入凭证编号或文件名" /></div></div>', '确认已付款', function () {
+    openBusinessModal('标记已付款', '<div class="alert"><span>ⓘ</span><div>仅在线下打款真实完成后确认。当前不支持部分付款；确认后付款记录只读保留，不支持修改或重新付款，来源订单永久关闭退款。</div></div><div class="form-grid"><div class="field span-2"><label>平台实际打款账户 *</label><select class="control" id="settlementV2PlatformAccount">' + accountOptionsV2(accounts, accounts.find(function (account) { return account.isDefault; })?.id) + '</select></div><div class="field"><label>实际付款金额 *</label><input class="control readonly" value="' + bill.amount + '" readonly /></div><div class="field"><label>实际付款时间 *</label><input class="control" id="settlementV2PaidAt" value="2026-09-08 11:00" /></div><div class="field"><label>银行流水号 *</label><input class="control" id="settlementV2Reference" placeholder="请输入银行流水号" /></div><div class="field"><label>付款凭证 *</label><input class="control" id="settlementV2Voucher" placeholder="请输入凭证编号或文件名" /></div></div>', '确认已付款', function () {
       const reference = $('#settlementV2Reference').value.trim();
       const voucher = $('#settlementV2Voucher').value.trim();
       if (!reference || !voucher) { modalError('请填写银行流水号和付款凭证。'); return; }
@@ -336,13 +362,14 @@
     $('#settlementConfigBody').innerHTML =
       '<div class="page-title"><h1>结算配置</h1><div class="page-actions"><button class="btn" data-finance-v2="run-settlement-preview-v2">运行结算预览</button><button class="btn" data-finance-v2="rerun-settlement-v2">补跑自动任务</button><button class="btn primary" data-finance-v2="edit-settlement-config-v2">编辑配置</button></div></div>' +
       '<div class="alert"><span>ⓘ</span><div>系统在结算周期结束后等待配置的自然日天数，再按生成时刻自动建单。延迟期用于等待业务状态稳定，但纳入资格不读取取货或送达状态。</div></div>' +
-      '<div class="card"><div class="card-head"><div>站点结算配置</div><span class="subtle">同一站点同一时刻仅一条配置生效</span></div><div class="card-body">' + [['站点',settlementConfigV2.site],['结算周期',settlementConfigV2.cycle],['周期规则',settlementPeriodRuleV2()],['周期结束后延迟',settlementConfigV2.delayDays + ' 个自然日'],['自动生成时刻',settlementConfigV2.generateAt],['付款截止天数',settlementConfigV2.paymentDueDays + ' 个自然日'],['站点时区',settlementConfigV2.timezone],['启用状态',settlementConfigV2.enabled ? '开启' : '停用'],['生效日期',settlementConfigV2.effectiveDate],['下次生成时间',settlementConfigV2.enabled ? nextSettlementRunV2() : '—（已停用）'],['最近执行结果',settlementConfigV2.lastRun]].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div>' +
+      '<div class="card"><div class="card-head"><div>站点结算配置</div><span class="subtle">同一站点同一时刻仅一条配置生效</span></div><div class="card-body">' + [['站点',settlementConfigV2.site],['结算周期',settlementConfigV2.cycle],['周期规则',settlementPeriodRuleV2()],['生成延迟天数',settlementConfigV2.delayDays + ' 个自然日（≥ 1）'],['生成时刻',settlementConfigV2.generateAt + '（站点时区）'],['生成日期公式','周期最后一个自然日＋生成延迟天数'],['付款截止天数',settlementConfigV2.paymentDueDays + ' 个自然日'],['站点时区',settlementConfigV2.timezone],['启用状态',settlementConfigV2.enabled ? '开启' : '停用'],['生效日期',settlementConfigV2.effectiveDate],['下次生成时间',settlementConfigV2.enabled ? nextSettlementRunV2() : '—（已停用）'],['最近执行结果',settlementConfigV2.lastRun]].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div>' +
+      '<div class="card"><div class="card-head"><div>生成日期示例</div><span class="subtle">生成时刻均为站点时区 02:00</span></div><div class="card-body">' + [['月结：2026-08','2026-08-31 ＋ 7 天 ＝ 2026-09-07 02:00'],['半月结：2026-09-01～15','2026-09-15 ＋ 7 天 ＝ 2026-09-22 02:00'],['半月结：2026-09-16～30','2026-09-30 ＋ 7 天 ＝ 2026-10-07 02:00']].map(function (item) { return '<div class="desc"><span class="desc-label">' + esc(item[0]) + '</span><span>' + esc(item[1]) + '</span></div>'; }).join('') + '</div></div>' +
       '<div class="card"><div class="card-head"><div>自动纳入规则</div><span class="subtle">以成交及资金状态为准</span></div><div class="card-body"><div class="relation-strip"><div class="relation-node"><b>① 周期归属</b><div class="merchant-account">成交时间位于结算周期</div></div><div class="relation-arrow">→</div><div class="relation-node"><b>② 生成时重算</b><div class="merchant-account">读取最新有效退款结果</div></div><div class="relation-arrow">→</div><div class="relation-node"><b>③ 资格校验</b><div class="merchant-account">回收商全额到账 · 无争议 · 未重复纳入</div></div><div class="relation-arrow">→</div><div class="relation-node"><b>④ 自动建单</b><div class="merchant-account">直接待付款并锁定退款</div></div></div><div class="audit-note" style="margin-top:12px"><b>不参与资格判断：</b>取货状态、送达状态。退款处理中或账户异常的订单保留在原周期，问题解决后通过受控补跑生成。</div></div></div>';
   }
 
   function openSettlementConfigV2() {
     openBusinessModal('编辑结算配置',
-      '<div class="alert"><span>ⓘ</span><div>修改只影响尚未开始的结算周期；已生成结算单继续使用原配置快照。</div></div><div class="form-grid"><div class="field"><label>结算周期 *</label><select class="control" id="settlementConfigV2Cycle"><option ' + (settlementConfigV2.cycle === '半月结' ? 'selected' : '') + '>半月结</option><option ' + (settlementConfigV2.cycle === '月结' ? 'selected' : '') + '>月结</option></select></div><div class="field"><label>启用状态 *</label><select class="control" id="settlementConfigV2Enabled"><option value="true" ' + (settlementConfigV2.enabled ? 'selected' : '') + '>开启</option><option value="false" ' + (!settlementConfigV2.enabled ? 'selected' : '') + '>停用</option></select></div><div class="field"><label>周期结束后延迟天数 *</label><input class="control" id="settlementConfigV2Delay" type="number" min="1" max="31" value="' + settlementConfigV2.delayDays + '" /></div><div class="field"><label>自动生成时刻 *</label><input class="control" id="settlementConfigV2Time" type="time" value="' + settlementConfigV2.generateAt + '" /></div><div class="field"><label>付款截止天数 *</label><input class="control" id="settlementConfigV2Due" type="number" min="1" max="30" value="' + settlementConfigV2.paymentDueDays + '" /></div><div class="field"><label>站点时区 *</label><input class="control readonly" value="' + esc(settlementConfigV2.timezone) + '" readonly /></div><div class="field span-2"><label>生效日期 *</label><input class="control" id="settlementConfigV2Effective" type="date" value="' + settlementConfigV2.effectiveDate + '" /></div></div>',
+      '<div class="alert"><span>ⓘ</span><div>修改只影响尚未开始的结算周期；已生成结算单继续使用原配置快照。</div></div><div class="form-grid"><div class="field"><label>结算周期 *</label><select class="control" id="settlementConfigV2Cycle"><option ' + (settlementConfigV2.cycle === '半月结' ? 'selected' : '') + '>半月结</option><option ' + (settlementConfigV2.cycle === '月结' ? 'selected' : '') + '>月结</option></select></div><div class="field"><label>启用状态 *</label><select class="control" id="settlementConfigV2Enabled"><option value="true" ' + (settlementConfigV2.enabled ? 'selected' : '') + '>开启</option><option value="false" ' + (!settlementConfigV2.enabled ? 'selected' : '') + '>停用</option></select></div><div class="field"><label>生成延迟天数 *</label><input class="control" id="settlementConfigV2Delay" type="number" min="1" max="31" value="' + settlementConfigV2.delayDays + '" /></div><div class="field"><label>生成时刻 *</label><input class="control" id="settlementConfigV2Time" type="time" value="' + settlementConfigV2.generateAt + '" /></div><div class="field"><label>付款截止天数 *</label><input class="control" id="settlementConfigV2Due" type="number" min="1" max="30" value="' + settlementConfigV2.paymentDueDays + '" /></div><div class="field"><label>站点时区 *</label><input class="control readonly" value="' + esc(settlementConfigV2.timezone) + '" readonly /></div><div class="field span-2"><label>生效日期 *</label><input class="control" id="settlementConfigV2Effective" type="date" value="' + settlementConfigV2.effectiveDate + '" /></div></div>',
       '保存', function () {
         const delay = Number($('#settlementConfigV2Delay').value);
         const due = Number($('#settlementConfigV2Due').value);
@@ -354,7 +381,7 @@
 
   function openSettlementPreviewV2() {
     openBusinessModal('结算预览',
-      '<div class="alert success"><span>✓</span><div><b>预览完成：3 张待付款结算单候选</b><br>按成交时间归属 2026-08 月结，并读取 2026-09-07 09:00 的最新退款结果。</div></div>' +
+      '<div class="alert success"><span>✓</span><div><b>预览完成：3 张待付款结算单候选</b><br>按成交时间归属 2026-08 月结，并读取 2026-09-07 02:00 的最新退款结果。</div></div>' +
       metricCards([['扫描成交订单','4 笔'],['符合资格订单','2 笔'],['退款后金额重算','1 笔'],['暂缓纳入','1 笔']]) +
       '<div class="table-wrap"><table class="table"><thead><tr><th>订单号</th><th>成交时间</th><th>退款状态</th><th>回收商收款</th><th>预览结果</th><th>原因</th></tr></thead><tbody><tr><td>ORD-MY-20260820-0041</td><td>2026-08-20 14:10</td><td>未退款</td><td>已收款</td><td><span class="tag green">纳入</span></td><td>符合全部资格</td></tr><tr><td>ORD-MY-20260819-0021</td><td>2026-08-19 11:08</td><td>未退款</td><td>已收款</td><td><span class="tag green">纳入</span></td><td>符合全部资格</td></tr><tr><td>ORD-MY-20260819-0028</td><td>2026-08-19 16:35</td><td>退款已生效</td><td>已收款</td><td><span class="tag blue">金额重算</span></td><td>按退款后的当前应结算金额计算</td></tr><tr><td>ORD-MY-20260819-0032</td><td>2026-08-19 18:40</td><td>未退款</td><td>待收款</td><td><span class="tag orange">暂缓</span></td><td>回收商款未全额到账</td></tr></tbody></table></div><div class="audit-note" style="margin-top:12px">预览不落库、不锁定退款、不生成空结算单；列表不展示取货或送达条件。</div>',
       '关闭', function () { closeModals(); }, 'primary');
@@ -365,21 +392,17 @@
   }
 
   Object.assign(I18N_EXACT, {
-    '预付金下拨单':'Prepayment Disbursement Orders','预付金下拨单详情':'Prepayment Disbursement Details','回收商收款单':'Recycler Receipt Orders','回收商收款单详情':'Recycler Receipt Details','登记下拨／追加':'Record Disbursement / Top-up','下拨单列表':'Disbursement Orders','累计下拨及追加':'Total Disbursed and Topped Up','本月追加':'Top-ups This Month','实际下拨时间':'Actual Disbursement Time','供货商预付金账户':'Supplier Prepayment Account','收款单列表':'Receipt Orders','应收金额':'Amount Receivable','实际到账时间':'Actual Receipt Time','到账凭证':'Receipt Evidence','作废':'Void','已作废':'Voided','待付款':'Pending Payment','已付款':'Paid','付款截止日期':'Payment Due Date','周期结束后延迟':'Delay After Period End','周期结束后延迟天数':'Days After Period End','自动生成时刻':'Automatic Generation Time','付款截止天数':'Payment Due Days','自动纳入规则':'Automatic Inclusion Rules','运行结算预览':'Preview Settlement Run','退款后金额重算':'Recalculated After Refund','当前应结算金额':'Current Settlement Amount','资金台账只记录和展示资金事实。成交、退款、预付金与角色分成分别核算；退款不以取货或送达状态为前置条件。':'The fund ledger records financial facts only. Transactions, refunds, prepayments, and revenue shares are calculated separately; refunds do not depend on pickup or delivery status.'
+    '预付金记录详情':'Prepayment Record Details','回收商收款单详情':'Recycler Receipt Details','资金明细':'Fund Details','门店预付金':'Store Prepayment','回收商收款单':'Recycler Receipt Orders','登记预付金':'Record Prepayment','预付金金额':'Prepayment Amount','已使用金额':'Used Amount','剩余金额':'Remaining Amount','已退金额':'Returned Amount','实际退回':'Actual Return','预付金记录':'Prepayment Records','实际发生时间':'Actual Time','供货商预付金账户':'Supplier Prepayment Account','收款单列表':'Receipt Orders','应收金额':'Amount Receivable','实际到账时间':'Actual Receipt Time','到账凭证':'Receipt Evidence','作废':'Void','已作废':'Voided','待付款':'Pending Payment','已付款':'Paid','付款截止日期':'Payment Due Date','生成延迟天数':'Generation Delay Days','生成时刻':'Generation Time','生成日期公式':'Generation Date Formula','付款截止天数':'Payment Due Days','自动纳入规则':'Automatic Inclusion Rules','运行结算预览':'Preview Settlement Run','退款后金额重算':'Recalculated After Refund','当前应结算金额':'Current Settlement Amount','资金台账只记录和展示资金事实。成交、退款、预付金与角色分成分别核算；退款不以取货或送达状态为前置条件。':'The fund ledger records financial facts only. Transactions, refunds, prepayments, and revenue shares are calculated separately; refunds do not depend on pickup or delivery status.'
   });
 
   renderFinanceLedger = renderFundsLedgerV2;
   renderSettlementBillList = renderSettlementListV2;
   renderSettlementBillDetail = renderSettlementDetailV2;
   renderSettlementConfig = renderSettlementConfigV2;
-  reverseSettlementBill = function () { toast('当前版本不支持付款冲正。'); return false; };
-
   document.addEventListener('click', function (event) {
     const nav = event.target.closest('[data-nav]');
     if (nav) {
       if (nav.dataset.nav === 'financeLedger') { renderFundsLedgerV2(); setView('financeLedger'); }
-      if (nav.dataset.nav === 'prepaymentDisbursement') { renderPrepaymentListV2(); setView('prepaymentDisbursement'); }
-      if (nav.dataset.nav === 'recyclerReceipt') { renderRecyclerReceiptListV2(); setView('recyclerReceipt'); }
       if (nav.dataset.nav === 'settlementBill') { renderSettlementListV2(); setView('settlementBill'); }
       if (nav.dataset.nav === 'settlementConfig') { renderSettlementConfigV2(); setView('settlementConfig'); }
     }
@@ -390,21 +413,20 @@
     const prepayment = prepaymentDisbursementOrdersV2.find(function (order) { return order.id === id; });
     const receipt = recyclerReceiptOrdersV2.find(function (order) { return order.id === id; });
     const settlement = settlementBillsV2.find(function (bill) { return bill.id === id; });
-    if (action === 'open-prepayment-list') { renderPrepaymentListV2(); setView('prepaymentDisbursement'); }
-    if (action === 'open-recycler-receipts') { renderRecyclerReceiptListV2(); setView('recyclerReceipt'); }
+    if (action === 'switch-ledger-tab') { renderFundsLedgerV2(target.dataset.tab); }
     if (action === 'search-ledger') filterFundsLedgerV2();
     if (action === 'reset-ledger') { $('#fundV2Keyword').value=''; $('#fundV2Type').value=''; $('#fundV2Receipt').value=''; filterFundsLedgerV2(); }
     if (action === 'search-prepayment') filterPrepaymentV2();
     if (action === 'reset-prepayment') { $('#prepaymentV2Keyword').value=''; $('#prepaymentV2Type').value=''; $('#prepaymentV2Site').value=''; filterPrepaymentV2(); }
     if (action === 'create-prepayment') openPrepaymentCreateV2();
     if (action === 'view-prepayment' && prepayment) renderPrepaymentDetailV2(prepayment);
-    if (action === 'back-prepayment') { renderPrepaymentListV2(); setView('prepaymentDisbursement'); }
+    if (action === 'back-prepayment') { renderFundsLedgerV2('prepayment'); setView('financeLedger'); }
     if (action === 'search-receipts') filterRecyclerReceiptsV2();
     if (action === 'reset-receipts') { $('#receiptV2Keyword').value=''; $('#receiptV2Status').value=''; $('#receiptV2Site').value=''; filterRecyclerReceiptsV2(); }
     if (action === 'view-recycler-receipt' && receipt) renderRecyclerReceiptDetailV2(receipt);
     if (action === 'mark-recycler-received' && receipt) openRecyclerReceiveV2(receipt);
     if (action === 'void-recycler-receipt' && receipt) openRecyclerVoidV2(receipt);
-    if (action === 'back-recycler-receipts') { renderRecyclerReceiptListV2(); setView('recyclerReceipt'); }
+    if (action === 'back-recycler-receipts') { renderFundsLedgerV2('receipts'); setView('financeLedger'); }
     if (action === 'search-settlements') filterSettlementsV2();
     if (action === 'reset-settlements') { $('#settlementV2Keyword').value=''; $('#settlementV2Type').value=''; $('#settlementV2Status').value=''; filterSettlementsV2(); }
     if (action === 'view-settlement-v2' && settlement) renderSettlementDetailV2(settlement);
@@ -430,8 +452,6 @@
   });
 
   renderFundsLedgerV2();
-  renderPrepaymentListV2();
-  renderRecyclerReceiptListV2();
   renderSettlementListV2();
   renderSettlementConfigV2();
 })();
