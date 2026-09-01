@@ -39,7 +39,7 @@ test('settlement has the required lifecycle', () => {
 });
 
 test('platform inline script compiles', () => {
-  const script = platform.match(/<script>([\s\S]*)<\/script>\s*<\/body>/)?.[1];
+  const script = platform.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script);
   assert.doesNotThrow(() => new Function(script));
 });
@@ -51,10 +51,28 @@ test('refund is not gated by return or after-sales', () => {
 });
 
 test('return refund entrypoints open the independent editor', () => {
-  assert.match(platform, /function renderReturnRows\(list\).*open-refund-editor/);
+  assert.match(platform, /renderReturnRows(?:=function|\(list\)).*open-refund-editor/);
   assert.match(platform, /function viewReturn\(r\).*退回记录不限制退款发起/);
   assert.match(platform, /if\(action==='start-refund'\).*openRefundEditor\(o\)/);
   assert.match(platform, /if\(action==='create-adjustment-from-return'\).*openRefundEditor\(o\)/);
+});
+
+test('refund demo keeps an unsettled order available for the PC interaction', () => {
+  const monthEnd = platform.match(/const initialSettlementDraft=buildSettlementDraft\(\{[^}]*monthEnd:'([^']+)'/)?.[1];
+  const draftOrderId = platform.match(/\{id:'RFD-[^']+',order:'([^']+)',status:'草稿'/)?.[1];
+  const draftOrder = draftOrderId && platform.match(new RegExp(`\\{id:'${draftOrderId}'[^}]*dealAt:'([^']+)'`));
+
+  assert.ok(monthEnd, 'initial settlement cutoff should be explicit');
+  assert.ok(draftOrder, 'the refund draft should point to a visible order');
+  assert.ok(draftOrder[1] >= monthEnd, 'the draft order must remain outside the effective settlement window');
+});
+
+test('formal refund initiation has preview, confirmation, and business validation', () => {
+  for (const text of [
+    '退款资金影响预览', '业务依据', '返回修改', '确认正式发起',
+    '预付金恢复金额', '待结算方向', 'function previewRefundInitiation'
+  ]) assert.match(platform, new RegExp(text));
+  assert.match(platform, /现金退款不能直接支付给门店/);
 });
 
 test('settlement splits by account, direction, and currency', () => {
