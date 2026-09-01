@@ -61,6 +61,8 @@
       <div class="nav-item" data-nav="orderList">▦ <span>成交订单</span></div>
       <div class="nav-group">财务管理</div>
       <div class="nav-item" data-nav="financeLedger">▤ <span>资金台账</span></div>
+      <div class="nav-item" data-nav="prepaymentDisbursement">▱ <span>预付金下拨单</span></div>
+      <div class="nav-item" data-nav="recyclerReceipt">▰ <span>回收商收款单</span></div>
       <div class="nav-item" data-nav="settlementBill">▧ <span>结算单</span></div>
       <div class="nav-item" data-nav="settlementConfig">⚙ <span>结算配置</span></div>
       <div class="nav-item" data-nav="platformFundAccount">▣ <span>平台资金账户</span></div>
@@ -180,6 +182,10 @@
       <section class="page" id="adjustmentCreatePage"><div id="adjustmentCreateBody"></div></section>
       <section class="page" id="adjustmentDetailPage"><div id="adjustmentDetailBody"></div></section>
       <section class="page" id="financeLedgerPage"><div id="financeLedgerBody"></div></section>
+      <section class="page" id="prepaymentDisbursementPage"><div id="prepaymentDisbursementBody"></div></section>
+      <section class="page" id="prepaymentDisbursementDetailPage"><div id="prepaymentDisbursementDetailBody"></div></section>
+      <section class="page" id="recyclerReceiptPage"><div id="recyclerReceiptBody"></div></section>
+      <section class="page" id="recyclerReceiptDetailPage"><div id="recyclerReceiptDetailBody"></div></section>
       <section class="page" id="settlementBillPage"><div id="settlementBillBody"></div></section>
       <section class="page" id="settlementBillDetailPage"><div id="settlementBillDetailBody"></div></section>
       <section class="page" id="settlementConfigPage"><div id="settlementConfigBody"></div></section>
@@ -1181,11 +1187,11 @@
     const renderOrderListBase=renderOrderList;
     function settlementStatusForRefund(order){const bill=settlementBills.find(function(x){return (x.sourceOrderIds||[]).includes(order.id)&&x.status!=='已冲正'});return bill?bill.status:order.settlementStatus}
     function displayedRefundRecord(order){const records=refundsForOrder(order);return activeRefundForOrder(order)||records.find(function(x){return x.status==='草稿'})||records[0]||null}
-    function renderOrderList(){
+    renderOrderList=function(){
       renderOrderListBase();
       const metrics=$('#orderListBody .metric-grid');
       if(metrics)metrics.outerHTML=metricCards([['成交订单',orders.length],['待取货',orders.filter(function(x){return x.status==='待取货'}).length],['已发起退款',refundRecords.filter(function(x){return x.status==='已发起'}).length],['退回中',orders.filter(function(x){return returnState(x)==='退回中'}).length]]);
-    }
+    };
     function renderOrderRows(list){
       visibleOrders=list;$('#orderSummary').textContent='共 '+list.length+' 条';if(!list.length){$('#orderResultArea').innerHTML='<div class="empty-compact">没有符合当前条件的成交订单</div>';return}
       const headCheck='<th class="check-cell"><input type="checkbox" aria-label="选择当前页订单" data-biz-check="select-all-orders" /></th>';
@@ -1210,9 +1216,9 @@
     function cancelRefund(record){const order=orders.find(function(o){return o.id===record.order});if(!order||record.status!=='已发起'||refundPermission(order)!=='可发起'){toast('当前退款已锁定或关闭，不能取消。');return}openBusinessModal('取消退款','<div class="alert warning"><span>!</span><div>取消后原退款记录和冻结方向仍会保留，并追加反向资金影响。</div></div><div class="readonly-box"><label>退款记录</label><b>'+esc(record.id)+' · MYR '+record.amount.toLocaleString()+'</b></div><div class="field" style="margin-top:14px"><label>取消原因 *</label><textarea class="control" id="refundCancelReason" placeholder="请说明取消退款的原因"></textarea></div>','确认取消退款',function(){const reason=$('#refundCancelReason').value.trim();if(!reason){modalError('请填写取消原因。');return}record.status='已取消';record.cancelledBy='贾瑞真';record.cancelledAt='2026-08-23 11:45';record.cancelReason=reason;if(typeof rebuildLedgerEntries==='function')rebuildLedgerEntries();closeModals();renderOrderList();if($('#orderDetailPage').classList.contains('active'))renderOrderDetail(order,'order-aftersales');toast('退款 '+record.id+' 已取消，原记录与方向已保留')},'danger')}
     function viewRefundRecord(record){openBusinessModal('退款记录详情','<div class="summary-grid"><div class="summary-item"><label>退款记录号</label><b>'+esc(record.id)+'</b></div><div class="summary-item"><label>状态</label>'+statusTag(record.status)+'</div><div class="summary-item"><label>退款金额</label><b class="money">MYR '+record.amount.toLocaleString()+'</b></div><div class="summary-item"><label>发起时间</label><b>'+esc(record.initiatedAt)+'</b></div></div><div class="readonly-box" style="margin-top:12px"><label>原因</label><b>'+esc(record.reason)+'</b><div>'+esc(record.description)+'</div></div><div class="card" style="margin-top:12px"><div class="table-wrap"><table class="amount-table"><thead><tr><th>方向类型</th><th>付款方及账户</th><th>收款方及账户</th><th>金额</th></tr></thead><tbody>'+record.directions.map(function(d){return '<tr><td>'+esc(d.kind)+'</td><td>'+esc(d.payer)+'<div class="merchant-account">'+esc(d.payerAccount)+'</div></td><td>'+esc(d.payee)+'<div class="merchant-account">'+esc(d.payeeAccount)+'</div></td><td class="money">MYR '+Number(d.amount).toLocaleString()+'</td></tr>'}).join('')+'</tbody></table></div></div>'+(record.status==='已取消'?'<div class="readonly-box"><label>取消信息</label>'+esc(record.cancelledAt)+' · '+esc(record.cancelledBy)+'<div>'+esc(record.cancelReason)+'</div></div>':'')+'','关闭',function(){closeModals()},'primary')}
     const renderAdjustmentCreateBase=renderAdjustmentCreate;
-    function renderAdjustmentCreate(order,mode){if(mode==='refund'){const current=orders.find(function(o){return o.id===order});if(current)openRefundEditor(current);return}renderAdjustmentCreateBase(order,mode)}
+    renderAdjustmentCreate=function(order,mode){if(mode==='refund'){const current=orders.find(function(o){return o.id===order});if(current)openRefundEditor(current);return}renderAdjustmentCreateBase(order,mode)};
     const renderReturnRowsBase=renderReturnRows;
-    function renderReturnRows(list){renderReturnRowsBase(list);$$('#returnResultArea tbody tr').forEach(function(row,index){const record=list[index],order=record&&orders.find(function(o){return o.id===record.order}),actions=row.querySelector('td:last-child .inline-actions');if(!order||!actions)return;actions.querySelectorAll('[data-biz="start-refund"]').forEach(function(button){button.dataset.biz='open-refund-editor';button.textContent='发起退款'});const active=activeRefundForOrder(order),permission=refundPermission(order),draft=refundsForOrder(order).find(function(x){return x.status==='草稿'});if(active&&permission==='可发起'&&!actions.querySelector('[data-biz="cancel-refund"]'))actions.insertAdjacentHTML('beforeend','<button class="btn link danger-link" data-biz="cancel-refund" data-id="'+esc(active.id)+'">取消退款</button>');if(!active&&permission==='可发起'&&!actions.querySelector('[data-biz="open-refund-editor"]'))actions.insertAdjacentHTML('beforeend','<button class="btn link" data-biz="open-refund-editor" data-id="'+esc(order.id)+'">'+(draft?'编辑退款草稿':'发起退款')+'</button>')})}
+    renderReturnRows=function(list){renderReturnRowsBase(list);$$('#returnResultArea tbody tr').forEach(function(row,index){const record=list[index],order=record&&orders.find(function(o){return o.id===record.order}),actions=row.querySelector('td:last-child .inline-actions');if(!order||!actions)return;actions.querySelectorAll('[data-biz="start-refund"]').forEach(function(button){button.dataset.biz='open-refund-editor';button.textContent='发起退款'});const active=activeRefundForOrder(order),permission=refundPermission(order),draft=refundsForOrder(order).find(function(x){return x.status==='草稿'});if(active&&permission==='可发起'&&!actions.querySelector('[data-biz="cancel-refund"]'))actions.insertAdjacentHTML('beforeend','<button class="btn link danger-link" data-biz="cancel-refund" data-id="'+esc(active.id)+'">取消退款</button>');if(!active&&permission==='可发起'&&!actions.querySelector('[data-biz="open-refund-editor"]'))actions.insertAdjacentHTML('beforeend','<button class="btn link" data-biz="open-refund-editor" data-id="'+esc(order.id)+'">'+(draft?'编辑退款草稿':'发起退款')+'</button>')})};
     function viewReturn(r){const order=orders.find(function(o){return o.id===r.order}),active=order&&activeRefundForOrder(order),permission=order?refundPermission(order):'已关闭',canStart=order&&!active&&permission==='可发起',canCancel=active&&permission==='可发起',confirmText=canCancel?'取消退款':canStart?'发起退款':'关闭';openBusinessModal('退回记录详情','<div class="summary-grid"><div class="summary-item"><label>退回记录</label><b>'+esc(r.id)+'</b></div><div class="summary-item"><label>状态</label>'+statusTag(r.status)+'</div><div class="summary-item"><label>退回原因</label><b>'+esc(r.reasonType||'其他')+'</b></div><div class="summary-item"><label>退款权限</label>'+statusTag(permission)+'</div></div><div class="readonly-box" style="margin-top:12px"><label>订单 / 标单</label><b>'+esc(r.order)+' / '+esc(r.bidId)+'</b></div><div class="readonly-box"><label>原因说明</label>'+esc(r.reason)+'</div><div class="readonly-box"><label>退回店铺（成交快照）</label>'+esc(r.store)+'</div><div class="audit-note" style="margin-top:12px">退回记录不限制退款发起；退款请按订单退款权限独立处理。</div>',confirmText,function(){closeModals();if(canCancel)cancelRefund(active);else if(canStart)openRefundEditor(order)},canCancel?'danger':'primary')}
     function settlementBoundary(value,end){return value+(end?' 23:59':' 00:00')}
     function money2(value){return 'MYR '+Number(value||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
@@ -1620,5 +1626,6 @@
     filteredStaff=staffAccounts();renderList();renderStaffList();renderStoreList();renderMappingRules();renderBidList();renderRoundList();renderOrderList();renderPrivacyList();renderReturnList();renderAdjustmentList();renderFinanceLedger();renderSettlementBillList();loadDefaultRatioForm();
     Object.assign(window.prototypeState,{refundRecords,refundsForOrder,activeRefundForOrder,refundPermission,refundAmountType,openRefundEditor,submitRefund,cancelRefund,viewRefundRecord});
   </script>
+  <script src="./platform-finance-v2.js?v=20260901"></script>
 </body>
 </html>
