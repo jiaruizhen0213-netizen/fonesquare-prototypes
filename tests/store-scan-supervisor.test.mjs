@@ -29,9 +29,10 @@ test('supervisor pickup is an isolated OB workspace', () => {
 });
 
 test('supervisor supports single and constrained batch pickup plus delivery without batch artifacts', () => {
-  for (const required of ['confirmSupervisorPickup', 'confirmSupervisorDelivery', '同一门店', '同一回收商', '状态不可撤销', '确认已送达']) {
+  for (const required of ['confirmSupervisorPickup', 'confirmSupervisorDelivery', 'toggleSupervisorBatchSelection', '批量勾选', '同一门店', '同一回收商', '状态不可撤销', '确认已送达']) {
     assert.match(store, new RegExp(required));
   }
+  assert.doesNotMatch(store, /id="supervisorRegionFilter"|getElementById\('supervisorRegionFilter'\)/);
   for (const forbidden of ['创建已取货批次', '取货批次号', '交接码', '扫码取货']) {
     assert.doesNotMatch(store, new RegExp(forbidden));
   }

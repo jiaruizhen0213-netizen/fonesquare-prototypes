@@ -419,6 +419,7 @@
     .supervisor-stat span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.35; }
     .supervisor-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .supervisor-filters input, .supervisor-filters select { width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+    #supervisorKeyword { grid-column: 1 / -1; }
     .supervisor-order { display: grid; grid-template-columns: 24px 1fr; gap: 10px; padding: 15px; border-bottom: 1px solid var(--line); background: #fff; }
     .supervisor-order:last-child { border-bottom: 0; }
     .supervisor-order.disabled { opacity: .48; }
@@ -432,6 +433,9 @@
     .supervisor-bottom-nav .nav-button.active { color: #315a7d; }
     .supervisor-workbench-action { bottom: calc(58px + env(safe-area-inset-bottom)); }
     .batch-selection-note { min-height: 20px; margin: 10px 12px 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .batch-selection-tools { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin: 10px 12px 0; }
+    .batch-selection-tools .batch-selection-note { margin: 0; }
+    .batch-select-button { min-height: 36px; padding: 0 12px; border: 1px solid #cfd7df; border-radius: 10px; color: #294967; background: #fff; font-size: 12px; font-weight: 700; }
     .permission-demo { display: grid; gap: 8px; }
     .permission-demo button { min-height: 42px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); }
     .case-hero { padding: 34px 22px 26px; color: #fff; background: linear-gradient(145deg,#151515,#343434 62%,#4a2a1e); }
@@ -821,7 +825,6 @@
       <div class="callout success">系统仅设一名督导；登录后可查看全部区域、商家和门店的待取货、已取货及已送达订单。</div>
       <div class="supervisor-stats"><div class="supervisor-stat"><strong id="supervisorPendingCount">0</strong><span>待取货</span></div><div class="supervisor-stat"><strong id="supervisorPickedCount">0</strong><span>已取货</span></div><div class="supervisor-stat"><strong id="supervisorDeliveredCount">0</strong><span>已送达</span></div></div>
       <section class="section supervisor-filters">
-        <select id="supervisorRegionFilter" aria-label="区域"><option value="">全部区域</option><option>Klang Valley</option><option>Selangor North</option></select>
         <select id="supervisorStoreFilter" aria-label="门店"><option value="">全部门店</option><option>中心旗舰店</option><option>北区门店</option></select>
         <select id="supervisorRecyclerFilter" aria-label="回收商"><option value="">全部回收商</option><option>Eco Mobile MY</option><option>Circular Tech</option></select>
         <input id="supervisorKeyword" type="search" placeholder="订单号、标单号、商品或 SKU">
@@ -831,7 +834,7 @@
         <button class="handover-tab" type="button" data-supervisor-status="picked">已取货</button>
         <button class="handover-tab" type="button" data-supervisor-status="delivered">已送达</button>
       </div>
-      <p class="batch-selection-note" id="supervisorSelectionNote">选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。</p>
+      <div class="batch-selection-tools"><p class="batch-selection-note" id="supervisorSelectionNote">选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。</p><button class="batch-select-button" id="toggleSupervisorBatchSelection" type="button">批量勾选</button></div>
       <div class="batch-list" id="supervisorOrderList"></div>
       <nav class="action-bar single supervisor-workbench-action"><button class="action-button primary" id="openSupervisorBatch" type="button" disabled>批量确认已取货</button></nav>
     </section>
@@ -1071,6 +1074,8 @@
       '订单号、标单号、商品或 SKU': 'Order, lot, product or SKU',
       '选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。': 'After selecting an order, only pending orders from the same store and recycler can be selected.',
       '批量确认已取货': 'Confirm Selected as Picked Up',
+      '批量勾选': 'Select Multiple',
+      '取消勾选': 'Clear Selection',
       '订单详情': 'Order Details',
       '确认已取货': 'Confirm Picked Up',
       '确认已送达': 'Confirm Delivered',
@@ -1646,14 +1651,13 @@
     const supervisorOrderList = document.getElementById('supervisorOrderList');
 
     const supervisorFilteredOrders = () => {
-      const region = document.getElementById('supervisorRegionFilter').value;
       const store = document.getElementById('supervisorStoreFilter').value;
       const recycler = document.getElementById('supervisorRecyclerFilter').value;
       const keyword = document.getElementById('supervisorKeyword').value.trim().toLowerCase();
       return supervisorOrders.filter((order) => {
         const haystack = [order.id, order.lotId, order.product, order.sku].join(' ').toLowerCase();
         return order.pickupStatus === supervisorState.statusFilter &&
-          (!region || order.region === region) && (!store || order.store === store) &&
+          (!store || order.store === store) &&
           (!recycler || order.recycler === recycler) && (!keyword || haystack.includes(keyword));
       });
     };
@@ -1685,6 +1689,9 @@
       });
       const count = supervisorState.selectedIds.size;
       document.getElementById('openSupervisorBatch').disabled = count === 0;
+      const batchSelectionButton = document.getElementById('toggleSupervisorBatchSelection');
+      batchSelectionButton.disabled = supervisorState.statusFilter !== 'pending' || orders.length === 0;
+      batchSelectionButton.textContent = count ? '取消勾选' : '批量勾选';
       document.getElementById('supervisorSelectionNote').textContent = count
         ? '已选择 ' + count + ' 笔 · 仅可继续选择同一门店、同一回收商的待取货订单。'
         : '选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。';
@@ -1702,6 +1709,19 @@
           return;
         }
         supervisorState.selectedIds.add(orderId);
+      }
+      renderSupervisorOrders();
+    }
+
+    function toggleSupervisorBatchSelection() {
+      if (supervisorState.selectedIds.size) {
+        supervisorState.selectedIds.clear();
+      } else {
+        const visiblePendingOrders = supervisorFilteredOrders().filter((order) => order.pickupStatus === 'pending');
+        const anchor = visiblePendingOrders[0];
+        visiblePendingOrders
+          .filter((order) => anchor && order.store === anchor.store && order.recycler === anchor.recycler)
+          .forEach((order) => supervisorState.selectedIds.add(order.id));
       }
       renderSupervisorOrders();
     }
@@ -1763,6 +1783,7 @@
       showToast('OB 督导登录成功');
     });
     document.getElementById('openSupervisorBatch').addEventListener('click', () => prepareSupervisorConfirmation([...supervisorState.selectedIds]));
+    document.getElementById('toggleSupervisorBatchSelection').addEventListener('click', toggleSupervisorBatchSelection);
     document.getElementById('confirmSingleSupervisorPickup').addEventListener('click', () => {
       const order = supervisorOrders.find((item) => item.id === supervisorState.activeOrderId);
       if (order?.pickupStatus === 'pending') { prepareSupervisorConfirmation([supervisorState.activeOrderId]); return; }
@@ -1790,7 +1811,7 @@
       document.querySelectorAll('[data-supervisor-status]').forEach((item) => item.classList.toggle('active', item === tab));
       renderSupervisorOrders();
     }));
-    ['supervisorRegionFilter', 'supervisorStoreFilter', 'supervisorRecyclerFilter'].forEach((id) => document.getElementById(id).addEventListener('change', renderSupervisorOrders));
+    ['supervisorStoreFilter', 'supervisorRecyclerFilter'].forEach((id) => document.getElementById(id).addEventListener('change', renderSupervisorOrders));
     document.getElementById('supervisorKeyword').addEventListener('input', renderSupervisorOrders);
     document.getElementById('refreshSupervisorOrders').addEventListener('click', () => { renderSupervisorOrders(); showToast('订单状态已刷新'); });
     document.querySelectorAll('[data-supervisor-permission]').forEach((button) => button.addEventListener('click', () => {
