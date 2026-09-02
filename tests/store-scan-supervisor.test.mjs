@@ -28,8 +28,8 @@ test('supervisor pickup is an isolated OB workspace', () => {
   assert.doesNotMatch(store, /<option value="supervisor"/);
 });
 
-test('supervisor supports single and constrained batch pickup without batch artifacts', () => {
-  for (const required of ['confirmSupervisorPickup', '同一门店', '同一回收商', '状态不可撤销', '超过 72 小时']) {
+test('supervisor supports single and constrained batch pickup plus delivery without batch artifacts', () => {
+  for (const required of ['confirmSupervisorPickup', 'confirmSupervisorDelivery', '同一门店', '同一回收商', '状态不可撤销', '确认已送达']) {
     assert.match(store, new RegExp(required));
   }
   for (const forbidden of ['创建已取货批次', '取货批次号', '交接码', '扫码取货']) {
