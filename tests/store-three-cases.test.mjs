@@ -46,6 +46,34 @@ test('supervisor case uses one global OB view and supports delivered orders', ()
   }
 });
 
+test('store app separates merchant-staff account login from supervisor Feishu login', () => {
+  for (const required of [
+    'data-page="supervisorLogin"',
+    '登录门店端',
+    '商家与店员',
+    '使用门店统一账号登录',
+    'id="supervisorStoreAccountLogin"',
+    '内部督导',
+    '使用飞书登录',
+    'id="supervisorFeishuLogin"',
+    '正在验证督导身份',
+    '未关联 OB 账号',
+    'data-supervisor-auth-outcome="unbound"',
+    'data-supervisor-auth-outcome="disabled"',
+    'data-supervisor-auth-outcome="no-role"',
+    'data-supervisor-auth-outcome="cancelled"',
+    '飞书登录成功 · OB 督导 李敏'
+  ]) assert.ok(store.includes(required), `missing role-separated login contract: ${required}`);
+
+  for (const forbidden of [
+    'id="supervisorUsername"',
+    'id="supervisorPassword"',
+    '使用演示 OB 账号登录',
+    '独立督导 App',
+    '退出督导 App'
+  ]) assert.ok(!store.includes(forbidden), `obsolete dedicated-supervisor login remains: ${forbidden}`);
+});
+
 test('role case states merchant and staff visibility boundaries', () => {
   for (const required of [
     'data-page="roleOverview"',

@@ -20,10 +20,10 @@ test('IMEI is scan-filled and photos are foldable-only', () => {
   assert.doesNotMatch(store, /id="imeiInput"|关于本机照片|aboutDevicePhoto/);
 });
 
-test('supervisor pickup is an isolated OB workspace', () => {
+test('supervisor pickup is an isolated OB workspace inside the store app', () => {
   for (const required of [
     'supervisorAppEntry', 'data-page="supervisorLogin"', 'data-page="supervisorPickup"',
-    'OB 账号', '现场取货工作台', 'supervisorOrders', 'renderSupervisorOrders'
+    '使用飞书登录', 'OB 账号', '现场取货工作台', 'supervisorOrders', 'renderSupervisorOrders'
   ]) assert.match(store, new RegExp(required));
   assert.doesNotMatch(store, /<option value="supervisor"/);
 });
@@ -41,6 +41,7 @@ test('supervisor supports single and constrained batch pickup plus delivery with
 test('employee scan and supervisor pickup flows include English copy', () => {
   for (const required of [
     'Scan Device', 'Standard Phone', 'Foldable Phone', 'Screen-on Photo', 'Screen-off Photo',
-    'Supervisor App', 'OB Account', 'On-site Pickup', 'Confirm Picked Up', 'Pickup cannot be undone'
+    'Sign in to Store App', 'Merchants and Staff', 'Sign in with Feishu', 'Supervisor Only',
+    'OB Account', 'On-site Pickup', 'Confirm Picked Up', 'Pickup cannot be undone'
   ]) assert.match(store, new RegExp(required));
 });

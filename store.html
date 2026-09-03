@@ -413,6 +413,31 @@
     .supervisor-hero { margin: 10px 12px 0; padding: 20px 18px; border-radius: 20px; color: #fff; background: linear-gradient(135deg,#243653,#365a81); }
     .supervisor-hero h2 { margin: 7px 0; font-size: 24px; }
     .supervisor-hero p { margin: 0; color: rgba(255,255,255,.82); font-size: 12px; line-height: 1.5; }
+    .login-methods { display: grid; gap: 10px; padding: 0 0 20px; }
+    .login-method-card { position: relative; border: 1px solid var(--line); }
+    .login-method-card.supervisor { border-color: #cdd9e7; box-shadow: 0 10px 24px rgba(49,90,125,.08); }
+    .login-method-head { display: grid; grid-template-columns: 42px 1fr auto; gap: 11px; align-items: center; }
+    .login-method-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; color: var(--orange); background: var(--orange-soft); font-size: 15px; font-weight: 850; }
+    .login-method-card.supervisor .login-method-icon { color: #fff; background: #315a7d; }
+    .login-method-head strong { display: block; font-size: 15px; }
+    .login-method-head small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .login-method-badge { padding: 4px 7px; border-radius: 99px; color: #315a7d; background: #edf3f8; font-size: 10px; font-weight: 750; }
+    .login-method-copy { margin: 13px 0 0; color: #555; font-size: 12px; line-height: 1.55; }
+    .login-steps { display: grid; gap: 7px; margin: 13px 0 0; padding: 0; list-style: none; }
+    .login-steps li { display: flex; gap: 9px; align-items: center; color: #4d5b68; font-size: 11px; }
+    .login-steps b { display: grid; width: 21px; height: 21px; flex: 0 0 21px; place-items: center; border-radius: 50%; color: #315a7d; background: #edf3f8; font-size: 10px; }
+    .feishu-button { border-color: #315a7d; background: #315a7d; }
+    .feishu-button:hover { background: #274b6b; }
+    .prototype-login-results { margin: 10px 12px 0; padding: 0 16px; border: 1px dashed #d4dbe2; border-radius: 16px; background: rgba(255,255,255,.72); }
+    .prototype-login-results summary { color: var(--muted); font-size: 12px; }
+    .prototype-login-results .permission-demo { padding-bottom: 14px; grid-template-columns: 1fr 1fr; }
+    .auth-progress-card { margin-top: 28px; padding: 28px 20px; text-align: center; }
+    .auth-progress-card .spinner { border-color: #dce7ef; border-top-color: #315a7d; }
+    .auth-progress-card h2 { margin: 0 0 8px; font-size: 20px; }
+    .auth-progress-card p { max-width: 300px; margin: 0 auto; color: var(--muted); font-size: 12px; line-height: 1.55; }
+    .auth-progress-steps { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-top: 24px; }
+    .auth-progress-step { padding: 9px 5px; border-radius: 10px; color: #8b969f; background: #f1f3f5; font-size: 10px; }
+    .auth-progress-step.active { color: #315a7d; background: #e9f1f7; font-weight: 750; }
     .supervisor-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 10px 12px 0; }
     .supervisor-stat { padding: 13px 8px; border-radius: 14px; background: #fff; text-align: center; }
     .supervisor-stat strong { display: block; font-size: 21px; }
@@ -473,7 +498,7 @@
       </div>
       <div class="case-list">
         <button class="case-card" type="button" data-case-entry="account"><span class="case-number">01</span><span><strong>案例一 · 账号注册与登录</strong><small>注册账号、选择国家/地区，再演示统一账号登录</small></span><span class="case-chevron">›</span></button>
-        <button class="case-card" type="button" data-case-entry="supervisor"><span class="case-number">02</span><span><strong>案例二 · 督导登录后可见内容</strong><small>使用 OB 账号进入全部订单的现场取货工作台</small></span><span class="case-chevron">›</span></button>
+        <button class="case-card" type="button" data-case-entry="supervisor"><span class="case-number">02</span><span><strong>案例二 · 督导登录后可见内容</strong><small>在门店端通过飞书登录，进入全部订单的现场取货工作台</small></span><span class="case-chevron">›</span></button>
         <button class="case-card" type="button" data-case-entry="role"><span class="case-number">03</span><span><strong>案例三 · 店员与商家可见内容</strong><small>对比本人作业范围与本商家经营范围</small></span><span class="case-chevron">›</span></button>
       </div>
       <div class="callout success">三个案例仅用于演示已确认的页面路径和权限边界，不新增账号、地区或角色规则。</div>
@@ -764,7 +789,7 @@
           <button class="quick-entry" id="storeAddressEntry" type="button" data-open="storeAddress"><span class="entry-icon">⌖</span><span><strong>门店地址</strong><small id="storeAddressSummary">马来西亚 · 18, Jalan Teknologi 3/6, Kota Damansara</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" id="bankAccountEntry" type="button" data-open="bankAccount"><span class="entry-icon">▤</span><span><strong id="bankAccountEntryTitle">银行卡号</strong><small id="bankAccountSummary" data-no-i18n>Maybank · •••• 9012</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" type="button" data-open="settings"><span class="entry-icon">⚙</span><span><strong>设置</strong><small>账户、安全与语言</small></span><span class="entry-chevron">›</span></button>
-          <button class="quick-entry" id="supervisorAppEntry" type="button"><span class="entry-icon">✓</span><span><strong>督导 App 演示</strong><small>使用独立 OB 账号进入现场提货工作台</small></span><span class="entry-chevron">›</span></button>
+          <button class="quick-entry" id="supervisorAppEntry" type="button"><span class="entry-icon">✓</span><span><strong>门店端登录分流演示</strong><small>商家、店员使用统一账号；督导使用飞书登录</small></span><span class="entry-chevron">›</span></button>
           <button class="quick-entry" id="helpSupportEntry" type="button"><span class="entry-icon">?</span><span><strong>帮助与支持</strong><small>常见问题、联系我们</small></span><span class="entry-chevron">›</span></button>
         </div>
       </section>
@@ -809,15 +834,29 @@
       </div>
     </section>
 
-    <section class="page with-actions" data-page="supervisorLogin" id="supervisorLoginPage">
-      <header class="topbar"><button class="icon-button case-back" type="button" data-back="caseHub" aria-label="返回案例">‹</button><h1>督导 App</h1><span></span></header>
-      <div class="supervisor-hero"><div class="eyebrow">独立 OB 身份</div><h2>现场取货</h2><p>督导使用现有 OB 账号登录；与门店商家主账号、店员账号及业务数据相互隔离。</p></div>
-      <section class="section">
-        <label class="form-field" style="margin-top:0"><span>OB 账号</span><input id="supervisorUsername" type="text" value="ob.limin" autocomplete="username"></label>
-        <label class="form-field"><span>密码</span><input id="supervisorPassword" type="password" value="prototype" autocomplete="current-password"></label>
-        <p class="permission-note">原型仅演示登录结果，不保存账号或密码。</p>
-      </section>
-      <nav class="action-bar single"><button class="action-button primary" id="supervisorDemoLogin" type="button">使用演示 OB 账号登录</button></nav>
+    <section class="page" data-page="supervisorLogin" id="supervisorLoginPage">
+      <header class="topbar"><button class="icon-button case-back" type="button" data-back="caseHub" aria-label="返回案例">‹</button><h1>登录门店端</h1><span></span></header>
+      <div class="supervisor-hero"><div class="eyebrow">门店端 · 角色分流</div><h2>选择登录方式</h2><p>商家主账号、店员与督导均使用门店端 App；系统根据登录入口和服务端有效权限进入对应工作区。</p></div>
+      <div class="login-methods">
+        <section class="section login-method-card">
+          <div class="login-method-head"><div class="login-method-icon">店</div><div><strong>商家与店员</strong><small>门店统一账号</small></div></div>
+          <p class="login-method-copy">使用手机号或邮箱及密码登录；认证成功后，根据有效角色和商家关系进入商家或店员工作区。</p>
+          <button class="wide-button secondary" id="supervisorStoreAccountLogin" type="button">使用门店统一账号登录</button>
+        </section>
+        <section class="section login-method-card supervisor">
+          <div class="login-method-head"><div class="login-method-icon">飞</div><div><strong>内部督导</strong><small>飞书身份认证 · OB 权限</small></div><span class="login-method-badge">督导专属</span></div>
+          <p class="login-method-copy">点击后跳转飞书完成身份验证，系统获取已关联的有效 OB 账号和督导权限；无需输入 OB 账号密码。</p>
+          <ol class="login-steps"><li><b>1</b>跳转飞书验证身份</li><li><b>2</b>获取关联的 OB 账号</li><li><b>3</b>进入现场取货工作台</li></ol>
+          <button class="wide-button primary feishu-button" id="supervisorFeishuLogin" type="button">使用飞书登录</button>
+          <p class="permission-note">仅限已配置督导权限的内部飞书账号；飞书登录不会进入商家或店员角色。</p>
+        </section>
+        <details class="prototype-login-results"><summary>原型：切换飞书登录结果</summary><div class="permission-demo"><button type="button" data-supervisor-auth-outcome="success">正常登录</button><button type="button" data-supervisor-auth-outcome="cancelled">授权未完成</button><button type="button" data-supervisor-auth-outcome="unbound">未关联 OB 账号</button><button type="button" data-supervisor-auth-outcome="disabled">账号不可用</button><button type="button" data-supervisor-auth-outcome="no-role">无督导权限</button></div></details>
+      </div>
+    </section>
+
+    <section class="page" data-page="supervisorAuth" id="supervisorAuthPage">
+      <header class="topbar"><button class="icon-button" id="cancelSupervisorAuth" type="button" data-supervisor-back="supervisorLogin" aria-label="返回登录">‹</button><h1>飞书登录</h1><span></span></header>
+      <section class="section auth-progress-card" aria-live="polite"><div class="spinner"></div><h2 id="supervisorAuthTitle">正在验证督导身份</h2><p id="supervisorAuthCopy">正在获取关联的 OB 账号与督导权限，请稍候…</p><div class="auth-progress-steps"><span class="auth-progress-step active">飞书授权</span><span class="auth-progress-step active">获取 OB 账号</span><span class="auth-progress-step">进入工作台</span></div></section>
     </section>
 
     <section class="page with-actions" data-page="supervisorPickup" id="supervisorPickupPage" data-state-machine="pending→picked→delivered">
@@ -854,16 +893,16 @@
 
     <section class="page" data-page="supervisorMy" id="supervisorMyPage">
       <header class="topbar"><span></span><h1>我的账号</h1><span></span></header>
-      <section class="section account-profile"><div class="account-profile-head"><div class="account-avatar" style="background:#315a7d">OB</div><div><strong class="account-name">李敏 · 督导</strong><span class="account-phone">OB 账号 ob.limin</span><span class="verification-badge">督导角色有效</span></div></div></section>
+      <section class="section account-profile"><div class="account-profile-head"><div class="account-avatar" style="background:#315a7d">飞</div><div><strong class="account-name">李敏 · 督导</strong><span class="account-phone">飞书身份 · li.min</span><span class="verification-badge">督导角色有效</span></div></div><div class="summary-row"><span>关联 OB 账号</span><strong>ob.limin</strong></div></section>
       <section class="section"><h2 class="section-title">数据视图</h2><div class="summary-row"><span>订单范围</span><strong>全部区域、商家和门店</strong></div><div class="summary-row"><span>敏感内容</span><strong>不展示金额、分账、佣金、退款和资金</strong></div></section>
       <section class="section"><h2 class="section-title">权限结果演示</h2><div class="permission-demo"><button type="button" data-supervisor-permission="no-role">无督导角色</button><button type="button" data-supervisor-permission="disabled">账号不可用</button></div></section>
-      <section class="section"><button class="wide-button secondary" id="exitSupervisorApp" type="button">退出督导 App</button></section>
+      <section class="section"><button class="wide-button secondary" id="exitSupervisorApp" type="button">退出督导账号</button></section>
     </section>
 
     <section class="page" data-page="supervisorPermission" id="supervisorPermissionPage">
-      <header class="topbar"><button class="icon-button" type="button" data-supervisor-back="supervisorMy" aria-label="返回">‹</button><h1>无法进入工作台</h1><span></span></header>
+      <header class="topbar"><button class="icon-button" type="button" data-supervisor-permission-back aria-label="返回">‹</button><h1>无法进入工作台</h1><span></span></header>
       <div class="callout warning" id="supervisorPermissionResult">当前 OB 账号没有可用的督导权限。</div>
-      <section class="section"><button class="wide-button secondary" type="button" data-supervisor-back="supervisorMy">返回我的账号</button></section>
+      <section class="section"><button class="wide-button secondary" type="button" data-supervisor-permission-back>返回</button></section>
     </section>
 
     <nav class="bottom-nav" id="bottomNav" aria-label="主导航" style="display:none">
@@ -1052,16 +1091,40 @@
       '已按实际创建人的选择结束标单，未创建新轮次。': 'The lot ended by the actual creator’s choice; no new round was created.',
       '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。': 'Confirm the winning price with the seller. After acceptance maintain contract, +60 mobile and OTP; after rejection choose re-auction or end lot.',
       '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。': 'This lot was created by Jia Ruizhen. The merchant admin has read-only access and cannot record the seller decision for the actual creator.',
-      '督导 App 演示': 'Supervisor App Demo',
-      '使用独立 OB 账号进入现场提货工作台': 'Use an independent OB account for on-site pickup',
-      '督导 App': 'Supervisor App',
-      '独立 OB 身份': 'Independent OB Identity',
+      '在门店端通过飞书登录，进入全部订单的现场取货工作台': 'Use Feishu in the Store App to access the all-orders pickup workspace',
+      '门店端登录分流演示': 'Store App Sign-in Routing Demo',
+      '商家、店员使用统一账号；督导使用飞书登录': 'Merchants and staff use unified accounts; supervisors use Feishu',
+      '登录门店端': 'Sign in to Store App',
+      '门店端 · 角色分流': 'Store App · Role Routing',
+      '选择登录方式': 'Choose a Sign-in Method',
+      '商家主账号、店员与督导均使用门店端 App；系统根据登录入口和服务端有效权限进入对应工作区。': 'Merchant admins, staff and supervisors all use the Store App. The selected sign-in route and server-side permissions determine the workspace.',
+      '商家与店员': 'Merchants and Staff',
+      '门店统一账号': 'Store Unified Account',
+      '使用手机号或邮箱及密码登录；认证成功后，根据有效角色和商家关系进入商家或店员工作区。': 'Sign in with a mobile number or email and password. After authentication, active roles and merchant relationships determine the merchant or staff workspace.',
+      '使用门店统一账号登录': 'Sign in with Store Account',
+      '内部督导': 'Internal Supervisor',
+      '飞书身份认证 · OB 权限': 'Feishu Identity · OB Permission',
+      '督导专属': 'Supervisor Only',
+      '点击后跳转飞书完成身份验证，系统获取已关联的有效 OB 账号和督导权限；无需输入 OB 账号密码。': 'Continue to Feishu for identity verification. The system retrieves the linked active OB account and supervisor permission; no OB password is required.',
+      '跳转飞书验证身份': 'Verify identity in Feishu',
+      '获取关联的 OB 账号': 'Retrieve the linked OB account',
+      '进入现场取货工作台': 'Enter the pickup workspace',
+      '使用飞书登录': 'Sign in with Feishu',
+      '仅限已配置督导权限的内部飞书账号；飞书登录不会进入商家或店员角色。': 'Only internal Feishu accounts with supervisor permission are allowed. Feishu sign-in never opens merchant or staff roles.',
+      '原型：切换飞书登录结果': 'Prototype: Switch Feishu Result',
+      '正常登录': 'Successful Sign-in',
+      '授权未完成': 'Authorization Incomplete',
+      '未关联 OB 账号': 'No Linked OB Account',
+      '无督导权限': 'No Supervisor Permission',
+      '飞书登录': 'Feishu Sign-in',
+      '正在验证督导身份': 'Verifying Supervisor Identity',
+      '正在获取关联的 OB 账号与督导权限，请稍候…': 'Retrieving the linked OB account and supervisor permission…',
+      '飞书授权': 'Feishu Authorization',
+      '获取 OB 账号': 'Retrieve OB Account',
+      '进入工作台': 'Enter Workspace',
       '现场取货': 'On-site Pickup',
-      '督导使用现有 OB 账号登录；与门店商家主账号、店员账号及业务数据相互隔离。': 'Supervisors sign in with an existing OB account, isolated from merchant admins, staff and their business data.',
       'OB 账号': 'OB Account',
       '密码': 'Password',
-      '原型仅演示登录结果，不保存账号或密码。': 'This prototype only demonstrates sign-in results and does not store credentials.',
-      '使用演示 OB 账号登录': 'Sign In with Demo OB Account',
       '现场取货工作台': 'On-site Pickup Workspace',
       '刷新订单': 'Refresh Orders',
       '已送达': 'Delivered',
@@ -1096,10 +1159,12 @@
       '权限结果演示': 'Permission Result Demo',
       '无督导角色': 'No Supervisor Role',
       '账号不可用': 'Account Unavailable',
-      '退出督导 App': 'Exit Supervisor App',
+      '飞书身份 · li.min': 'Feishu Identity · li.min',
+      '关联 OB 账号': 'Linked OB Account',
+      '退出督导账号': 'Sign Out Supervisor',
       '无法进入工作台': 'Unable to Access Workspace',
       '当前 OB 账号没有可用的督导权限。': 'This OB account does not have an active supervisor permission.',
-      '返回我的账号': 'Back to My Account',
+      '返回': 'Back',
       '督导主导航': 'Supervisor Navigation',
       '当前筛选下没有订单': 'No orders match the current filters',
       '查看': 'View',
@@ -1107,7 +1172,11 @@
       '现场核对': 'On-site Verification',
       '取货督导': 'Pickup Supervisor',
       '仅可同时选择同一门店、同一回收商的待取货订单。': 'Only pending orders from the same store and recycler can be selected together.',
-      'OB 督导登录成功': 'OB supervisor signed in',
+      '飞书登录成功 · OB 督导 李敏': 'Feishu sign-in successful · OB Supervisor Li Min',
+      '正在前往飞书': 'Opening Feishu',
+      '完成授权后将自动返回门店端。': 'After authorization, you will return to the Store App automatically.',
+      '飞书授权未完成，请重新登录。': 'Feishu authorization was not completed. Please try again.',
+      '未找到关联的 OB 账号，请联系管理员配置后重试。': 'No linked OB account was found. Contact an administrator and try again.',
       '订单状态已刷新': 'Order status refreshed',
       'OB-督导 李敏': 'OB Supervisor · Li Min',
       '当前 OB 账号未配置督导角色，不能进入现场取货工作台。': 'This OB account has no supervisor role and cannot access the on-site pickup workspace.',
@@ -1115,7 +1184,7 @@
       '订单已确认送达，状态不可撤销。': 'The order is confirmed delivered and cannot be reversed.',
       '南区门店': 'South District Store',
       '当前 OB 账号已停用或锁定，请联系管理员。': 'This OB account is disabled or locked. Contact an administrator.',
-      '已退出督导 App': 'Exited Supervisor App',
+      '已退出督导账号': 'Supervisor signed out',
       '当前店铺': 'Current Store',
       '选择要维护资料的店铺': 'Select a store to maintain',
       '每个店铺独立维护一个地址和一张银行卡，切换店铺不会同步修改资料。': 'Each store independently owns one address and one bank account. Switching stores does not synchronize profile changes.',
@@ -1776,12 +1845,55 @@
       const button = event.target.closest('[data-supervisor-view]');
       if (button) openSupervisorOrder(button.dataset.supervisorView);
     });
+    let supervisorAuthTimer;
+    let supervisorPermissionReturnPage = 'supervisorMy';
+    const supervisorAuthTitle = document.getElementById('supervisorAuthTitle');
+    const supervisorAuthCopy = document.getElementById('supervisorAuthCopy');
+    const supervisorAuthSteps = [...document.querySelectorAll('.auth-progress-step')];
+    const supervisorAuthFailures = {
+      cancelled: '飞书授权未完成，请重新登录。',
+      unbound: '未找到关联的 OB 账号，请联系管理员配置后重试。',
+      disabled: '当前 OB 账号已停用或锁定，请联系管理员。',
+      'no-role': '当前 OB 账号未配置督导角色，不能进入现场取货工作台。'
+    };
+    const showSupervisorPermission = (message, returnPage = 'supervisorLogin') => {
+      supervisorPermissionReturnPage = returnPage;
+      document.getElementById('supervisorPermissionResult').textContent = message;
+      showSupervisorPage('supervisorPermission');
+      applyLanguage(currentLanguage);
+    };
+    const runSupervisorAuth = (outcome = 'success') => {
+      clearTimeout(supervisorAuthTimer);
+      supervisorAuthTitle.textContent = '正在前往飞书';
+      supervisorAuthCopy.textContent = '完成授权后将自动返回门店端。';
+      supervisorAuthSteps.forEach((step, index) => step.classList.toggle('active', index === 0));
+      showSupervisorPage('supervisorAuth');
+      applyLanguage(currentLanguage);
+      supervisorAuthTimer = setTimeout(() => {
+        supervisorAuthTitle.textContent = '正在验证督导身份';
+        supervisorAuthCopy.textContent = '正在获取关联的 OB 账号与督导权限，请稍候…';
+        supervisorAuthSteps.forEach((step, index) => step.classList.toggle('active', index < 2));
+        applyLanguage(currentLanguage);
+        supervisorAuthTimer = setTimeout(() => {
+          if (outcome !== 'success') {
+            showSupervisorPermission(supervisorAuthFailures[outcome]);
+            return;
+          }
+          supervisorAuthSteps.forEach((step) => step.classList.add('active'));
+          renderSupervisorOrders();
+          showSupervisorPage('supervisorPickup');
+          showToast('飞书登录成功 · OB 督导 李敏');
+        }, 650);
+      }, 650);
+    };
     document.getElementById('supervisorAppEntry').addEventListener('click', () => showSupervisorPage('supervisorLogin'));
-    document.getElementById('supervisorDemoLogin').addEventListener('click', () => {
-      renderSupervisorOrders();
-      showSupervisorPage('supervisorPickup');
-      showToast('OB 督导登录成功');
+    document.getElementById('supervisorStoreAccountLogin').addEventListener('click', () => {
+      setAccountMode('login');
+      showPage('accountAccess');
     });
+    document.getElementById('supervisorFeishuLogin').addEventListener('click', () => runSupervisorAuth('success'));
+    document.querySelectorAll('[data-supervisor-auth-outcome]').forEach((button) => button.addEventListener('click', () => runSupervisorAuth(button.dataset.supervisorAuthOutcome)));
+    document.getElementById('cancelSupervisorAuth').addEventListener('click', () => clearTimeout(supervisorAuthTimer));
     document.getElementById('openSupervisorBatch').addEventListener('click', () => prepareSupervisorConfirmation([...supervisorState.selectedIds]));
     document.getElementById('toggleSupervisorBatchSelection').addEventListener('click', toggleSupervisorBatchSelection);
     document.getElementById('confirmSingleSupervisorPickup').addEventListener('click', () => {
@@ -1815,11 +1927,14 @@
     document.getElementById('supervisorKeyword').addEventListener('input', renderSupervisorOrders);
     document.getElementById('refreshSupervisorOrders').addEventListener('click', () => { renderSupervisorOrders(); showToast('订单状态已刷新'); });
     document.querySelectorAll('[data-supervisor-permission]').forEach((button) => button.addEventListener('click', () => {
-      const copies = { 'no-role':'当前 OB 账号未配置督导角色，不能进入现场取货工作台。', disabled:'当前 OB 账号已停用或锁定，请联系管理员。' };
-      document.getElementById('supervisorPermissionResult').textContent = copies[button.dataset.supervisorPermission];
-      showSupervisorPage('supervisorPermission');
+      showSupervisorPermission(supervisorAuthFailures[button.dataset.supervisorPermission], 'supervisorMy');
     }));
-    document.getElementById('exitSupervisorApp').addEventListener('click', () => { supervisorState.selectedIds.clear(); showPage('caseHub'); showToast('已退出督导 App'); });
+    document.querySelectorAll('[data-supervisor-permission-back]').forEach((button) => button.addEventListener('click', () => showSupervisorPage(supervisorPermissionReturnPage)));
+    document.getElementById('exitSupervisorApp').addEventListener('click', () => {
+      supervisorState.selectedIds.clear();
+      showSupervisorPage('supervisorLogin');
+      showToast('已退出督导账号');
+    });
 
     const roleSwitch = document.getElementById('roleSwitch');
     const storeProfiles=[
