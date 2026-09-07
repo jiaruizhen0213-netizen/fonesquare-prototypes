@@ -1836,36 +1836,109 @@
   }
 
   const prepaymentLedgerV2 = [
-    {id:'PPR-MY-20260830-004',site:'MY',supplier:'Lim Wei Jian',supplierId:'M1003',type:'实际退回',currency:'MYR',amount:-500,platformAccount:'Maybank Collection / 5566',supplierAccount:'Lim Wei Jian 预付金账户 / 4428',occurredAt:'2026-08-30 16:20',reference:'BANK-IN-20260830-014',voucher:'prepayment-return-004.pdf',operator:'陈财务',source:'财务手工登记'},
-    {id:'PPC-MY-20260829-010',site:'MY',supplier:'Siti Nur',supplierId:'M1002',type:'取消退款扣回',currency:'MYR',amount:-2410,platformAccount:'—',supplierAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-29 18:10',reference:'—',voucher:'—',operator:'系统',source:'取消退款 RF-0041'},
-    {id:'PPU-MY-20260829-009',site:'MY',supplier:'Siti Nur',supplierId:'M1002',type:'退款恢复',currency:'MYR',amount:2410,platformAccount:'—',supplierAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-29 17:40',reference:'—',voucher:'—',operator:'系统',source:'退款 RF-0041'},
-    {id:'PPX-MY-20260828-007',site:'MY',supplier:'AR Mobile Sdn Bhd',supplierId:'M1006',type:'成交核销',currency:'MYR',amount:-3428.40,platformAccount:'—',supplierAccount:'AR Mobile 预付金账户 / 7314',occurredAt:'2026-08-28 18:05',reference:'—',voucher:'—',operator:'系统',source:'成交订单 ORD-MY-20260819-0021'},
-    {id:'PPD-MY-20260828-003',site:'MY',supplier:'AR Mobile Sdn Bhd',supplierId:'M1006',type:'预付金下拨',currency:'MYR',amount:3000,platformAccount:'Maybank Payout / 9988',supplierAccount:'AR Mobile 预付金账户 / 7314',occurredAt:'2026-08-28 15:10',reference:'BANK-OUT-20260828-031',voucher:'prepayment-003.pdf',operator:'陈财务',source:'财务手工登记'},
-    {id:'PPD-MY-20260801-002',site:'MY',supplier:'Siti Nur',supplierId:'M1002',type:'预付金下拨',currency:'MYR',amount:11000,platformAccount:'Maybank Payout / 9988',supplierAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-01 09:15',reference:'BANK-OUT-20260801-002',voucher:'prepayment-002.pdf',operator:'陈财务',source:'财务手工登记'},
-    {id:'PPD-MY-20260801-001',site:'MY',supplier:'Lim Wei Jian',supplierId:'M1003',type:'预付金下拨',currency:'MYR',amount:2500,platformAccount:'Maybank Payout / 9988',supplierAccount:'Lim Wei Jian 预付金账户 / 4428',occurredAt:'2026-08-01 09:00',reference:'BANK-OUT-20260801-001',voucher:'prepayment-001.pdf',operator:'陈财务',source:'财务手工登记'}
+    {id:'PPR-MY-20260830-004',site:'MY',store:'PJ SS2 店',storeId:'S2002',type:'实际退回',currency:'MYR',amount:-500,platformAccount:'Maybank Collection / 5566',storeAccount:'Lim Wei Jian 预付金账户 / 4428',occurredAt:'2026-08-30 16:20',reference:'BANK-IN-20260830-014',voucher:'prepayment-return-004.pdf',operator:'陈财务',source:'财务手工登记'},
+    {id:'PPC-MY-20260829-010',site:'MY',store:'KL Sentral 店',storeId:'S2001',type:'取消退款扣回',currency:'MYR',amount:-2410,platformAccount:'—',storeAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-29 18:10',reference:'—',voucher:'—',operator:'系统',source:'取消退款 RF-0041'},
+    {id:'PPU-MY-20260829-009',site:'MY',store:'KL Sentral 店',storeId:'S2001',type:'退款恢复',currency:'MYR',amount:2410,platformAccount:'—',storeAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-29 17:40',reference:'—',voucher:'—',operator:'系统',source:'退款 RF-0041'},
+    {id:'PPX-MY-20260828-007',site:'MY',store:'Johor Bahru 店',storeId:'S2005',type:'成交核销',currency:'MYR',amount:-3428.40,platformAccount:'—',storeAccount:'AR Mobile 预付金账户 / 7314',occurredAt:'2026-08-28 18:05',reference:'—',voucher:'—',operator:'系统',source:'成交订单 ORD-MY-20260819-0021'},
+    {id:'PPD-MY-20260828-003',site:'MY',store:'Johor Bahru 店',storeId:'S2005',type:'预付金下拨',currency:'MYR',amount:3000,platformAccount:'Maybank Payout / 9988',storeAccount:'AR Mobile 预付金账户 / 7314',occurredAt:'2026-08-28 15:10',reference:'BANK-OUT-20260828-031',voucher:'prepayment-003.pdf',operator:'陈财务',source:'财务手工登记'},
+    {id:'PPD-MY-20260801-002',site:'MY',store:'KL Sentral 店',storeId:'S2001',type:'预付金下拨',currency:'MYR',amount:11000,platformAccount:'Maybank Payout / 9988',storeAccount:'Siti Nur 预付金账户 / 8821',occurredAt:'2026-08-01 09:15',reference:'BANK-OUT-20260801-002',voucher:'prepayment-002.pdf',operator:'陈财务',source:'财务手工登记'},
+    {id:'PPD-MY-20260801-001',site:'MY',store:'PJ SS2 店',storeId:'S2002',type:'预付金下拨',currency:'MYR',amount:2500,platformAccount:'Maybank Payout / 9988',storeAccount:'Lim Wei Jian 预付金账户 / 4428',occurredAt:'2026-08-01 09:00',reference:'BANK-OUT-20260801-001',voucher:'prepayment-001.pdf',operator:'陈财务',source:'财务手工登记'}
   ];
 
   const prepaymentSummariesV2 = [
-    {supplierId:'M1006',supplier:'AR Mobile Sdn Bhd',disbursed:3000,used:3428.40,restored:0,clawback:0,dueBack:0,returned:0},
-    {supplierId:'M1002',supplier:'Siti Nur',disbursed:11000,used:9857.40,restored:2410,clawback:2410,dueBack:0,returned:0},
-    {supplierId:'M1003',supplier:'Lim Wei Jian',disbursed:2500,used:1500,restored:428.40,clawback:0,dueBack:500,returned:500}
+    {storeId:'S2005',store:'Johor Bahru 店',disbursed:3000,used:3428.40,restored:0,clawback:0,dueBack:0,returned:0},
+    {storeId:'S2001',store:'KL Sentral 店',disbursed:11000,used:9857.40,restored:2410,clawback:2410,dueBack:0,returned:0},
+    {storeId:'S2002',store:'PJ SS2 店',disbursed:2500,used:1500,restored:428.40,clawback:0,dueBack:500,returned:500}
   ];
 
   const settlementBillsV2 = [
     {id:'STL-MY-202608-REC-0041',site:'MY',period:'2026-08 月结',settlementDirection:'平台应收',type:'平台应收（回收商付款）',payer:'回收商 M***11',payerAccount:'Maybank / ****9911',payee:'FoneSquare Malaysia Sdn Bhd',payeeAccount:'Maybank Collection / 5566',currency:'MYR',amount:2410,billStatus:'已处理',paymentStatus:'已收款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:2410,refund:'未退款',currentShare:2410}],paymentRecords:[{actualAt:'2026-09-08 10:05',amount:2410,platformAccount:'Maybank Collection / 5566',counterpartyAccount:'Maybank / ****9911',reference:'BANK-IN-20260908-041',voucher:'receipt-0041.pdf',operator:'陈财务'}],restoreRecords:[]},
     {id:'STL-MY-202608-REC-0032',site:'MY',period:'2026-08 月结',settlementDirection:'平台应收',type:'平台应收（回收商付款）',payer:'回收商 L***06',payerAccount:'Public Bank / ****6103',payee:'FoneSquare Malaysia Sdn Bhd',payeeAccount:'Maybank Collection / 5566',currency:'MYR',amount:1980,billStatus:'待处理',paymentStatus:'待收款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',sources:[{order:'ORD-MY-20260819-0032',dealAt:'2026-08-19 18:40',winning:1980,originalShare:1980,refund:'未退款',currentShare:1980}],paymentRecords:[],restoreRecords:[]},
-    {id:'STL-MY-202608-SUP-003',site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（供货商／门店收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'AR Mobile Sdn Bhd',payeeAccount:'RHB Bank / ****7314',currency:'MYR',amount:178.20,billStatus:'待处理',paymentStatus:'待打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',prepaymentBalance:-428.40,sources:[{order:'ORD-MY-20260819-0021',dealAt:'2026-08-19 11:08',winning:1980,originalShare:178.20,refund:'未退款',currentShare:178.20}],paymentRecords:[],restoreRecords:[]},
+    {id:'STL-MY-202608-SUP-003',site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（门店收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'AR Mobile Sdn Bhd',payeeAccount:'RHB Bank / ****7314',currency:'MYR',amount:178.20,billStatus:'待处理',paymentStatus:'待打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',prepaymentBalance:-428.40,sources:[{order:'ORD-MY-20260819-0021',dealAt:'2026-08-19 11:08',winning:1980,originalShare:178.20,refund:'未退款',currentShare:178.20}],paymentRecords:[],restoreRecords:[]},
     {id:'STL-MY-202608-STAFF-002',site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（店员收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'Aina Rahman',payeeAccount:'Maybank / ****1190',currency:'MYR',amount:27.80,billStatus:'已处理',paymentStatus:'已打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',prepaymentBalance:null,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:27.80,refund:'未退款',currentShare:27.80}],paymentRecords:[{actualAt:'2026-09-08 11:05',amount:27.80,platformAccount:'Maybank Payout / 9988',counterpartyAccount:'Maybank / ****1190',reference:'BANK-OUT-20260908-018',voucher:'staff-settlement-002.pdf',operator:'陈财务'}],restoreRecords:[]},
-    {id:'STL-MY-202608-SUP-001',site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（供货商／门店收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'Siti Nur',payeeAccount:'Maybank / ****8821',currency:'MYR',amount:89.80,billStatus:'已作废',paymentStatus:'待打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'收款账户配置错误，修复后重新生成',prepaymentBalance:1142.60,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:89.80,refund:'未退款',currentShare:89.80}],paymentRecords:[],restoreRecords:[]}
+    {id:'STL-MY-202608-SUP-001',site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（门店收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'Siti Nur',payeeAccount:'Maybank / ****8821',currency:'MYR',amount:89.80,billStatus:'已作废',paymentStatus:'待打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'收款账户配置错误，修复后重新生成',prepaymentBalance:1142.60,sources:[{order:'ORD-MY-20260820-0041',dealAt:'2026-08-20 14:10',winning:2410,originalShare:89.80,refund:'未退款',currentShare:89.80}],paymentRecords:[],restoreRecords:[]}
   ];
+
+  // Freeze complete bank identity; never merge using masked account tails or store IDs.
+  function storeAccountKeyV2(account) {
+    if (!account || !account.holder || !account.bankName || !account.accountNumber) return null;
+    return JSON.stringify([account.holder.trim(),account.bankName.trim(),account.accountNumber.replace(/\s/g,'')]);
+  }
+
+  function mergeStoreSettlementsV2(bills) {
+    const grouped = new Map(), result = [];
+    bills.forEach(function (bill) {
+      const accountKey = storeAccountKeyV2(bill.accountSnapshot);
+      if (bill.type !== '平台应付（门店收款）' || bill.billStatus !== '待处理' || bill.paymentStatus !== '待打款' || (bill.paymentRecords || []).length || (bill.restoreRecords || []).length || !accountKey) { result.push(bill); return; }
+      const key = JSON.stringify([bill.payer,bill.site,bill.currency,bill.period,accountKey]);
+      let group = grouped.get(key);
+      if (!group) {
+        group = Object.assign({},bill,{amount:0,sources:[],stores:[],storeBalances:[],mergedBillIds:[],accountSnapshot:Object.assign({},bill.accountSnapshot)});
+        grouped.set(key,group); result.push(group);
+      }
+      group.amount = Math.round((group.amount + bill.amount) * 100) / 100;
+      group.sources.push(...bill.sources.map(function (source) { return Object.assign({},source); }));
+      (bill.stores || []).forEach(function (store) { if (!group.stores.some(function (item) { return item.id === store.id; })) group.stores.push(Object.assign({},store)); });
+      (bill.storeBalances || []).forEach(function (store) { if (!group.storeBalances.some(function (item) { return item.id === store.id; })) group.storeBalances.push(Object.assign({},store)); });
+      group.mergedBillIds.push(...(bill.mergedBillIds || [bill.id]));
+      if (bill.deadline < group.deadline) group.deadline = bill.deadline;
+      group.prepaymentBalance = null;
+    });
+    return result;
+  }
+
+  // Existing examples retain their amounts and lifecycle; store/account snapshots are explicit.
+  settlementBillsV2.forEach(function (bill) {
+    if (bill.type === '平台应付（店员收款）') bill.accountSnapshot = {holder:bill.payee,bankName:'Maybank',accountNumber:'122033441190'};
+    if (bill.type !== '平台应付（门店收款）') return;
+    const ar = bill.payee === 'AR Mobile Sdn Bhd';
+    const store = ar ? {id:'S2005',name:'Johor Bahru 店'} : {id:'S2001',name:'KL Sentral 店'};
+    bill.stores = [store];
+    bill.accountSnapshot = ar ? {holder:'AR Mobile Sdn Bhd',bankName:'RHB Bank',accountNumber:'214011827314'} : {holder:'Siti Nur',bankName:'Maybank',accountNumber:'1122334455668821'};
+    bill.storeBalances = [{id:store.id,name:store.name,balance:bill.prepaymentBalance}];
+    bill.sources.forEach(function (source) { source.storeId = store.id; source.storeName = store.name; });
+  });
+  // Finance-only example: two store snapshots share one bank account; live store profiles are untouched.
+  [100,200].forEach(function (amount,index) {
+    const store = {id:'DEMO-STORE-' + (index + 1),name:'同账户示例门店' + (index + 1)};
+    settlementBillsV2.push({id:'STL-MY-202608-DEMO-' + (index + 1),site:'MY',period:'2026-08 月结',settlementDirection:'平台应付',type:'平台应付（门店收款）',payer:'FoneSquare Malaysia Sdn Bhd',payerAccount:'Maybank Payout / 9988',payee:'Demo Store Trading',payeeAccount:'Maybank / ****9001',accountSnapshot:{holder:'Demo Store Trading',bankName:'Maybank',accountNumber:'990000009001'},stores:[store],storeBalances:[{id:store.id,name:store.name,balance:index ? 2000 : 1000}],currency:'MYR',amount:amount,billStatus:'待处理',paymentStatus:'待打款',deadline:'2026-09-10',createdAt:'2026-09-07 02:00',voidReason:'—',sources:[{order:'DEMO-ORDER-' + (index + 1),storeId:store.id,storeName:store.name,dealAt:'2026-08-20 14:10',winning:1000,originalShare:amount,refund:'未退款',currentShare:amount}],paymentRecords:[],restoreRecords:[]});
+  });
+  settlementBillsV2.splice(0,settlementBillsV2.length,...mergeStoreSettlementsV2(settlementBillsV2));
+
+  function buildStorePayoutExportV2(bills) {
+    const eligible = [...new Map(bills.filter(function (bill) { return bill.settlementDirection === '平台应付' && bill.billStatus !== '已作废' && bill.paymentStatus === '待打款'; }).map(function (bill) { return [bill.id,bill]; })).values()];
+    const summaries = new Map();
+    const details = eligible.map(function (bill) {
+      const account = bill.accountSnapshot;
+      if (!storeAccountKeyV2(account)) throw new Error('结算单 ' + bill.id + ' 缺少完整收款账户快照');
+      let summary = summaries.get(bill.currency);
+      if (!summary) { summary = {currency:bill.currency,count:0,accounts:new Set(),amount:0}; summaries.set(bill.currency,summary); }
+      summary.count++; summary.accounts.add(storeAccountKeyV2(account)); summary.amount = Math.round((summary.amount + bill.amount) * 100) / 100;
+      return [bill.id,bill.site,bill.type,(bill.stores || []).map(function (store) { return store.id + ' ' + store.name; }).join('、'),account.holder,account.bankName,account.accountNumber,bill.currency,bill.amount,bill.period];
+    });
+    return {details:details,summaries:[...summaries.values()].map(function (summary) { return [summary.currency,summary.count,summary.accounts.size,summary.amount]; })};
+  }
+
+  function exportStoreSettlementV2() {
+    let data;
+    try { data = buildStorePayoutExportV2(visibleSettlementsV2); } catch (error) { toast(error.message); return; }
+    if (!data.details.length) { toast('当前筛选结果没有待打款结算单。'); return; }
+    const xml = function (value) { return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+    const sheet = function (name,rows) { return '<Worksheet ss:Name="' + name + '"><Table>' + rows.map(function (row) { return '<Row>' + row.map(function (cell) { return '<Cell><Data ss:Type="' + (typeof cell === 'number' ? 'Number' : 'String') + '">' + xml(cell) + '</Data></Cell>'; }).join('') + '</Row>'; }).join('') + '</Table></Worksheet>'; };
+    const workbook = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' + sheet('打款明细',[['结算单号','站点','结算类型','涉及门店 ID / 名称','收款人银行登记名称','收款银行','银行账号','币种','结算金额','结算周期'],...data.details]) + sheet('请款汇总',[['币种','结算单数量','收款人数','请款总金额'],...data.summaries]) + '</Workbook>';
+    const url = URL.createObjectURL(new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}));
+    const link = document.createElement('a'); link.href = url; link.download = '打款清单.xml'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); },1000);
+    toast('已导出打款明细和请款汇总。');
+  }
+
 
   const settlementConfigV2 = {site:'MY',timezone:'Asia/Kuala_Lumpur',enabled:true,cycle:'月结',delayDays:7,generateAt:'02:00',effectiveDate:'2026-08-01',lastRun:'2026-09-07 02:00：自动生成成功，5 张结算单'};
 
   const fundLedgerRowsV2 = [
-    {id:'FND-20260820-0041-A',order:'ORD-MY-20260820-0041',type:'正式成交',businessAt:'2026-08-20 14:10',winning:2410,seller:2152.40,supplier:89.80,staff:27.80,platform:140,current:117.60,prepayment:-2152.40,receipt:'已收款',settlement:'待生成'},
-    {id:'FND-20260820-0041-R',order:'ORD-MY-20260820-0041',type:'退款恢复',businessAt:'2026-08-20 17:50',winning:2410,seller:2152.40,supplier:89.80,staff:27.80,platform:140,current:0,prepayment:2152.40,receipt:'已收款',settlement:'退款后金额已重算'},
-    {id:'FND-20260819-0021-A',order:'ORD-MY-20260819-0021',type:'正式成交',businessAt:'2026-08-19 11:08',winning:1980,seller:1701.80,supplier:178.20,staff:24,platform:76,current:202.20,prepayment:-1701.80,receipt:'待收款',settlement:'待生成'},
-    {id:'FND-20260818-0017-B',order:'ORD-MY-20260818-0017',type:'资金退回',businessAt:'2026-08-23 16:20',winning:1680,seller:1450,supplier:120,staff:30,platform:80,current:0,prepayment:1450,receipt:'已收款',settlement:'无需结算'}
+    {id:'FND-20260820-0041-A',order:'ORD-MY-20260820-0041',type:'正式成交',businessAt:'2026-08-20 14:10',winning:2410,seller:2152.40,store:89.80,staff:27.80,platform:140,current:117.60,prepayment:-2152.40,receipt:'已收款',settlement:'待生成'},
+    {id:'FND-20260820-0041-R',order:'ORD-MY-20260820-0041',type:'退款恢复',businessAt:'2026-08-20 17:50',winning:2410,seller:2152.40,store:89.80,staff:27.80,platform:140,current:0,prepayment:2152.40,receipt:'已收款',settlement:'退款后金额已重算'},
+    {id:'FND-20260819-0021-A',order:'ORD-MY-20260819-0021',type:'正式成交',businessAt:'2026-08-19 11:08',winning:1980,seller:1701.80,store:178.20,staff:24,platform:76,current:202.20,prepayment:-1701.80,receipt:'待收款',settlement:'待生成'},
+    {id:'FND-20260818-0017-B',order:'ORD-MY-20260818-0017',type:'资金退回',businessAt:'2026-08-23 16:20',winning:1680,seller:1450,store:120,staff:30,platform:80,current:0,prepayment:1450,receipt:'已收款',settlement:'无需结算'}
   ];
 
   let visiblePrepaymentOrdersV2 = prepaymentLedgerV2.slice();
@@ -1881,7 +1954,7 @@
   }
 
   function renderFundDetailsPanelV2() {
-    $('#ledgerV2DetailsPanel').innerHTML = metricCards([['回收商待收',moneyV2(1980)],['供货商／店员待付',moneyV2(380.40)],['退款恢复预付金',moneyV2(3602.40)],['预付金剩余',moneyV2(-428.40)]]) +
+    $('#ledgerV2DetailsPanel').innerHTML = metricCards([['回收商待收',moneyV2(1980)],['门店／店员待付',moneyV2(settlementBillsV2.filter(function (bill) { return bill.billStatus !== '已作废' && bill.paymentStatus === '待打款'; }).reduce(function (total,bill) { return total + bill.amount; },0))],['退款恢复预付金',moneyV2(3602.40)],['预付金剩余',moneyV2(-428.40)]]) +
       '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>明细号 / 订单号</label><input class="control" id="fundV2Keyword" placeholder="请输入编号" /></div><div class="field"><label>业务类型</label><select class="control" id="fundV2Type"><option value="">全部</option><option>正式成交</option><option>退款恢复</option><option>资金退回</option></select></div><div class="field"><label>回收商收款状态</label><select class="control" id="fundV2Receipt"><option value="">全部</option><option>待收款</option><option>已收款</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-ledger">↻ 重置</button><button class="btn primary" data-finance-v2="search-ledger">⌕ 查询</button></div></div></div></div>' +
       '<div class="card"><div class="card-head"><div>逐笔资金明细 <span class="subtle" id="fundV2Summary"></span></div><span class="subtle">退款生效恢复预付金，取消退款反向扣减</span></div><div id="fundV2Result"></div></div>';
     filterFundsLedgerV2();
@@ -1891,7 +1964,7 @@
     const keyword = ($('#fundV2Keyword') || {}).value || '', type = ($('#fundV2Type') || {}).value || '', receipt = ($('#fundV2Receipt') || {}).value || '';
     const rows = fundLedgerRowsV2.filter(function (row) { return (!keyword || (row.id + row.order).toLowerCase().includes(keyword.trim().toLowerCase())) && (!type || row.type === type) && (!receipt || row.receipt === receipt); });
     $('#fundV2Summary').textContent = '共 ' + rows.length + ' 条';
-    $('#fundV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:2050px"><thead><tr><th>资金明细号</th><th>订单号</th><th>业务类型 / 时间</th><th>完整中标价</th><th>卖家应得金额</th><th>供货商分成</th><th>店员分成</th><th>平台分成</th><th>当前应结算金额</th><th>预付金影响</th><th>回收商收款</th><th>结算状态</th></tr></thead><tbody>' + rows.map(function (row) { return '<tr><td>' + esc(row.id) + '</td><td>' + esc(row.order) + '</td><td>' + statusTag(row.type) + '<div class="merchant-account">' + esc(row.businessAt) + '</div></td><td class="money">' + moneyV2(row.winning) + '</td><td class="money">' + moneyV2(row.seller) + '</td><td class="money">' + moneyV2(row.supplier) + '</td><td class="money">' + moneyV2(row.staff) + '</td><td class="money">' + moneyV2(row.platform) + '</td><td class="money">' + moneyV2(row.current) + '</td><td class="money ' + (row.prepayment < 0 ? 'negative' : '') + '">' + (row.prepayment > 0 ? '+' : '') + moneyV2(row.prepayment) + '</td><td>' + statusTag(row.receipt) + '</td><td>' + statusTag(row.settlement) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    $('#fundV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:2050px"><thead><tr><th>资金明细号</th><th>订单号</th><th>业务类型 / 时间</th><th>完整中标价</th><th>卖家应得金额</th><th>门店分成</th><th>店员分成</th><th>平台分成</th><th>当前应结算金额</th><th>预付金影响</th><th>回收商收款</th><th>结算状态</th></tr></thead><tbody>' + rows.map(function (row) { return '<tr><td>' + esc(row.id) + '</td><td>' + esc(row.order) + '</td><td>' + statusTag(row.type) + '<div class="merchant-account">' + esc(row.businessAt) + '</div></td><td class="money">' + moneyV2(row.winning) + '</td><td class="money">' + moneyV2(row.seller) + '</td><td class="money">' + moneyV2(row.store) + '</td><td class="money">' + moneyV2(row.staff) + '</td><td class="money">' + moneyV2(row.platform) + '</td><td class="money">' + moneyV2(row.current) + '</td><td class="money ' + (row.prepayment < 0 ? 'negative' : '') + '">' + (row.prepayment > 0 ? '+' : '') + moneyV2(row.prepayment) + '</td><td>' + statusTag(row.receipt) + '</td><td>' + statusTag(row.settlement) + '</td></tr>'; }).join('') + '</tbody></table></div>';
   }
 
   function prepaymentBalanceV2(item) { return item.disbursed - item.used + item.restored - item.clawback - item.returned; }
@@ -1899,7 +1972,7 @@
   function prepaymentBalanceSnapshotsV2() {
     const balances = {}, snapshots = {};
     prepaymentLedgerV2.slice().sort(function (a,b) { return a.occurredAt.localeCompare(b.occurredAt); }).forEach(function (row) {
-      const key = row.supplierId + '|' + row.currency, before = balances[key] || 0, after = before + row.amount;
+      const key = row.storeId + '|' + row.currency, before = balances[key] || 0, after = before + row.amount;
       snapshots[row.id] = {before:before,after:after};
       balances[key] = after;
     });
@@ -1924,33 +1997,33 @@
   function renderPrepaymentSummaryV2() {
     $('#prepaymentV2SummaryPanel').innerHTML =
       '<div class="alert"><span>ⓘ</span><div>预付金余额允许为负，负数表示门店预付金不足。</div></div>' +
-      '<div class="card"><div class="card-head"><div>门店预付金汇总</div><span class="subtle">余额＝下拨－使用＋退款恢复－取消退款扣回－实际退回</span></div><div class="table-wrap"><table class="table" style="min-width:1500px"><thead><tr><th>门店 / 供货商</th><th>预付金余额</th><th>周期内已使用金额</th><th>退款恢复金额</th><th>取消退款扣回金额</th><th>未使用资金应退金额</th><th>已退金额</th></tr></thead><tbody>' + prepaymentSummariesV2.map(function (item) { const balance = prepaymentBalanceV2(item); return '<tr><td>' + esc(item.supplier) + '<div class="merchant-account">' + esc(item.supplierId) + '</div></td><td class="money ' + (balance < 0 ? 'negative' : '') + '">' + moneyV2(balance) + (balance < 0 ? '<div class="merchant-account">预付金不足，建议下拨</div>' : '') + '</td><td class="money">' + moneyV2(item.used) + '</td><td class="money">' + moneyV2(item.restored) + '</td><td class="money">' + moneyV2(item.clawback) + '</td><td class="money">' + moneyV2(item.dueBack) + '</td><td class="money">' + moneyV2(item.returned) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+      '<div class="card"><div class="card-head"><div>门店预付金汇总</div><span class="subtle">余额＝下拨－使用＋退款恢复－取消退款扣回－实际退回</span></div><div class="table-wrap"><table class="table" style="min-width:1500px"><thead><tr><th>门店</th><th>预付金余额</th><th>周期内已使用金额</th><th>退款恢复金额</th><th>取消退款扣回金额</th><th>未使用资金应退金额</th><th>已退金额</th></tr></thead><tbody>' + prepaymentSummariesV2.map(function (item) { const balance = prepaymentBalanceV2(item); return '<tr><td>' + esc(item.store) + '<div class="merchant-account">' + esc(item.storeId) + '</div></td><td class="money ' + (balance < 0 ? 'negative' : '') + '">' + moneyV2(balance) + (balance < 0 ? '<div class="merchant-account">预付金不足，建议下拨</div>' : '') + '</td><td class="money">' + moneyV2(item.used) + '</td><td class="money">' + moneyV2(item.restored) + '</td><td class="money">' + moneyV2(item.clawback) + '</td><td class="money">' + moneyV2(item.dueBack) + '</td><td class="money">' + moneyV2(item.returned) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
   }
 
   function renderPrepaymentLedgerV2() {
     $('#prepaymentV2LedgerPanel').innerHTML =
       '<div class="alert"><span>ⓘ</span><div>预付金流水包含五类资金变动；财务手工登记只允许“预付金下拨”和“实际退回”。</div></div>' +
-      '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>流水号 / 供货商</label><input class="control" id="prepaymentV2Keyword" placeholder="请输入流水号或供货商" /></div><div class="field"><label>流水类型</label><select class="control" id="prepaymentV2Type"><option value="">全部</option><option>预付金下拨</option><option>成交核销</option><option>退款恢复</option><option>取消退款扣回</option><option>实际退回</option></select></div><div class="field"><label>站点</label><select class="control" id="prepaymentV2Site"><option value="">全部</option><option>MY</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-prepayment">↻ 重置</button><button class="btn primary" data-finance-v2="search-prepayment">⌕ 查询</button></div></div></div></div>' +
+      '<div class="card"><div class="card-body"><div class="filters"><div class="field"><label>流水号 / 门店</label><input class="control" id="prepaymentV2Keyword" placeholder="请输入流水号或门店" /></div><div class="field"><label>流水类型</label><select class="control" id="prepaymentV2Type"><option value="">全部</option><option>预付金下拨</option><option>成交核销</option><option>退款恢复</option><option>取消退款扣回</option><option>实际退回</option></select></div><div class="field"><label>站点</label><select class="control" id="prepaymentV2Site"><option value="">全部</option><option>MY</option></select></div><div class="filter-actions"><button class="btn" data-finance-v2="reset-prepayment">↻ 重置</button><button class="btn primary" data-finance-v2="search-prepayment">⌕ 查询</button></div></div></div></div>' +
       '<div class="card"><div class="card-head"><div>预付金流水 <span class="subtle" id="prepaymentV2Summary"></span></div><span class="subtle">业务流水由系统自动记录，不支持财务手工创建</span></div><div id="prepaymentV2Result"></div></div>';
     filterPrepaymentV2();
   }
 
   function filterPrepaymentV2() {
     const keyword = ($('#prepaymentV2Keyword') || {}).value || '', type = ($('#prepaymentV2Type') || {}).value || '', site = ($('#prepaymentV2Site') || {}).value || '';
-    visiblePrepaymentOrdersV2 = prepaymentLedgerV2.filter(function (row) { return (!keyword || (row.id + row.supplier).toLowerCase().includes(keyword.trim().toLowerCase())) && (!type || row.type === type) && (!site || row.site === site); });
+    visiblePrepaymentOrdersV2 = prepaymentLedgerV2.filter(function (row) { return (!keyword || (row.id + row.store).toLowerCase().includes(keyword.trim().toLowerCase())) && (!type || row.type === type) && (!site || row.site === site); });
     const snapshots = prepaymentBalanceSnapshotsV2();
     $('#prepaymentV2Summary').textContent = '共 ' + visiblePrepaymentOrdersV2.length + ' 条';
-    $('#prepaymentV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:1900px"><thead><tr><th>流水号</th><th>业务发生时间</th><th>门店</th><th>站点</th><th>币种</th><th>流水类型</th><th>本次变动金额</th><th>变动前余额</th><th>变动后余额</th><th>资金账户流水号／凭证</th><th>资金发生时间</th></tr></thead><tbody>' + visiblePrepaymentOrdersV2.map(function (row) { const snapshot = snapshots[row.id], hasBankMovement = hasPrepaymentBankMovementV2(row); return '<tr><td>' + esc(row.id) + '</td><td>' + esc(row.occurredAt) + '</td><td>' + esc(row.supplier) + '<div class="merchant-account">' + esc(row.supplierId) + '</div></td><td>' + esc(row.site) + '</td><td>' + esc(row.currency) + '</td><td>' + statusTag(row.type) + '</td><td class="money ' + (row.amount < 0 ? 'negative' : '') + '">' + (row.amount > 0 ? '+' : '') + moneyV2(row.amount,row.currency) + '</td><td class="money">' + moneyV2(snapshot.before,row.currency) + '</td><td class="money ' + (snapshot.after < 0 ? 'negative' : '') + '">' + moneyV2(snapshot.after,row.currency) + '</td><td>' + (hasBankMovement ? esc(row.reference) + '<div class="merchant-account">' + esc(row.voucher) + '</div>' : '—') + '</td><td>' + (hasPrepaymentBankMovementV2(row) ? esc(row.occurredAt) : '—') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    $('#prepaymentV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:1900px"><thead><tr><th>流水号</th><th>业务发生时间</th><th>门店</th><th>站点</th><th>币种</th><th>流水类型</th><th>本次变动金额</th><th>变动前余额</th><th>变动后余额</th><th>资金账户流水号／凭证</th><th>资金发生时间</th></tr></thead><tbody>' + visiblePrepaymentOrdersV2.map(function (row) { const snapshot = snapshots[row.id], hasBankMovement = hasPrepaymentBankMovementV2(row); return '<tr><td>' + esc(row.id) + '</td><td>' + esc(row.occurredAt) + '</td><td>' + esc(row.store) + '<div class="merchant-account">' + esc(row.storeId) + '</div></td><td>' + esc(row.site) + '</td><td>' + esc(row.currency) + '</td><td>' + statusTag(row.type) + '</td><td class="money ' + (row.amount < 0 ? 'negative' : '') + '">' + (row.amount > 0 ? '+' : '') + moneyV2(row.amount,row.currency) + '</td><td class="money">' + moneyV2(snapshot.before,row.currency) + '</td><td class="money ' + (snapshot.after < 0 ? 'negative' : '') + '">' + moneyV2(snapshot.after,row.currency) + '</td><td>' + (hasBankMovement ? esc(row.reference) + '<div class="merchant-account">' + esc(row.voucher) + '</div>' : '—') + '</td><td>' + (hasPrepaymentBankMovementV2(row) ? esc(row.occurredAt) : '—') + '</td></tr>'; }).join('') + '</tbody></table></div>';
   }
 
   function openPrepaymentCreateV2() {
     const accounts = activeAccountsV2('打款账户');
-    openBusinessModal('登记预付金', '<div class="alert"><span>ⓘ</span><div>此入口仅登记线下真实资金动作。成交核销、退款恢复和取消退款扣回由业务事件自动记账。</div></div><div class="form-grid"><div class="field"><label>操作类型 *</label><select class="control" id="prepaymentV2CreateType"><option>预付金下拨</option><option>实际退回</option></select></div><div class="field"><label>门店 / 供货商 *</label><select class="control" id="prepaymentV2Supplier"><option value="M1002">Siti Nur</option><option value="M1003">Lim Wei Jian</option><option value="M1006">AR Mobile Sdn Bhd</option></select></div><div class="field"><label>金额 *</label><input class="control" id="prepaymentV2Amount" type="number" min="0.01" step="0.01" /></div><div class="field"><label>实际发生时间 *</label><input class="control" id="prepaymentV2At" value="2026-09-02 10:00" /></div><div class="field span-2"><label id="prepaymentV2AccountLabel">平台打款账户 *</label><select class="control" id="prepaymentV2Account">' + accountOptionsV2(accounts, (accounts.find(function (a) { return a.isDefault; }) || {}).id) + '</select></div><div class="field"><label>银行流水号 *</label><input class="control" id="prepaymentV2Reference" /></div><div class="field"><label>资金凭证 *</label><input class="control" id="prepaymentV2Voucher" /></div></div>', '确认登记', function () {
+    openBusinessModal('登记预付金', '<div class="alert"><span>ⓘ</span><div>此入口仅登记线下真实资金动作。成交核销、退款恢复和取消退款扣回由业务事件自动记账。</div></div><div class="form-grid"><div class="field"><label>操作类型 *</label><select class="control" id="prepaymentV2CreateType"><option>预付金下拨</option><option>实际退回</option></select></div><div class="field"><label>门店 *</label><select class="control" id="prepaymentV2Store"><option value="S2001">KL Sentral 店</option><option value="S2002">PJ SS2 店</option><option value="S2005">Johor Bahru 店</option></select></div><div class="field"><label>金额 *</label><input class="control" id="prepaymentV2Amount" type="number" min="0.01" step="0.01" /></div><div class="field"><label>实际发生时间 *</label><input class="control" id="prepaymentV2At" value="2026-09-02 10:00" /></div><div class="field span-2"><label id="prepaymentV2AccountLabel">平台打款账户 *</label><select class="control" id="prepaymentV2Account">' + accountOptionsV2(accounts, (accounts.find(function (a) { return a.isDefault; }) || {}).id) + '</select></div><div class="field"><label>银行流水号 *</label><input class="control" id="prepaymentV2Reference" /></div><div class="field"><label>资金凭证 *</label><input class="control" id="prepaymentV2Voucher" /></div></div>', '确认登记', function () {
       const amount = Number($('#prepaymentV2Amount').value), reference = $('#prepaymentV2Reference').value.trim(), voucher = $('#prepaymentV2Voucher').value.trim();
       if (!(amount > 0) || !reference || !voucher) { modalError('请完整填写金额、银行流水号和资金凭证。'); return; }
-      const supplier = prepaymentSummariesV2.find(function (s) { return s.supplierId === $('#prepaymentV2Supplier').value; }), type = $('#prepaymentV2CreateType').value, account = platformFundAccounts.find(function (a) { return a.id === $('#prepaymentV2Account').value; });
-      prepaymentLedgerV2.unshift({id:(type === '实际退回' ? 'PPR-' : 'PPD-') + Date.now(),site:'MY',supplier:supplier.supplier,supplierId:supplier.supplierId,type:type,currency:'MYR',amount:type === '实际退回' ? -amount : amount,platformAccount:account ? account.accountName + ' / ' + account.accountNumber.slice(-4) : '—',supplierAccount:supplier.supplier + ' 预付金账户',occurredAt:$('#prepaymentV2At').value,reference:reference,voucher:voucher,operator:'贾瑞真',source:'财务手工登记'});
-      if (type === '实际退回') supplier.returned += amount; else supplier.disbursed += amount;
+      const store = prepaymentSummariesV2.find(function (s) { return s.storeId === $('#prepaymentV2Store').value; }), type = $('#prepaymentV2CreateType').value, account = platformFundAccounts.find(function (a) { return a.id === $('#prepaymentV2Account').value; });
+      prepaymentLedgerV2.unshift({id:(type === '实际退回' ? 'PPR-' : 'PPD-') + Date.now(),site:'MY',store:store.store,storeId:store.storeId,type:type,currency:'MYR',amount:type === '实际退回' ? -amount : amount,platformAccount:account ? account.accountName + ' / ' + account.accountNumber.slice(-4) : '—',storeAccount:store.store + ' 预付金账户',occurredAt:$('#prepaymentV2At').value,reference:reference,voucher:voucher,operator:'贾瑞真',source:'财务手工登记'});
+      if (type === '实际退回') store.returned += amount; else store.disbursed += amount;
       closeModals(); renderStorePrepaymentV2(currentStorePrepaymentTabV2); toast('预付金资金事实已登记。');
     }, 'primary');
     $('#prepaymentV2CreateType').onchange = syncPrepaymentAccountV2;
@@ -1964,7 +2037,7 @@
   }
 
   function renderPrepaymentDetailV2(row) {
-    $('#prepaymentDisbursementDetailBody').innerHTML = '<div class="page-title"><button class="btn" data-finance-v2="back-prepayment">← 返回门店预付金</button></div><div class="card detail-hero"><div><span class="detail-name">' + esc(row.id) + '</span><span class="detail-tags">' + statusTag(row.type) + '</span><div class="detail-meta">' + esc(row.site + ' · ' + row.supplier + ' · ' + row.currency) + '</div></div></div><div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">流水信息</h3></div><div class="card-body">' + [['流水类型',row.type],['余额影响',moneyV2(row.amount,row.currency)],['来源',row.source],['发生时间',row.occurredAt]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">资金事实</h3></div><div class="card-body">' + [['平台资金账户',row.platformAccount],['供货商预付金账户',row.supplierAccount],['银行流水号',row.reference],['资金凭证',row.voucher],['操作人',row.operator]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div></div>';
+    $('#prepaymentDisbursementDetailBody').innerHTML = '<div class="page-title"><button class="btn" data-finance-v2="back-prepayment">← 返回门店预付金</button></div><div class="card detail-hero"><div><span class="detail-name">' + esc(row.id) + '</span><span class="detail-tags">' + statusTag(row.type) + '</span><div class="detail-meta">' + esc(row.site + ' · ' + row.store + ' · ' + row.currency) + '</div></div></div><div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">流水信息</h3></div><div class="card-body">' + [['流水类型',row.type],['余额影响',moneyV2(row.amount,row.currency)],['来源',row.source],['发生时间',row.occurredAt]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">资金事实</h3></div><div class="card-body">' + [['平台资金账户',row.platformAccount],['门店预付金账户',row.storeAccount],['银行流水号',row.reference],['资金凭证',row.voucher],['操作人',row.operator]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div></div>';
     setView('prepaymentDisbursementDetail');
   }
 
@@ -1985,9 +2058,9 @@
 
   function filterSettlementsV2() {
     const keyword = ($('#settlementV2Keyword') || {}).value || '', direction = ($('#settlementV2Direction') || {}).value || '', billStatus = ($('#settlementV2BillStatus') || {}).value || '', paymentStatus = ($('#settlementV2PaymentStatus') || {}).value || '';
-    visibleSettlementsV2 = settlementBillsV2.filter(function (bill) { return (!keyword || (bill.id + bill.payer + bill.payee).toLowerCase().includes(keyword.trim().toLowerCase())) && (!direction || bill.settlementDirection === direction) && (!billStatus || bill.billStatus === billStatus) && (!paymentStatus || bill.paymentStatus === paymentStatus); });
+    visibleSettlementsV2 = settlementBillsV2.filter(function (bill) { return (!keyword || (bill.id + bill.payer + bill.payee + (bill.stores || []).map(function (store) { return store.id + store.name; }).join('')).toLowerCase().includes(keyword.trim().toLowerCase())) && (!direction || bill.settlementDirection === direction) && (!billStatus || bill.billStatus === billStatus) && (!paymentStatus || bill.paymentStatus === paymentStatus); });
     $('#settlementV2Summary').textContent = '共 ' + visibleSettlementsV2.length + ' 张';
-    $('#settlementV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:1900px"><thead><tr><th>结算单号</th><th>结算周期</th><th>结算方向 / 类型</th><th>付款主体</th><th>收款主体</th><th>结算金额</th><th>结算单状态</th><th>收付款状态</th><th>截止日期</th><th>生成时间</th><th>操作</th></tr></thead><tbody>' + visibleSettlementsV2.map(function (bill) { return '<tr><td>' + esc(bill.id) + '</td><td>' + esc(bill.period) + '</td><td>' + statusTag(bill.settlementDirection) + '<div class="merchant-account">' + esc(bill.type) + '</div></td><td>' + esc(bill.payer) + '</td><td>' + esc(bill.payee) + '</td><td class="money">' + moneyV2(bill.amount,bill.currency) + '</td><td>' + statusTag(bill.billStatus) + '</td><td>' + statusTag(bill.paymentStatus) + '</td><td>' + esc(bill.deadline) + '</td><td>' + esc(bill.createdAt) + '</td><td>' + settlementActionsV2(bill,'list') + '</td></tr>'; }).join('') + '</tbody></table></div>';
+    $('#settlementV2Result').innerHTML = '<div class="table-wrap"><table class="table" style="min-width:1900px"><thead><tr><th>结算单号</th><th>结算周期</th><th>结算方向 / 类型</th><th>付款主体</th><th>收款主体</th><th>结算金额</th><th>结算单状态</th><th>收付款状态</th><th>截止日期</th><th>生成时间</th><th>操作</th></tr></thead><tbody>' + visibleSettlementsV2.map(function (bill) { return '<tr><td>' + esc(bill.id) + '</td><td>' + esc(bill.period) + '</td><td>' + statusTag(bill.settlementDirection) + '<div class="merchant-account">' + esc(bill.type) + '</div></td><td>' + esc(bill.payer) + '</td><td>' + esc(bill.payee) + (bill.stores ? '<div class="merchant-account">' + esc(bill.stores.map(function (store) { return store.name; }).join('、')) + '</div>' : '') + '</td><td class="money">' + moneyV2(bill.amount,bill.currency) + '</td><td>' + statusTag(bill.billStatus) + '</td><td>' + statusTag(bill.paymentStatus) + '</td><td>' + esc(bill.deadline) + '</td><td>' + esc(bill.createdAt) + '</td><td>' + settlementActionsV2(bill,'list') + '</td></tr>'; }).join('') + '</tbody></table></div>';
   }
 
   function paymentRecordsHtmlV2(bill) {
@@ -1996,7 +2069,7 @@
   }
 
   function renderSettlementDetailV2(bill) {
-    $('#settlementBillDetailBody').innerHTML = '<div class="page-title"><button class="btn" data-finance-v2="back-settlements">← 返回结算单</button><div class="page-actions">' + settlementActionsV2(bill,'detail') + '</div></div><div class="card detail-hero"><div><span class="detail-name">' + esc(bill.id) + '</span><span class="detail-tags">' + statusTag(bill.settlementDirection) + statusTag(bill.billStatus) + statusTag(bill.paymentStatus) + '</span><div class="detail-meta">' + esc(bill.period + ' · ' + bill.type) + '</div></div></div>' + (bill.billStatus === '已作废' ? '<div class="alert warning"><span>!</span><div><b>结算单已作废</b><br>' + esc(bill.voidReason) + '</div></div>' : '') + '<div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">结算快照</h3></div><div class="card-body">' + [['结算方向',bill.settlementDirection],['结算类型',bill.type],['结算金额',moneyV2(bill.amount,bill.currency)],['结算单状态',bill.billStatus],['收付款状态',bill.paymentStatus],['截止日期',bill.deadline]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">账户快照</h3></div><div class="card-body">' + [['付款主体',bill.payer],['付款账户',bill.payerAccount],['收款主体',bill.payee],['收款账户',bill.payeeAccount],['期末预付金余额',bill.prepaymentBalance == null ? '—' : moneyV2(bill.prepaymentBalance,bill.currency)]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div></div><div class="card"><div class="card-head"><div>来源订单与退款快照</div></div><div class="table-wrap"><table class="table"><thead><tr><th>订单号</th><th>成交时间</th><th>完整中标价</th><th>原金额</th><th>退款状态</th><th>当前金额</th></tr></thead><tbody>' + bill.sources.map(function (s) { return '<tr><td>' + esc(s.order) + '</td><td>' + esc(s.dealAt) + '</td><td class="money">' + moneyV2(s.winning,bill.currency) + '</td><td class="money">' + moneyV2(s.originalShare,bill.currency) + '</td><td>' + statusTag(s.refund) + '</td><td class="money">' + moneyV2(s.currentShare,bill.currency) + '</td></tr>'; }).join('') + '</tbody></table></div></div><div class="card"><div class="card-head"><div>收付款记录</div><span class="subtle">恢复待打款不会删除历史打款记录</span></div>' + paymentRecordsHtmlV2(bill) + '</div><div class="card"><div class="card-head"><div>恢复记录</div></div><div class="card-body timeline">' + (bill.restoreRecords.length ? bill.restoreRecords.map(function (r) { return '<div class="event"><b>恢复待打款：' + esc(r.reason) + '</b><div class="event-time">' + esc(r.at + ' · ' + r.operator) + '</div></div>'; }).join('') : '<div class="empty-compact">暂无恢复记录</div>') + '</div></div>';
+    $('#settlementBillDetailBody').innerHTML = '<div class="page-title"><button class="btn" data-finance-v2="back-settlements">← 返回结算单</button><div class="page-actions">' + settlementActionsV2(bill,'detail') + '</div></div><div class="card detail-hero"><div><span class="detail-name">' + esc(bill.id) + '</span><span class="detail-tags">' + statusTag(bill.settlementDirection) + statusTag(bill.billStatus) + statusTag(bill.paymentStatus) + '</span><div class="detail-meta">' + esc(bill.period + ' · ' + bill.type) + '</div></div></div>' + (bill.billStatus === '已作废' ? '<div class="alert warning"><span>!</span><div><b>结算单已作废</b><br>' + esc(bill.voidReason) + '</div></div>' : '') + '<div class="section-grid"><div class="card"><div class="card-head"><h3 class="section-title">结算快照</h3></div><div class="card-body">' + [['结算方向',bill.settlementDirection],['结算类型',bill.type],['结算金额',moneyV2(bill.amount,bill.currency)],['结算单状态',bill.billStatus],['收付款状态',bill.paymentStatus],['截止日期',bill.deadline]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div><div class="card"><div class="card-head"><h3 class="section-title">账户快照</h3></div><div class="card-body">' + [['付款主体',bill.payer],['付款账户',bill.payerAccount],['收款主体',bill.payee],['收款账户',bill.payeeAccount],['期末预付金余额',bill.storeBalances ? bill.storeBalances.map(function (item) { return item.name + '：' + moneyV2(item.balance,bill.currency); }).join('；') : bill.prepaymentBalance == null ? '—' : moneyV2(bill.prepaymentBalance,bill.currency)]].map(function (x) { return '<div class="desc"><span class="desc-label">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></div></div><div class="card"><div class="card-head"><div>来源订单与退款快照</div></div><div class="table-wrap"><table class="table"><thead><tr><th>订单号</th><th>成交时间</th><th>完整中标价</th><th>原金额</th><th>退款状态</th><th>当前金额</th></tr></thead><tbody>' + bill.sources.map(function (s) { return '<tr><td>' + esc(s.order) + (s.storeName ? '<div class="merchant-account">' + esc(s.storeName + ' · ' + s.storeId) + '</div>' : '') + '</td><td>' + esc(s.dealAt) + '</td><td class="money">' + moneyV2(s.winning,bill.currency) + '</td><td class="money">' + moneyV2(s.originalShare,bill.currency) + '</td><td>' + statusTag(s.refund) + '</td><td class="money">' + moneyV2(s.currentShare,bill.currency) + '</td></tr>'; }).join('') + '</tbody></table></div></div><div class="card"><div class="card-head"><div>收付款记录</div><span class="subtle">恢复待打款不会删除历史打款记录</span></div>' + paymentRecordsHtmlV2(bill) + '</div><div class="card"><div class="card-head"><div>恢复记录</div></div><div class="card-body timeline">' + (bill.restoreRecords.length ? bill.restoreRecords.map(function (r) { return '<div class="event"><b>恢复待打款：' + esc(r.reason) + '</b><div class="event-time">' + esc(r.at + ' · ' + r.operator) + '</div></div>'; }).join('') : '<div class="empty-compact">暂无恢复记录</div>') + '</div></div>';
     setView('settlementBillDetail');
   }
 
@@ -2055,7 +2128,7 @@
     return {state:'已锁定',reason:'已进入待处理结算单：' + bill.id,bill:bill};
   }
 
-  Object.assign(I18N_EXACT, {'门店预付金汇总':'Store Prepayment Summary','预付金流水':'Prepayment Ledger','预付金下拨':'Prepayment Disbursement','成交核销':'Transaction Write-off','取消退款扣回':'Refund Cancellation Clawback','未使用资金应退':'Unused Funds Due Back','误成交撤销':'Mistaken Transaction Reversal','周期内已使用金额':'Used in Period','退款恢复金额':'Refund Restored Amount','取消退款扣回金额':'Refund Cancellation Clawback Amount','未使用资金应退金额':'Unused Funds Due Back','结算单状态':'Bill Status','收付款状态':'Payment Status','待处理':'Pending','已处理':'Processed','待打款':'Pending Payout','已打款':'Paid','待收款':'Pending Receipt','已收款':'Received','恢复待打款':'Restore Pending Payout','周结':'Weekly','平台应收（回收商付款）':'Platform Receivable (Recycler Payment)','平台应付（供货商／门店收款）':'Platform Payable (Supplier / Store Receipt)','平台应付（店员收款）':'Platform Payable (Staff Receipt)'});
+  Object.assign(I18N_EXACT, {'门店预付金汇总':'Store Prepayment Summary','预付金流水':'Prepayment Ledger','预付金下拨':'Prepayment Disbursement','成交核销':'Transaction Write-off','取消退款扣回':'Refund Cancellation Clawback','未使用资金应退':'Unused Funds Due Back','误成交撤销':'Mistaken Transaction Reversal','周期内已使用金额':'Used in Period','退款恢复金额':'Refund Restored Amount','取消退款扣回金额':'Refund Cancellation Clawback Amount','未使用资金应退金额':'Unused Funds Due Back','结算单状态':'Bill Status','收付款状态':'Payment Status','待处理':'Pending','已处理':'Processed','待打款':'Pending Payout','已打款':'Paid','待收款':'Pending Receipt','已收款':'Received','恢复待打款':'Restore Pending Payout','周结':'Weekly','平台应收（回收商付款）':'Platform Receivable (Recycler Payment)','平台应付（门店收款）':'Platform Payable (Store Receipt)','平台应付（店员收款）':'Platform Payable (Staff Receipt)'});
 
   renderFinanceLedger = renderFundsLedgerV2;
   renderSettlementBillList = renderSettlementListV2;
@@ -2092,13 +2165,18 @@
     if (action === 'edit-settlement-config-v2') openSettlementConfigV2();
     if (action === 'run-settlement-preview-v2') openBusinessModal('结算预览','<div class="alert success"><span>✓</span><div>预览完成：本次将生成平台应收与平台应付结算单，不读取取货或送达状态。</div></div>','关闭',function () { closeModals(); },'primary');
     if (action === 'rerun-settlement-v2') { settlementConfigV2.lastRun='2026-09-02 11:25：补跑完成，无新增结算单'; renderSettlementConfigV2(); toast('补跑完成。'); }
-    if (action && action.startsWith('export-')) toast('导出任务已提交（原型演示）。');
+    if (action === 'export-settlement') exportStoreSettlementV2();
+    else if (action === 'export-ledger') exportCsv('资金台账.csv',['资金明细号','订单号','业务类型','完整中标价','卖家应得金额','门店分成','店员分成','平台分成','当前应结算金额'],fundLedgerRowsV2.filter(function (row) { return (!$('#fundV2Keyword').value || (row.id + row.order).toLowerCase().includes($('#fundV2Keyword').value.trim().toLowerCase())) && (!$('#fundV2Type').value || row.type === $('#fundV2Type').value) && (!$('#fundV2Receipt').value || row.receipt === $('#fundV2Receipt').value); }).map(function (row) { return [row.id,row.order,row.type,row.winning,row.seller,row.store,row.staff,row.platform,row.current]; }));
+    else if (action && action.startsWith('export-')) toast('导出任务已提交（原型演示）。');
   });
 
   Object.assign(window.prototypeState, {
     prepaymentDisbursementOrdersV2: prepaymentLedgerV2,
     prepaymentLedgerV2: prepaymentLedgerV2,
     settlementBillsV2: settlementBillsV2,
+    mergeStoreSettlementsV2: mergeStoreSettlementsV2,
+    buildStorePayoutExportV2: buildStorePayoutExportV2,
+    prepaymentSummariesV2: prepaymentSummariesV2,
     settlementConfigV2: settlementConfigV2,
     financeSettlementForOrder: financeSettlementForOrder,
     financeRefundPermissionForOrder: financeRefundPermissionForOrder,
