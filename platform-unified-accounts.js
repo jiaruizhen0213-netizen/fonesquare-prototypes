@@ -82,20 +82,46 @@
   const originalStaffList=renderStaffList, originalStaffDetail=openStaffDetail;
   renderStaffList=function(){originalStaffList();displayAccountStates($('#staffResultArea'));};
   openStaffDetail=function(id){originalStaffDetail(id);displayAccountStates($('#businessModal'));};
-  const oldMemberBuild=memberBuildState;
-  memberBuildState=function(s){const m=s.merchantId?merchantById(s.merchantId):null;if(state(staffId(s))==='停用'||(m&&state(m.id)==='停用'))return {configured:s.personalBuild,effective:'未生效（账号停用）'};return oldMemberBuild(s);};
+  function staffBuildReason(s) {
+    if(role(staffId(s))!=='店员')return '当前账号不是店员';
+    if(staffRelationStatus(s)!=='已关联'||!s.merchantId)return '请先绑定商家';
+    const m=merchantById(s.merchantId);
+    if(!m||m.identityArchived)return '请先绑定商家';
+    if(state(staffId(s))!=='启用')return '店员账号已停用';
+    if(state(m.id)!=='启用')return '所属商家账号已停用';
+    if(m.build!=='开启')return '请先开启所属商家的建拍权限';
+    return '';
+  }
+  memberBuildState=function(s){
+    const configured=s.personalBuild==='开启'?'开启':'关闭',reason=staffBuildReason(s);
+    return {configured,effective:configured==='关闭'?'已关闭':reason?'未生效（'+(reason==='请先开启所属商家的建拍权限'?'商家建拍权限已关闭':reason)+'）':'已生效'};
+  };
+  function staffBuildSwitch(s) {
+    const permission=memberBuildState(s),on=permission.configured==='开启',reason=staffBuildReason(s);
+    return '<div class="switch-row"><button class="switch '+(on?'on':'')+'" aria-label="切换店员建拍权限" data-staff-build="'+staffId(s)+'" '+(!on&&reason?'disabled':'')+' title="'+esc(!on?reason:'关闭店员建拍权限')+'"></button><span>'+permission.configured+'</span></div>'+(on&&reason?'<div class="merchant-account">已开启，'+esc(permission.effective)+'</div>':!on&&reason?'<div class="merchant-account">'+esc(reason)+'</div>':'');
+  }
+  function requestStaffBuild(id) {
+    const s=staffFor(id);if(!s||role(id)!=='店员')return;
+    const previous=s.personalBuild,next=previous==='开启'?'关闭':'开启';
+    const reason=next==='开启'?staffBuildReason(s):'';if(reason){toast(reason);return;}
+    openBusinessModal(next+'店员建拍权限','<p>'+esc(s.name)+'：'+previous+' → '+next+'</p><p>开启需已绑定商家、双方账号启用，且商家建拍权限开启。</p>','确认'+next,()=>{
+      const error=role(id)!=='店员'?'当前账号不是店员':s.personalBuild!==previous?'权限已变化，请刷新后重试':next==='开启'?staffBuildReason(s):'';
+      if(error){toast(error);return;}
+      s.personalBuild=next;log(id,'店员建拍权限',previous,next);closeModals();renderList();renderStaffList();toast('店员建拍权限已'+next);
+    });
+  }
   toggleMerchantBusiness=function(u){toggle(u.id);};
   function filters() {
     const val=id=>$(id).value.trim(),kw=val('#keyword').toLowerCase();
-    return rows().filter(a=>(!kw||[a.id,a.name,a.account,a.raw].join(' ').toLowerCase().includes(kw))&&(!val('#businessStatusFilter')||a.status===val('#businessStatusFilter'))&&(!val('#accountRoleFilter')||a.role===val('#accountRoleFilter'))&&(!val('#merchantSourceFilter')||a.source===val('#merchantSourceFilter'))&&(!val('#ownerFilter')||a.owner===val('#ownerFilter'))&&(!val('#kycFilter')||a.fs?.kyc===val('#kycFilter'))&&(!val('#merchantBuildFilter')||(a.role==='商家'&&a.store?.build===val('#merchantBuildFilter')))&&(!val('#merchantBidFilter')||a.fs?.bid===val('#merchantBidFilter'))&&(!val('#merchantTypeFilter')||records(a.id).some(u=>!u.identityArchived&&legacyMerchantRoles(u).includes(val('#merchantTypeFilter')))));
+    return rows().filter(a=>(!kw||[a.id,a.name,a.account,a.raw].join(' ').toLowerCase().includes(kw))&&(!val('#businessStatusFilter')||a.status===val('#businessStatusFilter'))&&(!val('#accountRoleFilter')||a.role===val('#accountRoleFilter'))&&(!val('#merchantSourceFilter')||a.source===val('#merchantSourceFilter'))&&(!val('#ownerFilter')||a.owner===val('#ownerFilter'))&&(!val('#kycFilter')||a.fs?.kyc===val('#kycFilter'))&&(!val('#merchantBuildFilter')||((a.role==='商家'?a.store?.build:a.role==='店员'?a.staff?.personalBuild:null)===val('#merchantBuildFilter')))&&(!val('#merchantBidFilter')||a.fs?.bid===val('#merchantBidFilter'))&&(!val('#merchantTypeFilter')||records(a.id).some(u=>!u.identityArchived&&legacyMerchantRoles(u).includes(val('#merchantTypeFilter')))));
   }
   renderList=function(){
     if(activeState!=='normal')return oldRenderList();
     const list=filters();
-    $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1900px"><thead><tr>'+['账号 ID / 名称','统一账号','首次注册 App','账号状态','门店端身份','KYC 认证状态','商家建拍权限','出价权限','分账规则','店铺数','店员数','账号注册时间','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
+    $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1900px"><thead><tr>'+['账号 ID / 名称','统一账号','首次注册 App','账号状态','门店端身份','KYC 认证状态','建拍权限','出价权限','分账规则','店铺数','店员数','账号注册时间','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
       const m=a.role==='商家'?a.store:null,fs=a.fs;
       const action=(kind,label)=>'<button class="btn link" data-account-action="'+kind+'" data-account-id="'+a.id+'">'+label+'</button>';
-      return '<tr data-unified-account="'+a.id+'"><td>'+action('view',esc(a.name))+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+tag(a.source,a.source==='FoneSquare'?'orange':'cyan')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.role,a.role==='商家'?'cyan':a.role==='店员'?'blue':'gray')+'</td><td>'+statusTag(fs?.kyc||'未完善')+'</td><td>'+(m?permissionSwitch(m,'build'):'—')+'</td><td>'+(fs?permissionSwitch(fs,'bid'):'未配置')+'</td><td>'+(m?statusTag(m.ratioStatus):'—')+'</td><td>'+(m?'<button class="btn link" data-view-stores="'+m.merchantId+'">'+merchantStoreCount(m)+'</button>':'—')+'</td><td>'+(m?'<button class="btn link" data-merchant-staff="'+m.merchantId+'">'+merchantStaffCount(m)+'</button>':'—')+'</td><td>'+esc(a.time)+'</td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
+      return '<tr data-unified-account="'+a.id+'"><td>'+action('view',esc(a.name))+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+tag(a.source,a.source==='FoneSquare'?'orange':'cyan')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.role,a.role==='商家'?'cyan':a.role==='店员'?'blue':'gray')+'</td><td>'+statusTag(fs?.kyc||'未完善')+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+(fs?permissionSwitch(fs,'bid'):'未配置')+'</td><td>'+(m?statusTag(m.ratioStatus):'—')+'</td><td>'+(m?'<button class="btn link" data-view-stores="'+m.merchantId+'">'+merchantStoreCount(m)+'</button>':'—')+'</td><td>'+(m?'<button class="btn link" data-merchant-staff="'+m.merchantId+'">'+merchantStaffCount(m)+'</button>':'—')+'</td><td>'+esc(a.time)+'</td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
     }).join('')+'</tbody></table>'+(list.length?'':'<div class="empty-compact">没有符合当前条件的账号</div>')+'</div><div class="pagination"><span>共 '+list.length+' 条记录 第 1 / 1 页</span><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">›</button></div>';
   };
   applyFilters=function(){activeState='normal';renderList();};
@@ -106,6 +132,7 @@
     openBusinessModal('账号详情 · '+a.name,'<p>统一账号：'+esc(id)+'　'+esc(a.account)+'</p><p>账号状态：'+a.status+'　门店端身份：'+a.role+'</p>'+buttons+'<div style="margin-top:16px">'+(histories.get(id)||[]).map(h=>'<p>'+esc(h.at+' · '+h.operator+' · '+h.action+'：'+h.before+' → '+h.after)+'</p>').join('')+'</div>','关闭',closeModals);
   }
   openDetail=function(u,tab){oldOpenDetail(u,tab);$('#detailTags').innerHTML=statusTag(state(u.id))+tag(role(u.id),'blue');$('#statusBtn').onclick=()=>toggle(u.id);$('#statusBtn').textContent=state(u.id)==='启用'?'停用':'启用';};
+  $('#merchantBuildFilter').previousElementSibling.textContent='建拍权限';
   $('#businessStatusFilter').previousElementSibling.textContent='账号状态';
   $('#merchantSourceFilter').previousElementSibling.textContent='首次注册 App';
   $('#keyword').previousElementSibling.textContent='名称 / 账号';$('#keyword').placeholder='名称、账号 ID、手机号或邮箱';
@@ -114,6 +141,8 @@
   $('#staffAccountFilter').innerHTML='<option value="">全部</option><option value="正常">启用</option><option>停用</option>';
   $('#searchBtn').onclick=applyFilters;$('#resetBtn').onclick=resetFilters;
   document.addEventListener('click',e=>{
+    const permission=e.target.closest('[data-staff-build]');
+    if(permission){e.preventDefault();e.stopImmediatePropagation();if(!permission.disabled)requestStaffBuild(permission.dataset.staffBuild);return;}
     const btn=e.target.closest('[data-account-action],[data-account-business]');if(!btn)return;
     e.preventDefault();e.stopImmediatePropagation();const id=btn.dataset.accountId;
     if(btn.dataset.accountBusiness){closeModals();if(btn.dataset.accountBusiness==='staff')openStaffDetail(staffFor(id).id);else openDetail(btn.dataset.accountBusiness==='fs'?fsFor(id):storeFor(id));return;}
