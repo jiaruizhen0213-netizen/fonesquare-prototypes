@@ -98,7 +98,7 @@
   };
   function staffBuildSwitch(s) {
     const permission=memberBuildState(s),on=permission.configured==='开启',reason=staffBuildReason(s);
-    return '<div class="switch-row"><button class="switch '+(on?'on':'')+'" aria-label="切换店员建拍权限" data-staff-build="'+staffId(s)+'" '+(!on&&reason?'disabled':'')+' title="'+esc(!on?reason:'关闭店员建拍权限')+'"></button><span>'+permission.configured+'</span></div>'+(on&&reason?'<div class="merchant-account">已开启，'+esc(permission.effective)+'</div>':!on&&reason?'<div class="merchant-account">'+esc(reason)+'</div>':'');
+    return '<div class="switch-row"><button class="switch '+(on?'on'+(reason?' staff-build-inactive':''):'')+'" aria-label="切换店员建拍权限" data-staff-build="'+staffId(s)+'" '+(!on&&reason?'disabled':'')+' title="'+esc(!on?reason:'关闭店员建拍权限')+'"></button><span>'+permission.configured+'</span></div>'+(on&&reason?'<div class="merchant-account">已开启，'+esc(permission.effective)+'</div>':!on&&reason?'<div class="merchant-account">'+esc(reason)+'</div>':'');
   }
   function requestStaffBuild(id) {
     const s=staffFor(id);if(!s||role(id)!=='店员')return;
