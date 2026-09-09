@@ -483,6 +483,30 @@
     .role-case ul { margin: 0; padding-left: 18px; color: #555; font-size: 12px; line-height: 1.65; }
     .role-case .wide-button { margin-top: 15px; }
     .case-back { color: var(--orange); font-size: 18px; }
+
+    #bottomNav { grid-template-columns: repeat(4, 1fr); }
+    .earnings-kinds, .earnings-tabs { display:flex; gap:8px; padding:12px; }
+    .earnings-kinds button, .earnings-tabs button { flex:1; min-height:44px; border:0; border-radius:12px; background:#fff; color:#777; }
+    .earnings-kinds .selected, .earnings-tabs .selected { background:var(--orange-soft); color:var(--orange); font-weight:700; }
+    .earnings-filters { display:flex; flex-wrap:wrap; gap:10px; padding:12px; }
+    .earnings-filters label { flex:1; min-width:85px; font-size:12px; color:#777; }
+    .earnings-filters select { display:block; width:100%; min-height:38px; margin-top:6px; border:1px solid var(--line); border-radius:8px; background:white; font:inherit; color:var(--ink); }
+    .earnings-summary { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 12px; padding:24px 16px; background:white; border-radius:16px; }
+    .earnings-summary span { color:#777; font-size:12px; }
+    .earnings-summary strong { display:block; margin-top:12px; font-size:20px; overflow-wrap:anywhere; }
+    .earnings-summary div:first-child strong { color:var(--orange); }
+    .earnings-caption { margin:10px 16px; color:#888; font-size:11px; }
+    .earnings-row { margin-top:0; margin-bottom:10px; }
+    .earnings-row summary { display:flex; gap:10px; justify-content:space-between; align-items:start; padding:4px 0; }
+    .earnings-row summary>span { min-width:0; }
+    .earnings-row summary::after { display:none; }
+    .earnings-row summary b { flex-shrink:0; font-size:14px; }
+    .earnings-row summary b::after { content:"⌄"; margin-left:6px; color:#999; }
+    .earnings-row[open] summary b::after { content:"⌃"; }
+    .earnings-row small { display:block; color:#888; font-size:11px; line-height:1.6; margin-top:5px; overflow-wrap:anywhere; }
+    .earnings-row .earnings-adjustment { color:var(--amber); }
+    .earnings-empty { text-align:center; padding:40px 16px; color:#888; }
+    #earningsOrderDialog { width:min(90vw,400px); }
   </style>
 </head>
 <body>
@@ -499,6 +523,8 @@
         <button class="case-card" type="button" data-case-entry="role"><span class="case-number">03</span><span><strong>案例三 · 店员与商家可见内容</strong><small>对比本人作业范围与本商家经营范围</small></span><span class="case-chevron">›</span></button>
       </div>
       <div class="callout success">三个案例仅用于演示已确认的页面路径和权限边界，不新增账号、地区或角色规则。</div>
+      <details class="section"><summary>案例设置</summary><p>收益金额为示例数据，用于展示结算状态与角色范围。</p><label>演示身份 <select class="role-switch" id="roleSwitch"><option value="employee" selected>店员</option><option value="merchant">商家主账号</option></select></label><details class="section"><summary>原型演示</summary>      <button class="wide-button tertiary" id="togglePriceResult" type="button">切换为价格已生成</button>
+<button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button></details><section class="section"><details><summary>原型演示</summary><div class="permission-demo"><button type="button" data-supervisor-permission="no-role">无督导角色</button><button type="button" data-supervisor-permission="disabled">账号不可用</button></div></details></section><details class="prototype-login-results"><summary>原型：切换飞书登录结果</summary><div class="permission-demo"><button type="button" data-supervisor-auth-outcome="success">正常登录</button><button type="button" data-supervisor-auth-outcome="cancelled">授权未完成</button><button type="button" data-supervisor-auth-outcome="unbound">未关联 OB 账号</button><button type="button" data-supervisor-auth-outcome="disabled">账号不可用</button><button type="button" data-supervisor-auth-outcome="no-role">无督导权限</button></div></details></details>
     </section>
 
     <section class="page with-actions" data-page="accountAccess" id="accountAccessPage">
@@ -528,35 +554,6 @@
       </div>
     </section>
 
-    <section class="page" data-page="home" id="homePage">
-      <header class="topbar"><button class="icon-button case-back" type="button" data-back="caseHub" aria-label="返回案例">‹</button><h1 class="brand">FONESQUARE</h1><button class="icon-button" type="button" aria-label="通知">⋯</button></header>
-      <section class="section identity-card">
-        <div class="avatar">JR</div>
-        <div><strong>贾瑞真</strong><span id="identityScope">FS Retail Malaysia · 商家主账号</span></div>
-        <select class="role-switch" id="roleSwitch" aria-label="切换演示角色"><option value="merchant">商家主账号</option><option value="employee" selected>店员</option></select>
-        <span class="verified">可建拍</span>
-      </section>
-      <section class="hero">
-        <div class="eyebrow">供货端 · 门店端 / 店员 App</div>
-        <h2>扫码创建竞拍标单</h2>
-        <p>直接扫描设备，自动识别型号并带入 IMEI 后开始质检。</p>
-        <button class="hero-button" id="homeCreateLot" type="button">扫码质检并建标 →</button>
-      </section>
-      <section class="section"><details><summary>发布指引</summary>
-        <p class="section-kicker">快速指引</p>
-        <h2 class="section-title">两步完成发布</h2>
-        <div class="timeline">
-          <div class="timeline-item active"><strong>扫码并完成质检</strong><span>扫描设备后核对自动结果；折叠屏需补充亮屏、暗屏照片。</span></div>
-          <div class="timeline-item"><strong>确认并发布</strong><span>核对质检快照和价格结果后发布，无需预先维护卖家手机号或合同。</span></div>
-        </div>
-      </details></section>
-      <section class="section">
-        <div class="summary-row"><span>草稿</span><strong>0</strong></div>
-        <div class="summary-row"><span>竞拍中</span><strong>2</strong></div>
-        <div class="summary-row"><span>待卖家决定</span><strong>1</strong></div>
-      </section>
-    </section>
-
     <section class="page with-actions" data-page="inspection" id="inspectionPage">
       <header class="topbar"><button class="icon-button" type="button" data-back="scan" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="重新扫描设备">⌗</button></header>
       <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
@@ -565,7 +562,7 @@
         <div><h2 class="product-name" id="currentInspectionModel">等待扫码识别</h2><p class="specs">扫码后自动识别设备并加载质检模板</p></div>
       </section>
       <div class="inspection-progress" id="inspectionProgress">请先扫描设备</div>
-      <details class="section"><summary>原型演示</summary><p class="selector-context" id="templateSourceNote">质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。</p></details>
+
       <div class="callout warning" id="inspectionStatus">必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。</div>
       <section class="section">
         <p class="section-kicker">设备信息</p>
@@ -623,7 +620,7 @@
     </section>
 
     <section class="page with-actions" data-page="scan" id="scanPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="home" aria-label="返回">‹</button><h1>扫描设备</h1><span></span></header>
+      <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>扫描设备</h1><span></span></header>
       <div class="scan-stage">
         <div class="scan-frame" aria-label="二维码扫描模拟区"><div class="qr-code"></div><div class="scan-line"></div></div>
         <h2>扫描设备条码或二维码</h2>
@@ -667,13 +664,12 @@
         <strong>价格暂不可用</strong>
         <span>不影响发布与普通竞价；本轮不提供偏差提示。</span>
       </div>
-<details class="section"><summary>原型演示</summary>      <button class="wide-button tertiary" id="togglePriceResult" type="button">切换为价格已生成</button>
-<button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button></details>
+
       <nav class="action-bar"><button class="action-button secondary" type="button" data-back="inspection">返回修改</button><button class="action-button primary" id="publishLot" type="button">发布标单</button></nav>
     </section>
 
     <section class="page" data-page="auctions" id="auctionsPage">
-      <header class="topbar"><span></span><h1>在拍商品</h1><button class="icon-button" id="auctionScanEntry" type="button" aria-label="扫码查看质检">⌗</button></header>
+      <header class="topbar"><button class="icon-button case-back" type="button" data-back="caseHub" aria-label="返回案例">‹</button><h1>在拍商品</h1><button class="icon-button" id="auctionScanEntry" type="button" aria-label="扫码查看质检">⌗</button></header>
       <div class="callout success" id="auctionScopeNote">商家主账号可查看本商家全部竞拍标单；按竞拍截止时间从近到远排列。</div>
       <div id="auctionList" style="display:grid;gap:10px;padding:10px 12px" aria-label="按截止时间升序排列的标单">
         <button class="auction-card" id="preWinnerAuctionCard" type="button" data-owner="jia" data-deadline-offset-minutes="-1"><span class="device-thumb" style="background:linear-gradient(145deg,#e9edf5,#b9c3d5)"><span class="mini-phone" style="background:linear-gradient(145deg,#c8d0dc,#69758a)"></span></span><span><span class="condition-tag">A-</span><strong class="product-name" style="display:block">Samsung Galaxy S25 Ultra 256GB</strong><span class="specs">FS-MY-260823-0197 · 贾瑞真</span><span class="auction-meta"><span>执行状态：已结束</span><span id="preWinnerCardResult">结果：预中标 · 中标价格 MYR 3,280</span></span></span></button>
@@ -723,24 +719,7 @@
       <section class="section"><h2 class="section-title">取货结果</h2><p class="small muted" style="margin:0">供货端只读查看每笔订单的待取货或已取货结果，不需要执行取货操作。</p></section>
     </section>
 
-     <section class="page" data-page="bills" id="billsPage">
-      <header class="topbar"><span></span><h1>收益与佣金</h1><span></span></header>
-      <div class="callout success" id="billScopeNote">商家主账号可查看本商家店铺收益和所属员工佣金。</div>
-      <section class="section" id="storeRevenueCard">
-        <p class="section-kicker">按成交时间 · MYR</p><h2 class="section-title">店铺收益</h2>
-        <div class="summary-row"><span>店铺服务费</span><strong>MYR 486.80</strong></div>
-        <div class="summary-row"><span>店铺调整净额</span><strong>- MYR 40.00</strong></div>
-        <div class="summary-row"><span>店铺应收合计</span><strong>MYR 446.80</strong></div>
-        <p class="permission-note">店铺应收合计＝店铺服务费＋店铺调整净额，不包含卖家应付和员工佣金。</p>
-      </section>
-      <section class="section" id="employeeCommissionCard">
-        <p class="section-kicker">员工佣金 · MYR</p><h2 class="section-title">所属员工佣金</h2>
-        <div class="summary-row"><span>贾瑞真</span><strong>MYR 86.20</strong></div>
-        <div class="summary-row"><span>Aina Rahman</span><strong>MYR 64.50</strong></div>
-        <div class="summary-row"><span>调整净额</span><strong>- MYR 10.00</strong></div>
-      </section>
-      <section class="section"><h2 class="section-title">最近成交</h2><div class="summary-row"><span>FSO-260821-0098</span><strong>8月21日 11:02</strong></div><div class="summary-row"><span>处理状态</span><strong>待结算</strong></div><p class="permission-note">不同币种分别汇总；所有金额与处理结果只读。</p></section>
-    </section>
+    <section class="page" data-page="bills" id="billsPage" data-no-i18n></section>
 
     <section class="page" data-page="my" id="myPage">
       <header class="topbar"><span></span><h1>我的</h1><span></span></header>
@@ -816,7 +795,7 @@
             <span>飞书 · 督导</span>
           </button>
         </div>
-        <details class="prototype-login-results"><summary>原型：切换飞书登录结果</summary><div class="permission-demo"><button type="button" data-supervisor-auth-outcome="success">正常登录</button><button type="button" data-supervisor-auth-outcome="cancelled">授权未完成</button><button type="button" data-supervisor-auth-outcome="unbound">未关联 OB 账号</button><button type="button" data-supervisor-auth-outcome="disabled">账号不可用</button><button type="button" data-supervisor-auth-outcome="no-role">无督导权限</button></div></details>
+
       </div>
     </section>
 
@@ -857,7 +836,7 @@
       <header class="topbar"><span></span><h1>我的账号</h1><span></span></header>
       <section class="section account-profile"><div class="account-profile-head"><div class="account-avatar" style="background:#315a7d">飞</div><div><strong class="account-name">李敏 · 督导</strong><span class="account-phone">飞书身份 · li.min</span><span class="verification-badge">督导角色有效</span></div></div><div class="summary-row"><span>关联 OB 账号</span><strong>ob.limin</strong></div></section>
       <section class="section"><h2 class="section-title">数据视图</h2><div class="summary-row"><span>订单范围</span><strong>全部区域、商家和门店</strong></div><div class="summary-row"><span>敏感内容</span><strong>不展示金额、分账、佣金、退款和资金</strong></div></section>
-      <section class="section"><details><summary>原型演示</summary><div class="permission-demo"><button type="button" data-supervisor-permission="no-role">无督导角色</button><button type="button" data-supervisor-permission="disabled">账号不可用</button></div></details></section>
+
       <section class="section"><button class="wide-button secondary" id="exitSupervisorApp" type="button">退出督导账号</button></section>
     </section>
 
@@ -868,10 +847,9 @@
     </section>
 
     <nav class="bottom-nav" id="bottomNav" aria-label="主导航" style="display:none">
-      <button class="nav-button active" type="button" data-nav="home"><span>⌂</span>首页</button>
       <button class="nav-button" type="button" data-nav="auctions"><span>◫</span>竞拍</button>
       <button class="nav-button" type="button" data-nav="orders"><span>▣</span>订单</button>
-      <button class="nav-button" type="button" data-nav="bills"><span>▤</span>账单</button>
+      <button class="nav-button" type="button" data-nav="bills"><span>▤</span>收益</button>
       <button class="nav-button" id="myNav" type="button" data-nav="my"><span>●</span>我的</button>
     </nav>
     <nav class="bottom-nav supervisor-bottom-nav" id="supervisorBottomNav" aria-label="督导主导航" style="display:none">
@@ -881,6 +859,7 @@
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="earningsOrderDialog" data-no-i18n></dialog>
   <div class="loading-overlay" id="supervisorAuthOverlay" role="dialog" aria-modal="true" aria-labelledby="supervisorAuthTitle"><div class="loading-card"><div class="spinner"></div><strong id="supervisorAuthTitle">正在验证督导身份</strong><span id="supervisorAuthCopy">完成授权后将自动返回门店端。</span><button class="wide-button secondary" id="cancelSupervisorAuth" type="button">取消</button></div></div>
   <div class="loading-overlay" id="loadingOverlay" aria-live="polite"><div class="loading-card"><div class="spinner"></div><strong>正在发布标单</strong><span>正在执行最终校验…</span></div></div>
 
@@ -1058,6 +1037,7 @@
       '门店端登录分流演示': 'Store App Sign-in Routing Demo',
       '商家、店员使用统一账号；督导使用飞书登录': 'Merchants and staff use unified accounts; supervisors use Feishu',
       '登录门店端': 'Sign in to Store App',
+      '收益': 'Earnings',
       '发布标单': 'Publish Lot',
       '发布成功': 'Published successfully',
       '登录成功': 'Signed in',
@@ -1266,6 +1246,7 @@
     function saveLanguagePreference(language) {
       try { localStorage.setItem('fonesquare-language', language); } catch {}
       applyLanguage(language);
+      renderEarnings();
       if (typeof activeAuctionStart !== 'undefined' && activeAuctionStart) {
 
 
@@ -1299,7 +1280,7 @@
     const pages = [...document.querySelectorAll('.page')];
     const bottomNav = document.getElementById('bottomNav');
     const supervisorBottomNav = document.getElementById('supervisorBottomNav');
-    const mainPages = ['home', 'auctions', 'orders', 'bills', 'my'];
+    const mainPages = ['auctions', 'orders', 'bills', 'my'];
     const supervisorMainPages = ['supervisorPickup', 'supervisorMy'];
     const showPage = (name) => {
       pages.forEach((page) => page.classList.toggle('active', page.dataset.page === name));
@@ -1374,7 +1355,7 @@
         accountState.loginComplete = true;
         accountAccessResult.classList.remove('show');
         applyRoleScope();
-        showPage('home');
+        showPage('auctions');
         showToast('登录成功');
       }
       applyLanguage(currentLanguage);
@@ -1512,7 +1493,7 @@
       showPage('inspection');
     }
 
-    document.getElementById('homeCreateLot').addEventListener('click', () => showPage('scan'));
+
     document.getElementById('createLotFab').addEventListener('click', () => showPage('scan'));
     document.getElementById('auctionScanEntry').addEventListener('click', () => showPage('scan'));
     document.getElementById('inspectionScanEntry').addEventListener('click', () => showPage('scan'));
@@ -1848,6 +1829,7 @@
     };
     const runSupervisorAuth = (outcome = 'success') => {
       clearTimeout(supervisorAuthTimer);
+      showSupervisorPage('supervisorLogin');
       supervisorAuthTitle.textContent = '正在前往飞书';
       supervisorAuthCopy.textContent = '完成授权后将自动返回门店端。';
       document.getElementById('supervisorLoginError').hidden = true;
@@ -1964,14 +1946,55 @@
       const byState = currentOrderTab === 'all' || card.dataset.orderCard === currentOrderTab;
       card.style.display = byRole && byState ? 'block' : 'none';
     });
+    const earningRows = [
+      {id:'FSO-260909-0101',model:'iPhone 14 Pro',store:'central',owner:'jia',currency:'MYR',status:'pending',date:'2026-09-09',settled:'',storeBase:18000,storeAdjustment:-1000,commission:4200,adjustment:-500,reason:'售后调整'},
+      {id:'FSO-260908-0102',model:'Galaxy S25 Ultra',store:'central',owner:'jia',currency:'MYR',status:'settled',date:'2026-09-08',settled:'2026-09-09',storeBase:22000,storeAdjustment:0,commission:4420,adjustment:0,reason:''},
+      {id:'FSO-260907-0103',model:'iPhone 15',store:'north',owner:'aina',currency:'MYR',status:'pending',date:'2026-09-07',settled:'',storeBase:8680,storeAdjustment:-3000,commission:6450,adjustment:-500,reason:'售后调整'},
+      {id:'FSO-260906-0104',model:'iPhone 13',store:'north',owner:'aina',currency:'MYR',status:'settled',date:'2026-09-06',settled:'2026-09-08',storeBase:11000,storeAdjustment:0,commission:2800,adjustment:0,reason:''},
+      {id:'FSO-260905-0105',model:'iPhone 14',store:'central',owner:'jia',currency:'HKD',status:'settled',date:'2026-09-05',settled:'2026-09-08',storeBase:36000,storeAdjustment:0,commission:9500,adjustment:0,reason:''}
+    ];
+    const earningsState = {kind:'store',store:'all',owner:'all',currency:'MYR',status:'pending'};
+    function renderEarnings() {
+      const employee = roleSwitch.value === 'employee';
+      const kind = employee ? 'commission' : earningsState.kind;
+      const e = (zh,en) => currentLanguage === 'en' ? en : zh;
+      const money = n => earningsState.currency + ' ' + (n/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+      const names={central:e('中心旗舰店','Central Flagship'),north:e('北区店','North Store'),jia:e('贾瑞真','Jia Ruizhen'),aina:'Aina Rahman'};
+      const rows=earningRows.filter(r=>r.currency===earningsState.currency && (employee ? r.owner==='jia' : (earningsState.store==='all'||r.store===earningsState.store) && (kind==='store'||earningsState.owner==='all'||r.owner===earningsState.owner)));
+      const base=r=>kind==='store'?r.storeBase:r.commission;
+      const adjustment=r=>kind==='store'?r.storeAdjustment:r.adjustment;
+      const total=status=>rows.filter(r=>r.status===status).reduce((sum,r)=>sum+base(r)+adjustment(r),0);
+      const options=(values,selected)=>values.map(([v,label])=>'<option value="'+v+'"'+(v===selected?' selected':'')+'>'+label+'</option>').join('');
+      const visible=rows.filter(r=>r.status===earningsState.status).sort((a,b)=>(b.settled||b.date).localeCompare(a.settled||a.date));
+      const page=document.getElementById('billsPage');
+      page.innerHTML='<header class="topbar"><span></span><h1>'+e(employee?'我的收益':'收益与佣金',employee?'My Earnings':'Earnings & Commission')+'</h1><span></span></header>'+
+        (!employee?'<div class="earnings-kinds"><button data-earning-kind="store" class="'+(kind==='store'?'selected':'')+'">'+e('店铺收益','Store Earnings')+'</button><button data-earning-kind="commission" class="'+(kind==='commission'?'selected':'')+'">'+e('员工佣金','Staff Commission')+'</button></div>':'')+
+        '<div class="earnings-filters">'+(!employee?'<label>'+e('店铺','Store')+'<select id="earningsStore">'+options([['all',e('全部店铺','All stores')],['central',names.central],['north',names.north]],earningsState.store)+'</select></label>':'')+
+        (!employee&&kind==='commission'?'<label>'+e('员工','Staff')+'<select id="earningsOwner">'+options([['all',e('全部员工','All staff')],['jia',names.jia],['aina',names.aina]],earningsState.owner)+'</select></label>':'')+
+        '<label>'+e('币种','Currency')+'<select id="earningsCurrency">'+options([['MYR','MYR'],['HKD','HKD']],earningsState.currency)+'</select></label></div>'+
+        '<section class="earnings-summary"><div><span>'+e('待结算收益','Pending settlement')+'</span><strong id="earningsPending">'+money(total('pending'))+'</strong></div><div><span>'+e('已结算收益','Settled earnings')+'</span><strong id="earningsSettled">'+money(total('settled'))+'</strong></div></section>'+
+        '<p class="earnings-caption">'+e('累计收益 · 含调整金额','All-time earnings · Includes adjustments')+'</p>'+
+        '<div class="earnings-tabs"><button data-earning-status="pending" class="'+(earningsState.status==='pending'?'selected':'')+'">'+e('待结算','Pending')+'</button><button data-earning-status="settled" class="'+(earningsState.status==='settled'?'selected':'')+'">'+e('已结算','Settled')+'</button></div>'+
+        '<div id="earningsRows">'+(visible.length?visible.map(r=>'<details class="section earnings-row" data-earning-id="'+r.id+'"><summary><span><strong>'+r.model+'</strong><small>'+r.id+' · '+names[r.store]+(!employee&&kind==='commission'?' · '+names[r.owner]:'')+'</small><small>'+e(r.status==='settled'?'结算日期：':'成交日期：',r.status==='settled'?'Settled: ':'Traded: ')+(r.settled||r.date)+'</small>'+(adjustment(r)?'<small class="earnings-adjustment">'+e('含调整：','Adjustment: ')+money(adjustment(r))+' · '+e(r.reason,'After-sales adjustment')+'</small>':'')+'</span><b>'+money(base(r)+adjustment(r))+'</b></summary><div class="summary-row"><span>'+e('原始收益','Original earnings')+'</span><strong>'+money(base(r))+'</strong></div><div class="summary-row"><span>'+e('调整金额','Adjustment')+'</span><strong>'+money(adjustment(r))+'</strong></div><div class="summary-row"><span>'+e('最终金额','Final amount')+'</span><strong>'+money(base(r)+adjustment(r))+'</strong></div>'+(r.status==='settled'?'<p class="earnings-caption">'+e('已结算不代表已到账','Settled does not mean received')+'</p>':'')+'<button class="wide-button secondary" data-earning-order="'+r.id+'">'+e('查看订单','View order')+'</button></details>').join(''):'<p class="earnings-empty">'+e('暂无相关收益记录','No matching earnings')+'</p>')+'</div>';
+      page.querySelectorAll('[data-earning-kind]').forEach(b=>b.onclick=()=>{earningsState.kind=b.dataset.earningKind;renderEarnings()});
+      page.querySelectorAll('[data-earning-status]').forEach(b=>b.onclick=()=>{earningsState.status=b.dataset.earningStatus;renderEarnings()});
+      for(const [id,key] of [['earningsStore','store'],['earningsOwner','owner'],['earningsCurrency','currency']]) {const input=document.getElementById(id);if(input)input.onchange=()=>{earningsState[key]=input.value;renderEarnings()};}
+      page.querySelectorAll('[data-earning-order]').forEach(b=>b.onclick=()=>{
+        const r=rows.find(r=>r.id===b.dataset.earningOrder);if(!r)return;
+        const dialog=document.getElementById('earningsOrderDialog');
+        dialog.innerHTML='<h2>'+e('关联订单','Linked order')+'</h2><p>'+r.id+'</p><p>'+r.model+'</p><p>'+names[r.store]+' · '+names[r.owner]+'</p><p>'+e('成交日期：','Traded: ')+r.date+'</p><p>'+e('结算状态：','Settlement status: ')+e(r.status==='settled'?'已结算':'待结算',r.status==='settled'?'Settled':'Pending')+'</p><form method="dialog"><button class="wide-button primary">'+e('关闭','Close')+'</button></form>';
+        dialog.showModal();
+      });
+    }
+
     const applyRoleScope = () => {
       const role = roleSwitch.value;
       const copy = roleCopy[role];
-      document.getElementById('identityScope').textContent = copy.identity;
+
       document.getElementById('publishIdentity').textContent = '中心旗舰店 · 贾瑞真 · ' + (role === 'employee' ? '店员' : '商家主账号');
       document.getElementById('auctionScopeNote').textContent = copy.auction;
       document.getElementById('orderScopeNote').textContent = copy.order;
-      document.getElementById('billScopeNote').textContent = copy.bill;
+
       document.getElementById('decisionNote').textContent = copy.decision;
       const canDecidePreWinner = role === 'employee';
       const decisionActions = document.getElementById('preWinnerDecisionActions');
@@ -1979,17 +2002,16 @@
         decisionActions.style.display = canDecidePreWinner ? 'grid' : 'none';
         document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。' : copy.decision;
       }
-      document.getElementById('storeRevenueCard').style.display = role === 'employee' ? 'none' : 'block';
-      document.querySelectorAll('#employeeCommissionCard .summary-row').forEach((row, index) => row.style.display = role === 'employee' && index === 1 ? 'none' : 'flex');
       document.querySelectorAll('#auctionsPage [data-owner]').forEach((card) => card.style.display = role === 'employee' && card.dataset.owner !== 'jia' ? 'none' : 'grid');
       renderProfileScope();
       applyOrderScope();
+      renderEarnings();
     };
     roleSwitch.addEventListener('change', applyRoleScope);
     document.querySelectorAll('[data-role-entry]').forEach((button) => button.addEventListener('click', () => {
       roleSwitch.value = button.dataset.roleEntry;
       applyRoleScope();
-      showPage('home');
+      showPage('auctions');
     }));
     profileStoreSelector.addEventListener('change', renderProfileScope);
     document.querySelectorAll('[data-order-tab]').forEach((tab) => tab.addEventListener('click', () => {
