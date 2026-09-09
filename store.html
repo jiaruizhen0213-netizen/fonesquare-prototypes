@@ -410,26 +410,23 @@
     .language-check { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid #ccc; border-radius: 50%; color: transparent; font-size: 12px; }
     .language-option.selected .language-check { border-color: var(--orange); color: #fff; background: var(--orange); }
     .form-hint { display: block; margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
-    .supervisor-hero { margin: 10px 12px 0; padding: 20px 18px; border-radius: 20px; color: #fff; background: linear-gradient(135deg,#243653,#365a81); }
-    .supervisor-hero h2 { margin: 7px 0; font-size: 24px; }
-    .supervisor-hero p { margin: 0; color: rgba(255,255,255,.82); font-size: 12px; line-height: 1.5; }
-    .login-methods { display: grid; gap: 10px; padding: 0 0 20px; }
-    .login-method-card { position: relative; border: 1px solid var(--line); }
-    .login-method-card.supervisor { border-color: #cdd9e7; box-shadow: 0 10px 24px rgba(49,90,125,.08); }
-    .login-method-head { display: grid; grid-template-columns: 42px 1fr auto; gap: 11px; align-items: center; }
-    .login-method-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 13px; color: var(--orange); background: var(--orange-soft); font-size: 15px; font-weight: 850; }
-    .login-method-card.supervisor .login-method-icon { color: #fff; background: #315a7d; }
-    .login-method-head strong { display: block; font-size: 15px; }
-    .login-method-head small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
-    .login-method-badge { padding: 4px 7px; border-radius: 99px; color: #315a7d; background: #edf3f8; font-size: 10px; font-weight: 750; }
-    .login-method-copy { margin: 13px 0 0; color: #555; font-size: 12px; line-height: 1.55; }
-    .login-steps { display: grid; gap: 7px; margin: 13px 0 0; padding: 0; list-style: none; }
-    .login-steps li { display: flex; gap: 9px; align-items: center; color: #4d5b68; font-size: 11px; }
-    .login-steps b { display: grid; width: 21px; height: 21px; flex: 0 0 21px; place-items: center; border-radius: 50%; color: #315a7d; background: #edf3f8; font-size: 10px; }
-    .feishu-button { border-color: #315a7d; background: #315a7d; }
-    .feishu-button:hover { background: #274b6b; }
-    .prototype-login-results { margin: 10px 12px 0; padding: 0 16px; border: 1px dashed #d4dbe2; border-radius: 16px; background: rgba(255,255,255,.72); }
-    .prototype-login-results summary { color: var(--muted); font-size: 12px; }
+    #supervisorLoginPage { padding-bottom: 0; background: linear-gradient(180deg, #fff0e9 0, #fff 260px); }
+    #supervisorLoginPage .topbar { background: transparent; border-bottom: 0; }
+    .store-login-layout { display: flex; flex-direction: column; min-height: calc(100svh - 54px); padding: 0 24px max(20px, env(safe-area-inset-bottom)); }
+    .store-login-brand { padding: clamp(40px, 9vh, 88px) 0 0; text-align: center; }
+    .store-login-brand .brand { font-size: 32px !important; }
+    .store-login-brand h2 { margin: 14px 0 0; font-size: 23px; }
+    .store-login-primary { margin: clamp(64px, 15vh, 140px) 0 0; text-align: center; }
+    .store-login-primary .wide-button { min-height: 52px; margin: 0; border-radius: 28px; font-size: 16px; }
+    .store-login-primary p { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .store-login-other { margin-top: auto; padding-top: 72px; text-align: center; }
+    .store-login-divider { display: flex; align-items: center; gap: 14px; margin: 0 24px 14px; color: var(--muted); font-size: 12px; }
+    .store-login-divider::before, .store-login-divider::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .store-login-feishu { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; min-width: 72px; padding: 6px 12px; border: 0; border-radius: 12px; color: #777; background: transparent; font-size: 12px; }
+    .store-login-feishu:hover { background: #f5f8fc; }
+    .store-login-feishu-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #eef5ff; color: #3370ff; }
+    .prototype-login-results { margin-top: 20px; border-top: 1px dashed var(--line); }
+    .prototype-login-results summary { padding: 12px 0; color: var(--muted); font-size: 11px; text-align: center; }
     .prototype-login-results .permission-demo { padding-bottom: 14px; grid-template-columns: 1fr 1fr; }
     .auth-progress-card { margin-top: 28px; padding: 28px 20px; text-align: center; }
     .auth-progress-card .spinner { border-color: #dce7ef; border-top-color: #315a7d; }
@@ -836,27 +833,26 @@
 
     <section class="page" data-page="supervisorLogin" id="supervisorLoginPage">
       <header class="topbar"><button class="icon-button case-back" type="button" data-back="caseHub" aria-label="返回案例">‹</button><h1>登录门店端</h1><span></span></header>
-      <div class="supervisor-hero"><div class="eyebrow">门店端 · 角色分流</div><h2>选择登录方式</h2><p>商家主账号、店员与督导均使用门店端 App；系统根据登录入口和服务端有效权限进入对应工作区。</p></div>
-      <div class="login-methods">
-        <section class="section login-method-card">
-          <div class="login-method-head"><div class="login-method-icon">店</div><div><strong>商家与店员</strong><small>门店统一账号</small></div></div>
-          <p class="login-method-copy">使用手机号或邮箱及密码登录；认证成功后，根据有效角色和商家关系进入商家或店员工作区。</p>
-          <button class="wide-button secondary" id="supervisorStoreAccountLogin" type="button">使用门店统一账号登录</button>
-        </section>
-        <section class="section login-method-card supervisor">
-          <div class="login-method-head"><div class="login-method-icon">飞</div><div><strong>内部督导</strong><small>飞书身份认证 · OB 权限</small></div><span class="login-method-badge">督导专属</span></div>
-          <p class="login-method-copy">点击后跳转飞书完成身份验证，系统获取已关联的有效 OB 账号和督导权限；无需输入 OB 账号密码。</p>
-          <ol class="login-steps"><li><b>1</b>跳转飞书验证身份</li><li><b>2</b>获取关联的 OB 账号</li><li><b>3</b>进入现场取货工作台</li></ol>
-          <button class="wide-button primary feishu-button" id="supervisorFeishuLogin" type="button">使用飞书登录</button>
-          <p class="permission-note">仅限已配置督导权限的内部飞书账号；飞书登录不会进入商家或店员角色。</p>
-        </section>
+      <div class="store-login-layout">
+        <div class="store-login-brand"><div class="brand" data-no-i18n>FoneSquare</div><h2>欢迎登录门店端</h2></div>
+        <div class="store-login-primary">
+          <button class="wide-button primary" id="supervisorStoreAccountLogin" type="button">手机号 / 邮箱登录</button>
+          <p>商家、店员使用统一账号登录</p>
+        </div>
+        <div class="store-login-other">
+          <div class="store-login-divider">其他登录方式</div>
+          <button class="store-login-feishu" id="supervisorFeishuLogin" type="button">
+            <span class="store-login-feishu-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 7.5 10 10l5-6 6 2-9 10L3 12z" fill="currentColor"/><path d="m3 14 8 3 6-5-4 8-10-4z" fill="#36cfc9"/></svg></span>
+            <span>飞书 · 督导</span>
+          </button>
+        </div>
         <details class="prototype-login-results"><summary>原型：切换飞书登录结果</summary><div class="permission-demo"><button type="button" data-supervisor-auth-outcome="success">正常登录</button><button type="button" data-supervisor-auth-outcome="cancelled">授权未完成</button><button type="button" data-supervisor-auth-outcome="unbound">未关联 OB 账号</button><button type="button" data-supervisor-auth-outcome="disabled">账号不可用</button><button type="button" data-supervisor-auth-outcome="no-role">无督导权限</button></div></details>
       </div>
     </section>
 
     <section class="page" data-page="supervisorAuth" id="supervisorAuthPage">
       <header class="topbar"><button class="icon-button" id="cancelSupervisorAuth" type="button" data-supervisor-back="supervisorLogin" aria-label="返回登录">‹</button><h1>飞书登录</h1><span></span></header>
-      <section class="section auth-progress-card" aria-live="polite"><div class="spinner"></div><h2 id="supervisorAuthTitle">正在验证督导身份</h2><p id="supervisorAuthCopy">正在获取关联的 OB 账号与督导权限，请稍候…</p><div class="auth-progress-steps"><span class="auth-progress-step active">飞书授权</span><span class="auth-progress-step active">获取 OB 账号</span><span class="auth-progress-step">进入工作台</span></div></section>
+      <section class="section auth-progress-card" aria-live="polite"><div class="spinner"></div><h2 id="supervisorAuthTitle">正在验证督导身份</h2><p id="supervisorAuthCopy">正在获取关联的 OB 账号与督导权限，请稍候…</p><p class="permission-note">仅限已配置督导权限的内部飞书账号；飞书登录不会进入商家或店员角色。</p><div class="auth-progress-steps"><span class="auth-progress-step active">飞书授权</span><span class="auth-progress-step active">获取 OB 账号</span><span class="auth-progress-step">进入工作台</span></div></section>
     </section>
 
     <section class="page with-actions" data-page="supervisorPickup" id="supervisorPickupPage" data-state-machine="pending→picked→delivered">
@@ -1095,6 +1091,11 @@
       '门店端登录分流演示': 'Store App Sign-in Routing Demo',
       '商家、店员使用统一账号；督导使用飞书登录': 'Merchants and staff use unified accounts; supervisors use Feishu',
       '登录门店端': 'Sign in to Store App',
+      '欢迎登录门店端': 'Welcome to Store App',
+      '手机号 / 邮箱登录': 'Sign in with Mobile / Email',
+      '商家、店员使用统一账号登录': 'Merchants and staff sign in with a unified account',
+      '其他登录方式': 'Other sign-in methods',
+      '飞书 · 督导': 'Feishu · Supervisor',
       '门店端 · 角色分流': 'Store App · Role Routing',
       '选择登录方式': 'Choose a Sign-in Method',
       '商家主账号、店员与督导均使用门店端 App；系统根据登录入口和服务端有效权限进入对应工作区。': 'Merchant admins, staff and supervisors all use the Store App. The selected sign-in route and server-side permissions determine the workspace.',
