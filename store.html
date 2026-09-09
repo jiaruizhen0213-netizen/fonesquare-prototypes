@@ -509,7 +509,7 @@
       </div>
       <div class="callout success" id="accountModeNote">新用户注册后创建唯一统一账号；目标 App 尚未开通时继续首次开通，不直接进入业务首页。</div>
       <section class="section">
-        <label class="form-field" style="margin-top:0"><span>国家/地区 <i class="required">*</i></span><select id="accountCountry"><option value="MY">马来西亚（+60）</option><option value="HK">中国香港（+852）</option></select><small class="form-hint">用于本案例展示手机号区号；实际开放范围以后端配置为准。</small></label>
+        <label class="form-field" style="margin-top:0"><span>国家/地区 <i class="required">*</i></span><select id="accountCountry"><option value="MY">马来西亚（+60）</option><option value="HK">中国香港（+852）</option></select></label>
         <label class="form-field"><span>手机号或邮箱 <i class="required">*</i></span><input id="accountIdentifier" type="text" value="+60 12 345 6789" autocomplete="username"></label>
         <label class="form-field" id="accountVerificationField"><span>验证码 <i class="required">*</i></span><input id="accountVerificationCode" type="text" inputmode="numeric" maxlength="6" value="246810" autocomplete="one-time-code"></label>
         <label class="form-field"><span>密码 <i class="required">*</i></span><input id="accountPassword" type="password" value="prototype" autocomplete="current-password"></label>
@@ -542,14 +542,14 @@
         <p>直接扫描设备，自动识别型号并带入 IMEI 后开始质检。</p>
         <button class="hero-button" id="homeCreateLot" type="button">扫码质检并建标 →</button>
       </section>
-      <section class="section">
+      <section class="section"><details><summary>发布指引</summary>
         <p class="section-kicker">快速指引</p>
         <h2 class="section-title">两步完成发布</h2>
         <div class="timeline">
           <div class="timeline-item active"><strong>扫码并完成质检</strong><span>扫描设备后核对自动结果；折叠屏需补充亮屏、暗屏照片。</span></div>
           <div class="timeline-item"><strong>确认并发布</strong><span>核对质检快照和价格结果后发布，无需预先维护卖家手机号或合同。</span></div>
         </div>
-      </section>
+      </details></section>
       <section class="section">
         <div class="summary-row"><span>草稿</span><strong>0</strong></div>
         <div class="summary-row"><span>竞拍中</span><strong>2</strong></div>
@@ -565,7 +565,7 @@
         <div><h2 class="product-name" id="currentInspectionModel">等待扫码识别</h2><p class="specs">扫码后自动识别设备并加载质检模板</p></div>
       </section>
       <div class="inspection-progress" id="inspectionProgress">请先扫描设备</div>
-      <p class="selector-context" id="templateSourceNote">质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。</p>
+      <details class="section"><summary>原型演示</summary><p class="selector-context" id="templateSourceNote">质检项数量和内容由 PMS 模板动态返回；下方 8 项仅为原型演示。</p></details>
       <div class="callout warning" id="inspectionStatus">必须成功导入 MAX 三份质检报告后才能提交，请点击右上角扫码。</div>
       <section class="section">
         <p class="section-kicker">设备信息</p>
@@ -638,14 +638,14 @@
 
     <section class="page with-actions" data-page="report" id="reportPage">
       <header class="topbar"><button class="icon-button" type="button" data-back="inspection" aria-label="返回">‹</button><h1>质检结果</h1><span></span></header>
-      <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
-      <div class="callout success">PMS 质检报告已创建，可核对质检事实并继续发布。</div>
+      <div class="progress-rail" aria-label="创建标单进度"><div class="step done">1 · 质检</div><div class="step active">2 · 确认发布</div></div>
+
       <section class="section device-summary">
         <div class="device-thumb"><div class="mini-phone"></div></div>
         <div><span class="condition-tag">A</span><h2 class="product-name" id="reportModel">苹果 iPhone 14 Pro</h2><p class="specs">512GB · 深空黑色 · 香港版本<br>IMEI 尾号 2761</p></div>
       </section>
       <section class="section">
-        <h2 class="section-title">报告信息</h2>
+        <details><summary>报告与来源信息</summary>
         <dl class="meta-list">
           <div class="meta-row"><dt>PMS 质检报告</dt><dd>PMS-HK-260823-0198</dd></div>
           <div class="meta-row"><dt>PMS 基础产品 / SKU</dt><dd>iPhone 14 Pro / 512GB</dd></div>
@@ -655,53 +655,21 @@
           <div class="meta-row"><dt>事实来源</dt><dd>灵犀 · 质检 APP · MAX · 人工补充</dd></div>
           <div class="meta-row"><dt>工具报告</dt><dd>灵犀 · 质检APP · MAX</dd></div>
           <div class="meta-row"><dt>完成时间</dt><dd>2026年8月23日 10:18</dd></div>
-        </dl>
+        </dl></details>
       </section>
       <section class="section">
         <details open><summary>主要问题</summary><div class="detail-copy"><div class="issue-row"><span>屏幕外观</span><span class="issue-value">轻微划痕</span></div><div class="issue-row"><span>边框 / 后盖</span><span class="issue-value">轻微划痕</span></div><div class="issue-row"><span>风险标签</span><span>无高风险问题</span></div></div></details>
         <details><summary>功能与显示</summary><div class="detail-copy"><div class="issue-row"><span>屏幕显示</span><span>正常</span></div><div class="issue-row"><span>整机功能</span><span>功能正常</span></div><div class="issue-row"><span>电池健康度</span><span>92%</span></div></div></details>
         <details><summary>图片与报告信息</summary><div class="detail-copy">工具图片已随质检结果导入，报告信息已由 PMS 保存。</div></details>
       </section>
-      <nav class="action-bar"><button class="action-button secondary" type="button" data-back="inspection">返回修改</button><button class="action-button primary" type="button" data-open="confirm">确认结果并继续</button></nav>
-    </section>
-
-    <section class="page with-actions" data-page="confirm" id="confirmPage">
-      <header class="topbar"><button class="icon-button" type="button" data-back="report" aria-label="返回">‹</button><h1>确认并发布</h1><span></span></header>
-      <div class="progress-rail" aria-label="创建标单进度"><div class="step done">1 · 质检</div><div class="step active">2 · 确认发布</div></div>
-      <section class="section">
-        <p class="section-kicker">发布身份</p>
-        <h2 class="section-title">当前有效关系</h2>
-        <div class="summary-row"><span>供货商家</span><strong>FS Retail Malaysia Sdn. Bhd.</strong></div>
-        <div class="summary-row"><span>店铺</span><strong>中心旗舰店</strong></div>
-        <div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 店员</strong></div>
-      </section>
-      <section class="section">
-        <p class="section-kicker">发布快照</p>
-        <h2 class="section-title">设备与报告</h2>
-        <div class="summary-row"><span>PMS 基础产品 / SKU</span><strong id="confirmProduct">iPhone 14 Pro / 512GB</strong></div>
-        <div class="summary-row"><span>最终等级</span><strong>A</strong></div>
-        <div class="summary-row"><span>版本 PPN</span><strong>PPN-HK-IPH14P-512</strong></div>
-        <div class="summary-row"><span>来源 PPV</span><strong>PPV-HK-512-SB</strong></div>
-        <div class="summary-row"><span>事实来源</span><strong>灵犀 · 质检 APP · MAX · 人工补充</strong></div>
-        <div class="summary-row"><span>质检报告</span><strong>PMS-HK-260823-0198</strong></div>
-      </section>
+      <p class="permission-note" id="publishIdentity">中心旗舰店 · 贾瑞真 · 店员</p>
       <div class="callout warning" id="priceResultCard" aria-label="价格暂不可用，不影响发布与普通竞价">
         <strong>价格暂不可用</strong>
         <span>不影响发布与普通竞价；本轮不提供偏差提示。</span>
       </div>
-      <button class="wide-button tertiary" id="togglePriceResult" type="button">切换为价格已生成</button>
-      <div class="callout warning">发布时将重新校验账号建拍资格、店铺归属、质检快照、报告时效、设备仍在店、设备唯一性及风险。价格失败不阻断发布。</div>
-      <button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button>
-      <nav class="action-bar"><button class="action-button secondary" type="button" data-back="report">返回</button><button class="action-button primary" id="publishLot" type="button">确认并发布</button></nav>
-    </section>
-
-    <section class="page with-actions" data-page="success" id="successPage" data-auction-duration-minutes="10">
-      <header class="topbar"><span></span><h1>发布成功</h1><span></span></header>
-      <div class="success-hero"><div class="success-icon">✓</div><h2>标单创建成功</h2><p>回收单、标单及首轮竞拍已成功创建并立即开始。</p></div>
-      <section class="section number-card"><div class="number-item"><span>回收单号</span><strong>FSR-260823-0062</strong></div><div class="number-item"><span>标单号</span><strong>FS-HK-260823-0216</strong></div></section>
-      <section class="section"><div class="summary-row"><span>轮次执行状态</span><strong class="status-line"><i class="status-dot"></i>竞拍中</strong></div><div class="summary-row"><span>轮次结果</span><strong>—</strong></div><div class="summary-row"><span>竞拍时长</span><strong>竞拍时长：10分钟</strong></div><div class="summary-row"><span>竞拍开始</span><strong id="successAuctionStart" data-no-i18n>—</strong></div><div class="summary-row"><span>竞拍结束</span><strong id="successAuctionEnd" data-no-i18n>—</strong></div><div class="summary-row"><span>剩余时间</span><strong id="successAuctionCountdown">10:00</strong></div><div class="summary-row"><span>操作人</span><strong>贾瑞真</strong></div></section>
-      <div class="callout success">成功结果具备幂等性；重复提交将返回本次结果，不会创建重复标单。</div>
-      <nav class="action-bar"><button class="action-button secondary" type="button" id="createAnother">继续建标</button><button class="action-button primary" type="button" data-open="lot">查看标单</button></nav>
+<details class="section"><summary>原型演示</summary>      <button class="wide-button tertiary" id="togglePriceResult" type="button">切换为价格已生成</button>
+<button class="wide-button tertiary" id="simulateFailure" type="button">预览发布校验失败状态</button></details>
+      <nav class="action-bar"><button class="action-button secondary" type="button" data-back="inspection">返回修改</button><button class="action-button primary" id="publishLot" type="button">发布标单</button></nav>
     </section>
 
     <section class="page" data-page="auctions" id="auctionsPage">
@@ -714,13 +682,14 @@
       </div><button class="create-lot-fab" id="createLotFab" type="button" aria-label="手动创建标单">＋</button>
     </section>
 
-    <section class="page" data-page="lot" id="lotPage" data-auction-duration-minutes="10">
+    <section class="page with-actions" data-page="lot" id="lotPage" data-auction-duration-minutes="10">
       <header class="topbar"><button class="icon-button" type="button" data-back="auctions" aria-label="返回">‹</button><h1>标单详情</h1><span></span></header>
       <div class="callout success">发布成功 · 竞拍中 · 默认竞拍 10 分钟</div>
       <section class="section device-summary"><div class="device-thumb"><div class="mini-phone"></div></div><div><span class="condition-tag">A</span><h2 class="product-name">iPhone 17 Pro Max</h2><p class="specs">512GB · 星宇橙 · 香港版本<br>IMEI 尾号 2761</p></div></section>
       <section class="section"><h2 class="section-title">当前竞拍轮次</h2><div class="summary-row"><span>标单号</span><strong>FS-HK-260823-0216</strong></div><div class="summary-row"><span>竞拍轮次</span><strong>第 1 轮</strong></div><div class="summary-row"><span>轮次执行状态</span><strong class="status-line"><i class="status-dot"></i>竞拍中</strong></div><div class="summary-row"><span>轮次结果</span><strong>—</strong></div><div class="summary-row"><span>竞拍时长</span><strong>10 分钟</strong></div><div class="summary-row"><span>竞拍开始</span><strong id="lotAuctionStart" data-no-i18n>—</strong></div><div class="summary-row"><span>竞拍结束</span><strong id="lotAuctionEnd" data-no-i18n>—</strong></div><div class="summary-row"><span>剩余时间</span><strong id="lotAuctionCountdown">10:00</strong></div></section>
-      <section class="section"><h2 class="section-title">发布快照</h2><div class="summary-row"><span>报告快照</span><strong>PMS-HK-260823-0198</strong></div><div class="summary-row"><span>PMS 基础产品 / SKU</span><strong>iPhone 17 Pro Max / 512GB</strong></div><div class="summary-row"><span>最终等级</span><strong>A</strong></div><div class="summary-row"><span>版本 PPN</span><strong>PPN-HK-IPH17PM-512</strong></div><div class="summary-row"><span>来源 PPV</span><strong>PPV-HK-512-CO</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 店员</strong></div><div class="summary-row"><span>发布时间</span><strong>2026年8月23日 10:24</strong></div></section>
+      <section class="section"><details><summary>发布快照</summary><div class="summary-row"><span>报告快照</span><strong>PMS-HK-260823-0198</strong></div><div class="summary-row"><span>PMS 基础产品 / SKU</span><strong>iPhone 17 Pro Max / 512GB</strong></div><div class="summary-row"><span>最终等级</span><strong>A</strong></div><div class="summary-row"><span>版本 PPN</span><strong>PPN-HK-IPH17PM-512</strong></div><div class="summary-row"><span>来源 PPV</span><strong>PPV-HK-512-CO</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 店员</strong></div><div class="summary-row"><span>发布时间</span><strong>2026年8月23日 10:24</strong></div></details></section>
       <section class="section"><h2 class="section-title">下一步</h2><p class="small muted" style="margin:0" id="decisionNote">竞拍结束并产生预中标后，由实际建拍操作人确认卖家接受或拒绝。</p></section>
+      <nav class="action-bar single"><button class="action-button primary" id="createAnother" type="button">继续建标</button></nav>
     </section>
 
     <section class="page with-actions" data-page="preWinnerDetail" id="preWinnerDetailPage">
@@ -839,6 +808,7 @@
           <button class="wide-button primary" id="supervisorStoreAccountLogin" type="button">手机号 / 邮箱登录</button>
           <p>商家、店员使用统一账号登录</p>
         </div>
+        <div id="supervisorLoginError" class="callout warning" role="alert" hidden><span id="supervisorLoginErrorCopy"></span><button class="wide-button secondary" id="retrySupervisorAuth" type="button">重新登录</button></div>
         <div class="store-login-other">
           <div class="store-login-divider">其他登录方式</div>
           <button class="store-login-feishu" id="supervisorFeishuLogin" type="button">
@@ -850,10 +820,6 @@
       </div>
     </section>
 
-    <section class="page" data-page="supervisorAuth" id="supervisorAuthPage">
-      <header class="topbar"><button class="icon-button" id="cancelSupervisorAuth" type="button" data-supervisor-back="supervisorLogin" aria-label="返回登录">‹</button><h1>飞书登录</h1><span></span></header>
-      <section class="section auth-progress-card" aria-live="polite"><div class="spinner"></div><h2 id="supervisorAuthTitle">正在验证督导身份</h2><p id="supervisorAuthCopy">正在获取关联的 OB 账号与督导权限，请稍候…</p><p class="permission-note">仅限已配置督导权限的内部飞书账号；飞书登录不会进入商家或店员角色。</p><div class="auth-progress-steps"><span class="auth-progress-step active">飞书授权</span><span class="auth-progress-step active">获取 OB 账号</span><span class="auth-progress-step">进入工作台</span></div></section>
-    </section>
 
     <section class="page with-actions" data-page="supervisorPickup" id="supervisorPickupPage" data-state-machine="pending→picked→delivered">
       <header class="topbar"><span></span><h1>现场取货工作台</h1><button class="icon-button" id="refreshSupervisorOrders" type="button" aria-label="刷新订单">↻</button></header>
@@ -891,7 +857,7 @@
       <header class="topbar"><span></span><h1>我的账号</h1><span></span></header>
       <section class="section account-profile"><div class="account-profile-head"><div class="account-avatar" style="background:#315a7d">飞</div><div><strong class="account-name">李敏 · 督导</strong><span class="account-phone">飞书身份 · li.min</span><span class="verification-badge">督导角色有效</span></div></div><div class="summary-row"><span>关联 OB 账号</span><strong>ob.limin</strong></div></section>
       <section class="section"><h2 class="section-title">数据视图</h2><div class="summary-row"><span>订单范围</span><strong>全部区域、商家和门店</strong></div><div class="summary-row"><span>敏感内容</span><strong>不展示金额、分账、佣金、退款和资金</strong></div></section>
-      <section class="section"><h2 class="section-title">权限结果演示</h2><div class="permission-demo"><button type="button" data-supervisor-permission="no-role">无督导角色</button><button type="button" data-supervisor-permission="disabled">账号不可用</button></div></section>
+      <section class="section"><details><summary>原型演示</summary><div class="permission-demo"><button type="button" data-supervisor-permission="no-role">无督导角色</button><button type="button" data-supervisor-permission="disabled">账号不可用</button></div></details></section>
       <section class="section"><button class="wide-button secondary" id="exitSupervisorApp" type="button">退出督导账号</button></section>
     </section>
 
@@ -915,6 +881,7 @@
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="loading-overlay" id="supervisorAuthOverlay" role="dialog" aria-modal="true" aria-labelledby="supervisorAuthTitle"><div class="loading-card"><div class="spinner"></div><strong id="supervisorAuthTitle">正在验证督导身份</strong><span id="supervisorAuthCopy">完成授权后将自动返回门店端。</span><button class="wide-button secondary" id="cancelSupervisorAuth" type="button">取消</button></div></div>
   <div class="loading-overlay" id="loadingOverlay" aria-live="polite"><div class="loading-card"><div class="spinner"></div><strong>正在发布标单</strong><span>正在执行最终校验…</span></div></div>
 
   <dialog id="validationDialog" aria-labelledby="validationTitle">
@@ -1091,6 +1058,15 @@
       '门店端登录分流演示': 'Store App Sign-in Routing Demo',
       '商家、店员使用统一账号；督导使用飞书登录': 'Merchants and staff use unified accounts; supervisors use Feishu',
       '登录门店端': 'Sign in to Store App',
+      '发布标单': 'Publish Lot',
+      '发布成功': 'Published successfully',
+      '登录成功': 'Signed in',
+      '报告与来源信息': 'Report and sources',
+      '原型演示': 'Prototype demos',
+      '发布指引': 'Publishing guide',
+      '重新登录': 'Try signing in again',
+      '中心旗舰店 · 贾瑞真 · 店员': 'Central Flagship · Jia Ruizhen · Staff',
+      '中心旗舰店 · 贾瑞真 · 商家主账号': 'Central Flagship · Jia Ruizhen · Merchant admin',
       '欢迎登录门店端': 'Welcome to Store App',
       '手机号 / 邮箱登录': 'Sign in with Mobile / Email',
       '商家、店员使用统一账号登录': 'Merchants and staff sign in with a unified account',
@@ -1291,8 +1267,8 @@
       try { localStorage.setItem('fonesquare-language', language); } catch {}
       applyLanguage(language);
       if (typeof activeAuctionStart !== 'undefined' && activeAuctionStart) {
-        document.getElementById('successAuctionStart').textContent = formatAuctionTime(activeAuctionStart);
-        document.getElementById('successAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd);
+
+
         document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart);
         document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd);
       }
@@ -1365,6 +1341,7 @@
       accountState.loginComplete = false;
       document.querySelectorAll('[data-account-mode]').forEach((button) => button.classList.toggle('active', button.dataset.accountMode === mode));
       accountVerificationField.style.display = mode === 'register' ? 'block' : 'none';
+      accountModeNote.hidden = mode === 'login';
       accountModeNote.textContent = mode === 'register'
         ? '新用户注册后创建唯一统一账号；目标 App 尚未开通时继续首次开通，不直接进入业务首页。'
         : '已有 FoneSquare 账号可直接复用原手机号或邮箱及密码登录，不重复创建统一账号。';
@@ -1379,7 +1356,6 @@
     });
     submitAccountAccess.addEventListener('click', () => {
       if (accountState.registered && accountState.mode === 'register') { setAccountMode('login'); return; }
-      if (accountState.loginComplete && accountState.mode === 'login') { showPage('roleOverview'); return; }
       const identifier = document.getElementById('accountIdentifier').value.trim();
       const password = document.getElementById('accountPassword').value;
       const code = document.getElementById('accountVerificationCode').value.trim();
@@ -1396,8 +1372,10 @@
         submitAccountAccess.textContent = '切换到登录演示';
       } else {
         accountState.loginComplete = true;
-        accountAccessResult.innerHTML = '<p class="section-kicker">登录结果</p><h2 class="section-title">认证成功</h2><div class="summary-row"><span>统一账号</span><strong>' + safeIdentifier + '</strong></div><div class="summary-row"><span>目标 App</span><strong>供货端</strong></div><p class="permission-note">系统按当前有效角色和商家关系进入商家视图或店员视图。</p>';
-        submitAccountAccess.textContent = '查看店员与商家内容';
+        accountAccessResult.classList.remove('show');
+        applyRoleScope();
+        showPage('home');
+        showToast('登录成功');
       }
       applyLanguage(currentLanguage);
     });
@@ -1431,7 +1409,7 @@
     const updateDeviceCopies = (profile) => {
       document.getElementById('currentInspectionModel').textContent = profile.model;
       document.getElementById('reportModel').textContent = profile.model;
-      document.getElementById('confirmProduct').textContent = profile.model + (profile.foldable ? ' 512GB 银影蓝' : ' 512GB 深空黑色');
+      document.querySelector('#reportPage .specs').textContent = '512GB · IMEI ' + profile.imei;
       document.getElementById('detectedImei').textContent = profile.imei;
     };
 
@@ -1601,11 +1579,16 @@
       renderPriceResult();
     });
     document.getElementById('publishLot').addEventListener('click', () => {
+      if (!isInspectionReady()) { showPage('inspection'); return; }
+      if (loadingOverlay.classList.contains('show')) return;
       loadingOverlay.classList.add('show');
       setTimeout(() => {
         loadingOverlay.classList.remove('show');
         startAuction();
-        showPage('success');
+        document.querySelector('#lotPage .device-summary').innerHTML = document.querySelector('#reportPage .device-summary').innerHTML.replace(/ id="[^"]*"/g, '');
+        document.querySelector('#lotPage details').innerHTML = '<summary>发布快照</summary>' + document.querySelector('#reportPage .meta-list').outerHTML + '<p>' + document.getElementById('publishIdentity').textContent + '</p>';
+        showPage('lot');
+        showToast('发布成功');
       }, 1200);
     });
 
@@ -1617,9 +1600,9 @@
     const formatAuctionTime = (timestamp) => currentLanguage === 'en' ? new Intl.DateTimeFormat('en-MY', { dateStyle: 'medium', timeStyle: 'short', hour12: false }).format(new Date(timestamp)) : new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(timestamp));
     const formatCountdown = (milliseconds) => { const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000)); return String(Math.floor(totalSeconds / 60)).padStart(2, '0') + ':' + String(totalSeconds % 60).padStart(2, '0'); };
     function sortAuctionCards() { [...auctionList.querySelectorAll('.auction-card')].sort((a, b) => Number(a.dataset.deadline) - Number(b.dataset.deadline)).forEach((card) => auctionList.appendChild(card)); }
-    const updateAuctionCountdowns = () => { const now = Date.now(); document.querySelectorAll('[data-auction-countdown]').forEach((countdown) => { const card = countdown.closest('.auction-card'); countdown.textContent = formatCountdown(Number(card.dataset.deadline) - now); }); if (activeAuctionEnd) { const remaining = formatCountdown(activeAuctionEnd - now); document.getElementById('successAuctionCountdown').textContent = remaining; document.getElementById('lotAuctionCountdown').textContent = remaining; } };
+    const updateAuctionCountdowns = () => { const now = Date.now(); document.querySelectorAll('[data-auction-countdown]').forEach((countdown) => { const card = countdown.closest('.auction-card'); countdown.textContent = formatCountdown(Number(card.dataset.deadline) - now); }); if (activeAuctionEnd) { const remaining = formatCountdown(activeAuctionEnd - now);  document.getElementById('lotAuctionCountdown').textContent = remaining; } };
     const initializeAuctionDeadlines = () => { const now = Date.now(); auctionList.querySelectorAll('[data-deadline-offset-minutes]').forEach((card) => { card.dataset.deadline = String(now + Number(card.dataset.deadlineOffsetMinutes) * 60 * 1000); }); sortAuctionCards(); updateAuctionCountdowns(); };
-    const startAuction = () => { activeAuctionStart = Date.now(); activeAuctionEnd = activeAuctionStart + AUCTION_DURATION_MINUTES * 60 * 1000; currentAuctionCard.dataset.deadline = String(activeAuctionEnd); document.getElementById('successAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('successAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); sortAuctionCards(); updateAuctionCountdowns(); };
+    const startAuction = () => { activeAuctionStart = Date.now(); activeAuctionEnd = activeAuctionStart + AUCTION_DURATION_MINUTES * 60 * 1000; currentAuctionCard.dataset.deadline = String(activeAuctionEnd);   document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); sortAuctionCards(); updateAuctionCountdowns(); };
     function openPreWinnerDetail() { showPage('preWinnerDetail'); }
     document.getElementById('preWinnerAuctionCard').addEventListener('click', openPreWinnerDetail);
     const sellerDecisionDialog = document.getElementById('sellerDecisionDialog');
@@ -1850,7 +1833,7 @@
     let supervisorPermissionReturnPage = 'supervisorMy';
     const supervisorAuthTitle = document.getElementById('supervisorAuthTitle');
     const supervisorAuthCopy = document.getElementById('supervisorAuthCopy');
-    const supervisorAuthSteps = [...document.querySelectorAll('.auth-progress-step')];
+    const supervisorAuthOverlay = document.getElementById('supervisorAuthOverlay');
     const supervisorAuthFailures = {
       cancelled: '飞书授权未完成，请重新登录。',
       unbound: '未找到关联的 OB 账号，请联系管理员配置后重试。',
@@ -1867,20 +1850,22 @@
       clearTimeout(supervisorAuthTimer);
       supervisorAuthTitle.textContent = '正在前往飞书';
       supervisorAuthCopy.textContent = '完成授权后将自动返回门店端。';
-      supervisorAuthSteps.forEach((step, index) => step.classList.toggle('active', index === 0));
-      showSupervisorPage('supervisorAuth');
+      document.getElementById('supervisorLoginError').hidden = true;
+      supervisorAuthOverlay.classList.add('show');
+      document.getElementById('cancelSupervisorAuth').focus();
       applyLanguage(currentLanguage);
       supervisorAuthTimer = setTimeout(() => {
         supervisorAuthTitle.textContent = '正在验证督导身份';
         supervisorAuthCopy.textContent = '正在获取关联的 OB 账号与督导权限，请稍候…';
-        supervisorAuthSteps.forEach((step, index) => step.classList.toggle('active', index < 2));
         applyLanguage(currentLanguage);
         supervisorAuthTimer = setTimeout(() => {
+          supervisorAuthOverlay.classList.remove('show');
           if (outcome !== 'success') {
-            showSupervisorPermission(supervisorAuthFailures[outcome]);
+            document.getElementById('supervisorLoginErrorCopy').textContent = supervisorAuthFailures[outcome];
+            document.getElementById('supervisorLoginError').hidden = false;
+            document.getElementById('retrySupervisorAuth').focus();
             return;
           }
-          supervisorAuthSteps.forEach((step) => step.classList.add('active'));
           renderSupervisorOrders();
           showSupervisorPage('supervisorPickup');
           showToast('飞书登录成功 · OB 督导 李敏');
@@ -1894,7 +1879,12 @@
     });
     document.getElementById('supervisorFeishuLogin').addEventListener('click', () => runSupervisorAuth('success'));
     document.querySelectorAll('[data-supervisor-auth-outcome]').forEach((button) => button.addEventListener('click', () => runSupervisorAuth(button.dataset.supervisorAuthOutcome)));
-    document.getElementById('cancelSupervisorAuth').addEventListener('click', () => clearTimeout(supervisorAuthTimer));
+    document.getElementById('cancelSupervisorAuth').addEventListener('click', () => {
+      clearTimeout(supervisorAuthTimer);
+      supervisorAuthOverlay.classList.remove('show');
+      document.getElementById('supervisorFeishuLogin').focus();
+    });
+    document.getElementById('retrySupervisorAuth').addEventListener('click', () => runSupervisorAuth('success'));
     document.getElementById('openSupervisorBatch').addEventListener('click', () => prepareSupervisorConfirmation([...supervisorState.selectedIds]));
     document.getElementById('toggleSupervisorBatchSelection').addEventListener('click', toggleSupervisorBatchSelection);
     document.getElementById('confirmSingleSupervisorPickup').addEventListener('click', () => {
@@ -1978,6 +1968,7 @@
       const role = roleSwitch.value;
       const copy = roleCopy[role];
       document.getElementById('identityScope').textContent = copy.identity;
+      document.getElementById('publishIdentity').textContent = '中心旗舰店 · 贾瑞真 · ' + (role === 'employee' ? '店员' : '商家主账号');
       document.getElementById('auctionScopeNote').textContent = copy.auction;
       document.getElementById('orderScopeNote').textContent = copy.order;
       document.getElementById('billScopeNote').textContent = copy.bill;
