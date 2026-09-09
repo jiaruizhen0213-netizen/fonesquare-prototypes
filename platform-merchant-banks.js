@@ -1,7 +1,7 @@
 /* Merchant-scoped accounts; independent store and employee banking remain separate. */
 (function () {
   const B=window.MerchantBanks, e=esc;
-  Object.assign(I18N_EXACT,{'商家收款账户':'Merchant Bank Accounts','收款账户':'Bank Accounts','新增账户':'Add Account','＋ 新增账户':'＋ Add Account','新增商家收款账户':'Add Merchant Bank Account','编辑商家收款账户':'Edit Merchant Bank Account','收款人银行登记名称':'Account Holder Name','收款银行':'Bank Name','银行账号':'Account Number','使用店铺':'Stores Using Account','选择商家收款账户':'Select Merchant Bank Account','请选择商家收款账户':'Select a merchant bank account','店铺独立账户':'Independent Store Account','收款账户方式':'Account Setup','保存账户':'Save Account','商家收款账户已保存':'Merchant bank account saved','暂无商家收款账户，请新增账户':'No merchant accounts yet. Add an account.','收款账户操作记录':'Bank Account History','所选账户信息只读，保存后可在店铺编辑中切换。':'Account details are read-only. Edit the store to switch accounts later.'});
+  Object.assign(I18N_EXACT,{'商家收款账户':'Merchant Bank Accounts','收款账户':'Bank Accounts','新增账户':'Add Account','＋ 新增账户':'＋ Add Account','新增商家收款账户':'Add Merchant Bank Account','编辑商家收款账户':'Edit Merchant Bank Account','收款人银行登记名称':'Account Holder Name','收款银行':'Bank Name','银行账号':'Account Number','使用店铺':'Stores Using Account','选择商家收款账户':'Select Merchant Bank Account','请选择商家收款账户':'Select a merchant bank account','自行新增收款账户':'Add Independent Bank Account','店铺独立账户':'Independent Store Account','收款账户方式':'Account Setup','保存账户':'Save Account','商家收款账户已保存':'Merchant bank account saved','暂无商家收款账户，请新增账户':'No merchant accounts yet. Add an account.','收款账户操作记录':'Bank Account History','所选账户信息只读，保存后可在店铺编辑中切换。':'Account details are read-only. Edit the store to switch accounts later.'});
   stores.forEach(s=>B.attach(s,'pc:'+s.id,s.merchantId));
   const tab=document.createElement('button'); tab.className='tab';tab.dataset.tab='merchant-banks';tab.textContent='收款账户';
   document.querySelector('#detailPage .tabs').append(tab);
@@ -23,7 +23,9 @@
     },'primary');
   }
   function options(mid,selected){return '<option value="">请选择商家收款账户</option>'+B.list(mid).map(a=>'<option value="'+e(a.id)+'" '+(a.id===selected?'selected':'')+'>'+e(B.label(a))+'</option>').join('');}
-  const mode=document.querySelector('#newStoreBankMode');mode.insertAdjacentHTML('beforeend','<option value="merchant">选择商家收款账户</option>');
+  const mode=document.querySelector('#newStoreBankMode');mode.querySelector('[value="copy"]')?.remove();mode.querySelector('[value="new"]').textContent='自行新增收款账户';
+  const note=document.querySelector('#storeModal .alert div');note.textContent='每个店铺维护一个地址和一个当前生效收款账户。可自行新增店铺独立账户，或选择本商家已维护的收款账户；选择商家账户后只读，可在编辑店铺时切换。';
+  mode.insertAdjacentHTML('beforeend','<option value="merchant">选择商家收款账户</option>');
   const source=document.createElement('div');source.className='field span-2';source.id='newMerchantBankWrap';source.style.display='none';source.innerHTML='<label>商家收款账户 *</label><select class="control" id="newMerchantBank"></select><div class="subtle">所选账户信息只读，保存后可在店铺编辑中切换。</div>';
   document.querySelector('#newStoreBankSourceWrap').after(source);
   const oldSync=syncNewStoreBankMode,oldMerchant=syncNewStoreMerchant;
@@ -32,7 +34,8 @@
   mode.onchange=syncNewStoreBankMode;document.querySelector('#newStoreMerchant').onchange=syncNewStoreMerchant;
   const oldSave=saveStore;
   document.querySelector('#saveStore').onclick=function(){
-    if(mode.value!=='merchant')return oldSave();
+    if(mode.value==='new')return oldSave();
+    if(mode.value!=='merchant')return;
     const mid=document.querySelector('#newStoreMerchant').value,id=document.querySelector('#newMerchantBank').value,a=B.account(mid,id);
     if(!a){document.querySelector('#storeError').textContent='请选择本商家的收款账户。';document.querySelector('#storeError').classList.add('show');return;}
     const before=stores.length;mode.value='new';[['newStoreBankHolder','holder'],['newStoreBankName','bankName'],['newStoreBankNumber','accountNumber']].forEach(([field,k])=>document.getElementById(field).value=a[k]);oldSave();mode.value='merchant';
