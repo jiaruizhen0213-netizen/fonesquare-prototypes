@@ -1283,6 +1283,7 @@
     const mainPages = ['auctions', 'orders', 'bills', 'my'];
     const supervisorMainPages = ['supervisorPickup', 'supervisorMy'];
     const showPage = (name) => {
+      if(name==='storeAddress' && window.prototypeState?.editManagedStore){window.prototypeState.editManagedStore(selectedStoreProfile().id);return;}
       pages.forEach((page) => page.classList.toggle('active', page.dataset.page === name));
       bottomNav.style.display = mainPages.includes(name) ? 'grid' : 'none';
       supervisorBottomNav.style.display = 'none';
