@@ -14,8 +14,11 @@
     html,body{margin:0;min-height:100%;font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg)}
     button,input,select,textarea{font:inherit} button{cursor:pointer} button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid rgba(22,119,255,.35);outline-offset:1px}
     .app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:220px;background:var(--nav);color:rgba(255,255,255,.68);z-index:10;overflow:auto}
-    .brand{height:64px;padding:0 18px;display:flex;align-items:center;gap:10px;color:#fff;font-size:16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.08)}
-    .brand-mark{width:30px;height:30px;display:grid;place-items:center;border-radius:6px;background:var(--primary);font-size:11px}.nav-group{padding:18px 18px 7px;color:rgba(255,255,255,.34);font-size:10px;letter-spacing:1px}.nav-group-link{cursor:pointer}.nav-group-link:hover{color:rgba(255,255,255,.76)}
+    .brand{position:relative;height:64px;padding:0 12px;display:flex;align-items:center;color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+    .system-switch{width:100%;padding:8px 6px;border:0;border-radius:5px;background:transparent;color:#fff;display:flex;align-items:center;gap:9px;text-align:left;font-size:14px;font-weight:700}.system-switch:hover,.system-switch[aria-expanded="true"]{background:rgba(255,255,255,.08)}
+    .brand-mark{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border-radius:6px;background:var(--primary);font-size:11px}.system-name{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.system-arrow{font-size:10px;transition:transform .15s}.system-switch[aria-expanded="true"] .system-arrow{transform:rotate(180deg)}
+    .system-menu{display:none;position:absolute;top:56px;left:12px;right:12px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:var(--shadow);z-index:20}.system-menu.show{display:block}.system-option{width:100%;padding:10px 12px;border:0;border-radius:4px;background:#fff;color:var(--text);display:flex;align-items:center;justify-content:space-between;text-align:left}.system-option:hover{background:#f5f5f5}.system-option.active{background:#e6f4ff;color:var(--primary);font-weight:600}.system-option.active::after{content:"✓"}
+    [data-system-nav][hidden]{display:none!important}.nav-group{padding:18px 18px 7px;color:rgba(255,255,255,.34);font-size:10px;letter-spacing:1px}.nav-group-link{cursor:pointer}.nav-group-link:hover{color:rgba(255,255,255,.76)}
     .nav-item{margin:0 8px;padding:11px 13px;border-left:3px solid transparent;border-radius:3px;display:flex;gap:9px;align-items:center;color:rgba(255,255,255,.7)}
     .nav-item.active{color:#fff;background:var(--primary);border-left-color:#fff}.nav-item.muted{cursor:default;color:rgba(255,255,255,.42)}
     .main{margin-left:220px;min-width:980px}.topbar{height:56px;padding:0 24px;background:#fff;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:8}
@@ -48,28 +51,38 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand"><span class="brand-mark">FS</span>FoneSquare</div>
-      <div class="nav-group">商家管理</div>
-      <div class="nav-item active" data-nav="list">▤ <span>商家列表</span></div>
-      <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
-      <div class="nav-item" data-nav="staff">♙ <span>店员列表</span></div>
-      <div class="nav-group">系统配置</div>
-      <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
-      <div class="nav-group">商品映射管理</div>
-      <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 属性映射规则</span></div>
-      <div class="nav-group">竞拍运营</div>
-      <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
-      <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
-      <div class="nav-group nav-group-link" data-nav="orderList">订单中心</div>
-      <div class="nav-item" data-nav="orderList">▦ <span>成交订单</span></div>
-      <div class="nav-group">财务管理</div>
-      <div class="nav-item" data-nav="financeLedger">▤ <span>资金台账</span></div>
-      <div class="nav-item" data-nav="storePrepayment">▥ <span>门店预付金</span></div>
-      <div class="nav-item" data-nav="settlementBill">▧ <span>结算单</span></div>
-      <div class="nav-item" data-nav="settlementConfig">⚙ <span>结算配置</span></div>
-      <div class="nav-item" data-nav="platformFundAccount">▣ <span>平台资金账户</span></div>
-      <div class="nav-group">下载中心</div>
-      <div class="nav-item muted">⇩ <span>我的文件</span></div>
+      <div class="brand">
+        <button type="button" class="system-switch" id="systemSwitch" aria-haspopup="menu" aria-expanded="false"><span class="brand-mark">FS</span><span class="system-name" id="systemName">海外 B2B 管理后台</span><span class="system-arrow">▼</span></button>
+        <div class="system-menu" id="systemMenu" role="menu">
+          <button type="button" class="system-option active" data-system-option="b2b" role="menuitem">海外 B2B 管理后台</button>
+          <button type="button" class="system-option" data-system-option="auction" role="menuitem">实时竞拍</button>
+        </div>
+      </div>
+      <div data-system-nav="b2b">
+        <div class="nav-group">商家管理</div>
+        <div class="nav-item active" data-nav="list">▤ <span>商家列表</span></div>
+        <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
+        <div class="nav-item" data-nav="staff">♙ <span>店员列表</span></div>
+      </div>
+      <div data-system-nav="auction" hidden>
+        <div class="nav-group">系统配置</div>
+        <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
+        <div class="nav-group">商品映射管理</div>
+        <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 属性映射规则</span></div>
+        <div class="nav-group">竞拍运营</div>
+        <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
+        <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
+        <div class="nav-group nav-group-link" data-nav="orderList">订单中心</div>
+        <div class="nav-item" data-nav="orderList">▦ <span>成交订单</span></div>
+        <div class="nav-group">财务管理</div>
+        <div class="nav-item" data-nav="financeLedger">▤ <span>资金台账</span></div>
+        <div class="nav-item" data-nav="storePrepayment">▥ <span>门店预付金</span></div>
+        <div class="nav-item" data-nav="settlementBill">▧ <span>结算单</span></div>
+        <div class="nav-item" data-nav="settlementConfig">⚙ <span>结算配置</span></div>
+        <div class="nav-item" data-nav="platformFundAccount">▣ <span>平台资金账户</span></div>
+        <div class="nav-group">下载中心</div>
+        <div class="nav-item muted">⇩ <span>我的文件</span></div>
+      </div>
     </aside>
 
     <main class="main">
@@ -2188,6 +2201,53 @@
     renderSettlementListV2: renderSettlementListV2,
     renderSettlementConfigV2: renderSettlementConfigV2
   });
+
+  const systemLabels = {b2b:'海外 B2B 管理后台',auction:'实时竞拍'};
+  const systemLastView = {b2b:'list',auction:'bidList'};
+  let currentSystem = 'b2b';
+  const systemAwareSetView = setView;
+
+  setView = function (view) {
+    systemAwareSetView(view);
+    if ($('#' + view + 'Page') && $('#'+ view + 'Page').classList.contains('active')) systemLastView[currentSystem] = view;
+  };
+
+  function closeSystemMenu() {
+    $('#systemMenu').classList.remove('show');
+    $('#systemSwitch').setAttribute('aria-expanded','false');
+  }
+
+  function renderSystemNavigation(system) {
+    currentSystem = system;
+    $('#systemName').textContent = systemLabels[system];
+    $$('[data-system-option]').forEach(function (option) { option.classList.toggle('active', option.dataset.systemOption === system); });
+    $$('[data-system-nav]').forEach(function (item) { item.hidden = item.dataset.systemNav !== system; });
+    closeSystemMenu();
+  }
+
+  function switchSystem(system) {
+    if (!systemLabels[system]) return;
+    renderSystemNavigation(system);
+    const view = systemLastView[system];
+    if (view === 'list') { filtered=merchantRecords(); renderList(); }
+    if (view === 'bidList') renderBidList();
+    setView(view);
+  }
+
+  $('#systemSwitch').addEventListener('click', function (event) {
+    event.stopPropagation();
+    const menu = $('#systemMenu'), open = !menu.classList.contains('show');
+    menu.classList.toggle('show', open);
+    this.setAttribute('aria-expanded', String(open));
+  });
+
+  $('#systemMenu').addEventListener('click', function (event) {
+    const option = event.target.closest('[data-system-option]');
+    if (option) switchSystem(option.dataset.systemOption);
+  });
+
+  document.addEventListener('click', function (event) { if (!event.target.closest('.brand')) closeSystemMenu(); });
+  document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeSystemMenu(); });
 
   renderFundsLedgerV2();
   renderStorePrepaymentV2();
