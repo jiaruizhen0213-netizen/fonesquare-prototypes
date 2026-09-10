@@ -5,10 +5,10 @@
   const code=value=>Object.keys(countries).find(k=>k===value||countries[k]===value)||({Malaysia:'MY',Singapore:'SG','香港':'HK','迪拜':'AE'}[value])||value||'';
   const fields=['country','state','city','postcode','detail'];
   const samples=[
-    {country:'MY',state:'Selangor',city:'Petaling Jaya',postcode:'47810',detail:'Demo Garden, 18 Jalan Contoh',name:'Demo Garden 公寓（示例）',keywords:'公寓 garden 雪兰莪'},
-    {country:'MY',state:'W.P. Kuala Lumpur',city:'Kuala Lumpur',postcode:'50450',detail:'Demo Tower, 12 Jalan Contoh',name:'Demo Tower 大楼（示例）',keywords:'吉隆坡 大楼 tower'},
-    {country:'MY',state:'Johor',city:'Johor Bahru',postcode:'80000',detail:'Demo Square, 8 Jalan Contoh',name:'Demo Square 商业楼（示例）',keywords:'新山 柔佛'},
-    {country:'MY',state:'Pulau Pinang',city:'George Town',postcode:'10450',detail:'Demo Garden, 28 Jalan Contoh',name:'Demo Garden 公寓（槟城示例）',keywords:'槟城 公寓 penang garden'}
+    {country:'MY',state:'Selangor',city:'Petaling Jaya',postcode:'47810',detail:'Demo Garden, 18 Jalan Contoh',name:'Demo Garden 公寓（示例）',keywords:'公寓 garden 雪兰莪',latitude:3.157900,longitude:101.594200,placeId:'demo-pj'},
+    {country:'MY',state:'W.P. Kuala Lumpur',city:'Kuala Lumpur',postcode:'50450',detail:'Demo Tower, 12 Jalan Contoh',name:'Demo Tower 大楼（示例）',keywords:'吉隆坡 大楼 tower',latitude:3.157800,longitude:101.711600,placeId:'demo-kl'},
+    {country:'MY',state:'Johor',city:'Johor Bahru',postcode:'80000',detail:'Demo Square, 8 Jalan Contoh',name:'Demo Square 商业楼（示例）',keywords:'新山 柔佛',latitude:1.465500,longitude:103.757800,placeId:'demo-jb'},
+    {country:'MY',state:'Pulau Pinang',city:'George Town',postcode:'10450',detail:'Demo Garden, 28 Jalan Contoh',name:'Demo Garden 公寓（槟城示例）',keywords:'槟城 公寓 penang garden',latitude:5.414100,longitude:100.328800,placeId:'demo-penang'}
   ];
   const fixtures={
     M1002:{registrationRegion:'马来西亚',kyc:'未认证'},
@@ -18,15 +18,14 @@
   };
   function initial(profile={},store){
     const country=code(profile.registrationRegion);
-    if(store){return {country:code(store.addressParts?.country||store.country)||country,state:store.addressParts?.state||'',city:store.addressParts?.city||store.city||'',postcode:store.addressParts?.postcode||'',detail:store.addressParts?.detail??store.address??'',prefilled:false};}
-    const a={country,state:'',city:'',postcode:'',detail:'',prefilled:false},k=profile.kycAddress;
-    if(country&&profile.kyc==='已认证'&&k&&code(k.country)===country){fields.slice(1).forEach(f=>a[f]=k[f]||'');if(country==='MY'&&!states.includes(a.state))a.state='';a.prefilled=fields.slice(1).some(f=>a[f]);}
+    if(store){return {country:code(store.addressParts?.country||store.country)||country,state:store.addressParts?.state||'',city:store.addressParts?.city||store.city||'',postcode:store.addressParts?.postcode||'',detail:store.addressParts?.detail??store.address??'',prefilled:false,latitude:store.addressParts?.latitude??null,longitude:store.addressParts?.longitude??null,placeId:store.addressParts?.placeId||''};}
+    const a={country,state:'',city:'',postcode:'',detail:'',prefilled:false,latitude:null,longitude:null,placeId:''},k=profile.kycAddress;
+    if(country&&profile.kyc==='已认证'&&k&&code(k.country)===country){fields.slice(1).forEach(f=>a[f]=k[f]||'');a.prefilled=fields.slice(1).some(f=>a[f]);}
     return a;
   }
   function validate(a){
     if(!a.country)return '请先补充所属商家的注册国家/地区。';
     if(!a.state||!a.city||!a.postcode||!a.detail)return '请完整填写州、城市、邮政编码和详细地址。';
-    if(a.country==='MY'&&!states.includes(a.state))return '请选择有效的州 / 联邦直辖区。';
     if(a.country==='MY'&&!/^\d{5}$/.test(a.postcode))return '马来西亚邮政编码须为 5 位数字。';
     return '';
   }
@@ -43,15 +42,20 @@
     const box=document.createElement('div');box.className='shop-address';box.setAttribute('data-no-i18n','');
     if(host.tagName==='LABEL'){host.replaceWith(box);box.append(input)}else host.append(box);
     if(!document.getElementById('shop-address-style')){const style=document.createElement('style');style.id='shop-address-style';style.textContent='.shop-address{width:100%;margin:4px 0 16px}.shop-address-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.shop-address label{display:block;font-size:14px;color:#595959;margin-bottom:6px}.shop-address input,.shop-address select{width:100%;box-sizing:border-box;border:1px solid #d9d9d9;border-radius:6px;padding:9px 11px;font:inherit;background:white;color:#333}.shop-address input[readonly]{background:#f5f5f5;color:#666}.shop-address .wide{grid-column:1/-1}.shop-address-note{font-size:12px;color:#888;margin:7px 0;line-height:1.5}.shop-address-results{border:1px solid #ddd;border-radius:6px;max-height:180px;overflow:auto}.shop-address-results button{display:block;width:100%;text-align:left;background:white;border:0;border-bottom:1px solid #eee;padding:10px;font:inherit;color:#444;cursor:pointer}.shop-address-results button:hover{background:#e6f4ff}.shop-address-results small{display:block;color:#888;margin-top:4px}.shop-address [hidden]{display:none!important}@media(max-width:600px){.shop-address-grid{grid-template-columns:1fr}}';document.head.append(style)}
-    box.insertAdjacentHTML('beforeend','<div style="font-weight:600;margin-bottom:12px">'+t('店铺地址','Store Address')+'</div><div class="shop-address-grid">'+fields.map((f,i)=>'<div class="'+(f==='detail'?'wide':'')+'"><label for="'+id+'-'+f+'">'+[t('国家/地区','Country/Region'),t('州 / 联邦直辖区','State / Federal Territory'),t('城市','City'),t('邮政编码','Postcode'),t('详细地址','Detailed Address')][i]+' *</label>'+(f==='state'&&a.country==='MY'?'<select id="'+id+'-'+f+'"><option value="">'+t('请选择州 / 联邦直辖区','Select a state')+'</option>'+states.map(s=>'<option>'+s+'</option>').join('')+'</select>':'<input id="'+id+'-'+f+'" '+(f==='country'?'readonly':'')+' '+(f==='postcode'?'inputmode="numeric" maxlength="12"':'maxlength="250"')+' placeholder="'+(f==='detail'?t('输入街道、门牌、小区/大楼及楼层单元号','Street, building, floor and unit'):t('请输入','Enter value'))+'" autocomplete="off" />')+'</div>').join('')+'</div><div class="shop-address-note" data-hint></div><div class="shop-address-results" hidden></div><div class="shop-address-note">'+t('地址搜索为模拟演示，可试填 Demo / 公寓；也可直接手动填写。','Sample search: try Demo; manual entry is supported.')+'</div>');
+    const labels={country:t('国家/地区','Country/Region'),detail:t('详细地址','Detailed Address'),state:t('州 / 联邦直辖区','State / Federal Territory'),city:t('城市','City'),postcode:t('邮政编码','Postcode')};
+    const control=f=>'<div class="'+(['country','detail'].includes(f)?'wide':'')+'"><label for="'+id+'-'+f+'">'+labels[f]+' *</label><input id="'+id+'-'+f+'" '+(f==='country'?'readonly':'')+' '+(f==='postcode'?'inputmode="numeric" maxlength="12"':'maxlength="250"')+' placeholder="'+(f==='detail'?t('输入街道、门牌、小区/大楼及楼层单元号','Street, building, floor and unit'):t('自动回填，也可手动填写','Autofill or enter manually'))+'" autocomplete="off" />'+(f==='detail'?'<div class="shop-address-results" hidden></div>':'')+'</div>';
+    box.insertAdjacentHTML('beforeend','<div style="font-weight:600;margin-bottom:12px">'+t('店铺地址','Store Address')+'</div><div class="shop-address-grid">'+control('country')+control('detail')+'<div><label for="'+id+'-longitude">'+t('经度（只读）','Longitude (read-only)')+'</label><input id="'+id+'-longitude" readonly placeholder="'+t('选择地址后获取','Select an address')+'" /></div><div><label for="'+id+'-latitude">'+t('纬度（只读）','Latitude (read-only)')+'</label><input id="'+id+'-latitude" readonly placeholder="'+t('选择地址后获取','Select an address')+'" /></div>'+control('state')+control('city')+control('postcode')+'</div><div class="shop-address-note" data-hint role="status"></div><div class="shop-address-note">'+t('地址及坐标为模拟演示，可搜索 Demo / 公寓。重新选择地址会覆盖州、城市、邮编及坐标。','Sample addresses and coordinates: search Demo. Selecting another address replaces the state, city, postcode and coordinates.')+'</div>');
     const el=f=>document.getElementById(id+'-'+f),results=box.querySelector('.shop-address-results'),hint=box.querySelector('[data-hint]');
     fields.forEach(f=>el(f).value=f==='country'?(countries[a.country]||a.country):a[f]||'');
     if(english&&a.country==='MY')el('country').value='Malaysia';
-    hint.textContent=a.prefilled?t('已根据认证资料预填，请核对实际店铺地址。','Prefilled from verified details. Check the store address.'):a.country?'':t('请先补充所属商家的注册国家/地区。','Complete the merchant registration country first.');
-    const read=()=>Object.fromEntries(fields.map(f=>[f,f==='country'?a.country:el(f).value.trim()]));
+    let latitude=a.latitude??null,longitude=a.longitude??null,placeId=a.placeId||'';
+    const displayCoordinates=()=>{el('latitude').value=latitude===null?'':Number(latitude).toFixed(6);el('longitude').value=longitude===null?'':Number(longitude).toFixed(6);};displayCoordinates();
+    hint.textContent=a.prefilled?t('已根据认证资料预填，请核对实际店铺地址；选择搜索候选后获取坐标。','Prefilled from verified details. Select a search result to obtain coordinates.'):a.country?'':t('请先补充所属商家的注册国家/地区。','Complete the merchant registration country first.');
+    const read=()=>({...Object.fromEntries(fields.map(f=>[f,f==='country'?a.country:el(f).value.trim()])),latitude,longitude,placeId});
     function sync(){input.value=full(read())}sync();
-    box.addEventListener('input',sync);box.addEventListener('change',sync);
-    el('detail').addEventListener('input',()=>{results.replaceChildren();const query=el('detail').value.trim().toLowerCase();const matches=query?samples.filter(s=>s.country===a.country&&(s.name+' '+s.keywords+' '+s.city+' '+s.detail).toLowerCase().includes(query)):[];results.hidden=!matches.length;matches.forEach(s=>{const button=document.createElement('button');button.type='button';button.innerHTML=esc(s.name)+'<small>'+esc(s.city+', '+s.state+', Malaysia')+'</small>';button.onclick=()=>{if(el('state').value&&el('state').value!==s.state&&!root.confirm(t('所选地址位于 '+s.state+'，是否更新州并回填地址？','Update state and address to '+s.state+'?')))return;fields.slice(1).forEach(f=>el(f).value=s[f]||'');results.hidden=true;hint.textContent=t('已回填示例地址，请补充门牌、楼层或单元号。','Sample address filled. Add the floor or unit.');sync()};results.append(button)})});
+    box.addEventListener('input',event=>{if(fields.slice(1).some(f=>event.target===el(f))){latitude=null;longitude=null;placeId='';displayCoordinates();hint.textContent=t('地址已修改，坐标待重新获取；请选择匹配的地址候选。','Address changed. Select a matching result to refresh coordinates.');}sync();});
+    box.addEventListener('change',sync);
+    el('detail').addEventListener('input',()=>{results.replaceChildren();const query=el('detail').value.trim().toLowerCase();const matches=query?samples.filter(s=>s.country===a.country&&(s.name+' '+s.keywords+' '+s.city+' '+s.detail).toLowerCase().includes(query)):[];results.hidden=!matches.length;matches.forEach(s=>{const button=document.createElement('button');button.type='button';button.innerHTML=esc(s.name)+'<small>'+esc(s.city+', '+s.state+', Malaysia')+'</small>';button.onclick=()=>{fields.slice(1).forEach(f=>el(f).value=s[f]||'');latitude=s.latitude??null;longitude=s.longitude??null;placeId=s.placeId||'';displayCoordinates();results.hidden=true;hint.textContent=t('已按所选地址更新州、城市、邮编及坐标，请核对。','State, city, postcode and coordinates updated from the selected address.');sync()};results.append(button)})});
     box.addEventListener('keydown',event=>{if(event.key==='Escape')results.hidden=true});
     box.addEventListener('focusout',()=>setTimeout(()=>{if(!box.contains(document.activeElement))results.hidden=true},0));
     return {read,element:box,error(){const error=validate(read());if(!error)return '';if(!english)return error;return !a.country?'Complete the merchant registration country first.':'Complete all address fields and enter a valid postcode (5 digits for Malaysia).';}};

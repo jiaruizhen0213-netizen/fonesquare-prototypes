@@ -17,3 +17,8 @@
 - [x] Run Node checks and scoped browser create/edit/cancel/bank tests, capture PC/App screenshots, run `git diff --check`, commit task-only files and publish the authorized prototype change. Verify remote content.
 
 Validation environment: `FONTCONFIG_FILE=/tmp/platform-browser-deps/fonts.conf`, `LD_LIBRARY_PATH=/tmp/platform-browser-deps/root/usr/lib64`, Chromium 1228. Missing font configuration causes browser navigation timeouts.
+
+## Coordinate follow-up
+- [x] Use text fields for Google-returned state/city; move detail search before read-only longitude/latitude.
+- [x] Selection atomically replaces state, city, postcode, coordinates and place ID without confirmation. Editing address fields invalidates coordinates; KYC text alone does not imply coordinates.
+- [x] Verify PC/App selection, replacement, invalidation, save/reopen and details. Node tests and address/account browser regressions passed; publish this change and verify remote content.
