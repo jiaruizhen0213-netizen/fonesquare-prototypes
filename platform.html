@@ -1935,10 +1935,12 @@
   const settlementConfigV2 = {site:'MY',timezone:'Asia/Kuala_Lumpur',enabled:true,cycle:'月结',delayDays:7,generateAt:'02:00',effectiveDate:'2026-08-01',lastRun:'2026-09-07 02:00：自动生成成功，5 张结算单'};
 
   const fundLedgerRowsV2 = [
-    {id:'FND-20260820-0041-A',order:'ORD-MY-20260820-0041',type:'正式成交',businessAt:'2026-08-20 14:10',winning:2410,seller:2152.40,store:89.80,staff:27.80,platform:140,current:117.60,prepayment:-2152.40,receipt:'已收款',settlement:'待生成'},
-    {id:'FND-20260820-0041-R',order:'ORD-MY-20260820-0041',type:'退款恢复',businessAt:'2026-08-20 17:50',winning:2410,seller:2152.40,store:89.80,staff:27.80,platform:140,current:0,prepayment:2152.40,receipt:'已收款',settlement:'退款后金额已重算'},
-    {id:'FND-20260819-0021-A',order:'ORD-MY-20260819-0021',type:'正式成交',businessAt:'2026-08-19 11:08',winning:1980,seller:1701.80,store:178.20,staff:24,platform:76,current:202.20,prepayment:-1701.80,receipt:'待收款',settlement:'待生成'},
-    {id:'FND-20260818-0017-B',order:'ORD-MY-20260818-0017',type:'资金退回',businessAt:'2026-08-23 16:20',winning:1680,seller:1450,store:120,staff:30,platform:80,current:0,prepayment:1450,receipt:'已收款',settlement:'无需结算'}
+    {"id":"FND-DEMO-CASE3-C","order":"DEMO-ORDER-CANCEL-003","type":"取消退款","businessAt":"2026-08-20 17:50","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":117.6,"prepayment":-2152.4,"receipt":"待收款","settlement":"待生成"},
+    {"id":"FND-DEMO-CASE3-R","order":"DEMO-ORDER-CANCEL-003","type":"发起退款","businessAt":"2026-08-20 17:40","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":0,"prepayment":2152.4,"receipt":"待收款","settlement":"待生成"},
+    {"id":"FND-DEMO-CASE3-A","order":"DEMO-ORDER-CANCEL-003","type":"正式成交","businessAt":"2026-08-20 15:00","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":117.6,"prepayment":-2152.4,"receipt":"待收款","settlement":"待生成"},
+    {"id":"FND-DEMO-CASE2-R","order":"DEMO-ORDER-REFUND-002","type":"发起退款","businessAt":"2026-08-20 14:10","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":0,"prepayment":2152.4,"receipt":"待收款","settlement":"无需结算"},
+    {"id":"FND-DEMO-CASE2-A","order":"DEMO-ORDER-REFUND-002","type":"正式成交","businessAt":"2026-08-20 11:00","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":117.6,"prepayment":-2152.4,"receipt":"待收款","settlement":"无需结算"},
+    {"id":"FND-DEMO-CASE1-A","order":"DEMO-ORDER-NORMAL-001","type":"正式成交","businessAt":"2026-08-20 10:00","winning":2410,"seller":2152.4,"store":89.8,"staff":27.8,"platform":140,"current":117.6,"prepayment":-2152.4,"receipt":"待收款","settlement":"待生成"}
   ];
 
   let visiblePrepaymentOrdersV2 = prepaymentLedgerV2.slice();
@@ -1997,7 +1999,7 @@
   function renderPrepaymentSummaryV2() {
     $('#prepaymentV2SummaryPanel').innerHTML =
       '<div class="alert"><span>ⓘ</span><div>预付金余额允许为负，负数表示门店预付金不足。</div></div>' +
-      '<div class="card"><div class="card-head"><div>门店预付金汇总</div><span class="subtle">余额＝下拨－使用＋退款恢复－取消退款扣回－实际退回</span></div><div class="table-wrap"><table class="table" style="min-width:1500px"><thead><tr><th>门店</th><th>预付金余额</th><th>周期内已使用金额</th><th>退款恢复金额</th><th>取消退款扣回金额</th><th>未使用资金应退金额</th><th>已退金额</th></tr></thead><tbody>' + prepaymentSummariesV2.map(function (item) { const balance = prepaymentBalanceV2(item); return '<tr><td>' + esc(item.store) + '<div class="merchant-account">' + esc(item.storeId) + '</div></td><td class="money ' + (balance < 0 ? 'negative' : '') + '">' + moneyV2(balance) + (balance < 0 ? '<div class="merchant-account">预付金不足，建议下拨</div>' : '') + '</td><td class="money">' + moneyV2(item.used) + '</td><td class="money">' + moneyV2(item.restored) + '</td><td class="money">' + moneyV2(item.clawback) + '</td><td class="money">' + moneyV2(item.dueBack) + '</td><td class="money">' + moneyV2(item.returned) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+      '<div class="card"><div class="card-head"><div>门店预付金汇总</div><span class="subtle">余额＝下拨－使用＋退款恢复－取消退款扣回－实际退回</span></div><div class="table-wrap"><table class="table" style="min-width:1500px"><thead><tr><th>门店</th><th>预付金余额</th><th>周期内已使用金额</th><th>退款恢复金额</th><th>取消退款扣回金额</th><th>已退金额</th></tr></thead><tbody>' + prepaymentSummariesV2.map(function (item) { const balance = prepaymentBalanceV2(item); return '<tr><td>' + esc(item.store) + '<div class="merchant-account">' + esc(item.storeId) + '</div></td><td class="money ' + (balance < 0 ? 'negative' : '') + '">' + moneyV2(balance) + (balance < 0 ? '<div class="merchant-account">预付金不足，建议下拨</div>' : '') + '</td><td class="money">' + moneyV2(item.used) + '</td><td class="money">' + moneyV2(item.restored) + '</td><td class="money">' + moneyV2(item.clawback) + '</td><td class="money">' + moneyV2(item.returned) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
   }
 
   function renderPrepaymentLedgerV2() {
