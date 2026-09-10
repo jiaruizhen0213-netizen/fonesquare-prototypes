@@ -3,7 +3,7 @@
  const A=window.ShopAddress,q=id=>document.getElementById(id);
  // Explicit registration and approved KYC fixtures, not inferred from a marketplace.
  Object.entries(A.fixtures).forEach(([mid,p])=>{const u=users.find(u=>u.merchantId===mid);if(u){if(!u.registrationRegion)u.registrationRegion=p.registrationRegion;if(p.kycAddress&&!u.kycAddress)u.kycAddress={...p.kycAddress}}});
- function profile(mid){const user=merchantById(mid)||{};const account=users.find(u=>u.id===user.id&&u.registrationRegion)||user;return {...user,registrationRegion:account.registrationRegion};}
+ function profile(mid){const user=merchantById(mid)||{};const account=users.find(u=>u.id===user.id&&u.type==='FoneSquare 回收商')||user;return {...user,registrationRegion:account.registrationRegion,kyc:account.kyc,kycAddress:account.kycAddress};}
  stores.forEach(s=>{const saved=A.load('pc:'+s.id);if(saved)A.apply(s,saved)});renderStoreList();
  let form,lastMerchant='';
  function mountNew(){q('newStoreAddress').closest('.field').querySelector('.shop-address')?.remove();form=A.mount(q('newStoreAddress'),A.initial(profile(q('newStoreMerchant').value)),currentLanguage==='en');lastMerchant=q('newStoreMerchant').value;}
