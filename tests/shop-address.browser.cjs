@@ -7,7 +7,7 @@ await page.locator('#newStoreMerchant').selectOption('M1003');assert.equal(await
 await page.screenshot({path:'/tmp/shop-address-pc.png',fullPage:true});
 page.once('dialog',d=>d.dismiss());await page.locator('#newStoreMerchant').selectOption('M1002');assert.equal(await page.locator('#newStoreMerchant').inputValue(),'M1003');
 page.once('dialog',d=>d.accept());await page.locator('#newStoreMerchant').selectOption('M1002');assert.equal(await page.locator('#newStoreAddress-parts-city').inputValue(),'');
-await page.locator('#newStoreAddress-parts-detail').fill('Demo');await page.locator('.shop-address-results button').first().click();assert.equal(await page.locator('#newStoreAddress-parts-state').inputValue(),'Selangor');
+await page.locator('#newStoreAddress-parts-search').fill('Demo');await page.locator('.shop-address-results button').first().click();assert.equal(await page.locator('#newStoreAddress-parts-state').inputValue(),'Selangor');
 await page.locator('#newStoreName').fill('Address Test Shop');await page.locator('#newStorePhone').fill('+60123456789');await page.locator('#newStoreBankHolder').fill('Test');await page.locator('#newStoreBankName').fill('Maybank');await page.locator('#newStoreBankNumber').fill('123456789012');
 await page.locator('#newStoreAddress-parts-postcode').fill('1234');await page.locator('#saveStore').click();assert.equal(await page.locator('#storeError').isVisible(),true);await page.locator('#newStoreAddress-parts-postcode').fill('01234');await page.locator('#saveStore').click();
 assert.equal(await page.evaluate(()=>stores.at(-1).addressParts.postcode),'01234');assert.equal(await page.evaluate(()=>stores.at(-1).city),'Petaling Jaya');
