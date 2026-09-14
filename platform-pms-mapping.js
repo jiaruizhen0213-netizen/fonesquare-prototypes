@@ -175,7 +175,7 @@ function mount(win){
   ${field('品类 *',`<select id="pmCategory" class="control">${options(categories,v.category,'请选择品类')}</select>`)}${field('适用型号范围',`<select id="pmModelMode" class="control">${option('all','本品类全部支持型号',!v.models.length)}${option('selected','指定型号',v.models.length)}</select>`)}
   <div id="pmModelChoices" class="pms-span"></div><div id="pmAttributeFields" class="pms-span"></div>
   <div class="pms-span"><div class="pms-detail-head"><div><b>映射明细</b><small>附加值由海外维护；取价映射值来自 PMS 一级字典。</small></div><label><input id="pmDirect" type="checkbox" ${editor.direct?'checked':''}> 无需附加确认，直接映射</label></div><div id="pmDetailRows"></div><div id="pmAddDetail">${button('detail-add','＋ 添加明细')}</div></div>
-  ${field('确认提示',input('pmPrompt',v.prompt))}${field('应用取价组',input('pmGroups','本机实际质检 ＋ 基准值对照','text','readonly'))}
+  ${field('确认提示',input('pmPrompt',v.prompt),true)}
   ${field('优先级 *',input('pmPriority',v.priority,'number','min="1" step="1"')+'<small>数字越小越优先；先选中整条规则，再读取明细。</small>')}${field('保存状态',input('pmStatus','草稿','text','readonly'))}
   ${field('生效开始时间 *（MYT / UTC+8）',input('pmStart',local(v.start),'datetime-local','step="1"'))}${field('生效结束时间（不含结束时刻）',input('pmEnd',v.end?local(v.end):'','datetime-local','step="1"')+'<small>不填表示长期有效。</small>')}
   ${field('修改原因 *','<textarea id="pmReason" class="control" rows="2" placeholder="填写本次修改原因"></textarea>',true)}</div>`,button('save','保存草稿','','primary'));
