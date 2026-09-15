@@ -11,3 +11,5 @@
 @media(max-width:1200px){#mappingRulePage .pms-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.pms-dialog .pms-preview-groups,.pms-dialog .pms-comparison{grid-template-columns:1fr}.pms-dialog .pms-detail-head{display:block}#mappingRulePage .pms-filters{grid-template-columns:1fr 1fr}}
 
 #mappingRulePage .pms-rules td{white-space:normal;overflow-wrap:anywhere}#mappingRulePage .pms-pairs>div,.pms-dialog .pms-pairs>div{grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr)}#mappingRulePage .pms-pairs span,.pms-dialog .pms-pairs span{min-width:0}
+
+#tab-bid-snapshot .pms-lot-conversion .table{min-width:1040px}#tab-bid-snapshot .pms-lot-conversion td{vertical-align:top;white-space:normal;max-width:260px}#tab-bid-snapshot .pms-lot-conversion small{display:block;font-size:11px;color:#7b8697;line-height:1.7;margin-top:4px}#tab-bid-snapshot .pms-lot-conversion details{margin-top:16px}#tab-bid-snapshot .pms-lot-conversion summary{color:#3567b7;cursor:pointer}#tab-bid-snapshot .pms-lot-history{margin-top:20px;border-top:1px solid #edf0f5;padding-top:16px}
