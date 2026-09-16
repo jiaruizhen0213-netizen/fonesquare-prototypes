@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict');
+const {JSDOM,VirtualConsole}=require(process.env.JSDOM_MODULE||'/tmp/order-audit-dom/node_modules/jsdom');
+(async()=>{
+const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+const dom=await JSDOM.fromURL(process.env.QUOTE_URL||'http://127.0.0.1:8796/recycler-pc.html',{resources:'usable',runScripts:'dangerously',pretendToBeVisual:true,virtualConsole:vc,beforeParse(w){w.scrollTo=()=>{};w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;};}});
+const w=dom.window,d=w.document;const delay=ms=>new Promise(r=>setTimeout(r,ms));await new Promise(r=>w.addEventListener('load',r));
+const el=s=>{const e=d.querySelector(s);assert.ok(e,`Missing ${s}`);return e;};const click=s=>el(s).click();const change=(s,v)=>{el(s).value=v;el(s).dispatchEvent(new w.Event('change',{bubbles:true}));};const input=(s,v)=>{el(s).value=v;el(s).dispatchEvent(new w.Event('input',{bubbles:true}));};
+assert.equal(d.querySelectorAll('[data-action="open"]').length,5);
+input('[name="id"]','0216');el('#filters').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));assert.equal(d.querySelectorAll('[data-action="open"]').length,1);
+click('[data-action="open"]');assert.ok(d.body.textContent.includes('2,497.12'));click('[data-action="report"][data-type="r2"]');assert.ok(el('#modal').open);assert.ok(el('#modal-body').textContent.includes('机身轻微划痕'));click('[data-action="close"]');
+change('[data-field="screen"]','屏幕已更换');assert.ok(el('[data-field="screenPart"]'));assert.ok(el('[data-action="confirm-report"]').disabled);assert.ok(d.body.textContent.includes('待补全属性'));
+change('[data-field="screenPart"]','原装屏');assert.ok(d.body.textContent.includes('计算中'));input('#bid','2300');change('[data-field="battery"]','低于80%');await delay(900);assert.equal(el('#bid').value,'2300');assert.ok(el('#bid-convert').textContent.includes('3,538.46'));assert.ok(el('#pricing').textContent.includes('草稿')||el('#pricing').textContent.includes('参考价'));
+input('#reason','照片确认更换屏幕');click('[data-action="confirm-report"]');click('[data-action="save-report"]');assert.ok(d.body.textContent.includes('当前属性已确认'));assert.ok(!d.body.textContent.includes('MYR 2,300.00 / CNY'));
+click('[data-action="bid"]');click('[data-action="save-bid"]');assert.ok(d.body.textContent.includes('MYR 2,300.00 / CNY 3,538.46'));
+click('[data-action="list"]');click('[data-action="clear"]');click('[data-action="open"][data-id$="0218"]');assert.ok(d.body.textContent.includes('暂无法计算'));input('#bid','1800');click('[data-action="bid"]');click('[data-action="save-bid"]');assert.ok(d.body.textContent.includes('MYR 1,800.00'));click('[data-action="retry"]');await delay(900);assert.ok(d.body.textContent.includes('已更新'));assert.equal(el('#bid').value,'1800');
+click('[data-action="list"]');click('[data-action="open"][data-id$="0220"]');assert.ok(el('[data-action="bid"]').disabled);
+change('#merchant','REC-MY-OTHER');assert.ok(d.body.textContent.includes('当前商家暂未开放'));assert.equal(d.querySelector('[data-action="report"]'),null);assert.equal(d.querySelector('#pricing'),null);
+change('#merchant','REC-MY-SELF-001');assert.equal(d.querySelectorAll('[data-action="open"]').length,5);
+click('[data-action="open"][data-id$="0216"]');change('[data-field="appearance"]','机身明显磕碰');change('#merchant','REC-MY-OTHER');await delay(900);assert.equal(d.querySelector('#pricing'),null);change('#merchant','REC-MY-SELF-001');click('[data-action="open"][data-id$="0216"]');assert.ok(d.body.textContent.includes('计算已中断'));assert.equal(el('[data-action="retry"]').disabled,false);
+assert.deepEqual(errors,[]);dom.window.close();console.log('PASS: list filters, reports, dependent attributes, latest price, bid preservation, confirmations, failure recovery, auction guard and merchant permissions');
+})().catch(e=>{console.error(e);process.exit(1);});

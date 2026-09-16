@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>报价工作台 · FoneSquare 回收商 PC</title>
+<meta name="description" content="FoneSquare 自营报价工作台交互原型，支持质检报告对照、一级属性调整、双币参考价及手动出价。">
+<link rel="stylesheet" href="recycler-pc.css">
+<script defer src="recycler-pc-core.js"></script><script defer src="recycler-pc.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+ <a class="brand" href="index.html"><span class="brand-mark">FS</span><span>FoneSquare<small>回收商工作空间</small></span></a>
+ <div class="nav-label">交易工作台</div><button class="nav-item active" data-action="list"><span>▦</span> 报价工作台</button>
+ <div class="sidebar-bottom"><span class="live-dot"></span> 马来西亚站点<small>PC 端 · 交互原型</small><a href="index.html">← 返回原型首页</a></div>
+</aside>
+<div class="workspace">
+ <header class="topbar"><div id="breadcrumb">工作空间 <span>/</span> 报价工作台</div><div class="account"><span class="demo-label">演示环境</span><span class="avatar">陈</span><div>陈嘉明<small>自营报价操盘手</small></div></div></header>
+ <main id="app"></main>
+ <footer class="page-foot">数据、报告与价格均为原型示例；操作仅保存在当前浏览器，不会提交真实报价。</footer>
+</div>
+<dialog id="modal" aria-labelledby="modal-title"><div id="modal-body"></div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
