@@ -48,6 +48,7 @@
     @media(max-width:1200px){.filters{grid-template-columns:repeat(3,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}.section-grid.three{grid-template-columns:1fr 1fr}}
   </style>
   <link rel="stylesheet" href="platform-pms-mapping.css?v=20260915-5">
+  <link rel="stylesheet" href="platform-price-management.css?v=20260916-1">
 </head>
 <body>
   <div class="app">
@@ -69,7 +70,7 @@
         <div class="nav-group">系统配置</div>
         <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
         <div class="nav-group">商品映射管理</div>
-        <div class="nav-item" data-nav="mappingRule">⇄ <span>PMS 属性映射规则</span></div>
+        <div class="nav-item" data-nav="mappingRule">⇄ <span>一级属性转换规则</span></div>
         <div class="nav-group">竞拍运营</div>
         <div class="nav-item" data-nav="bidList">◫ <span>标单列表</span></div>
         <div class="nav-item" data-nav="roundList">◷ <span>竞拍轮次</span></div>
@@ -175,7 +176,7 @@
       </section>
 
       <section class="page" id="mappingRulePage">
-        <div class="page-title"><h1>PMS 属性映射转化规则</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
+        <div class="page-title"><h1>一级属性转换规则</h1><div class="page-actions"><button class="btn primary" id="addMappingRuleBtn">＋ 新增映射规则</button></div></div>
         <div class="alert"><span>ⓘ</span><div>属性项 PPN、源属性值 PPV和目标属性值 PPV均从 PMS 获取；海外系统只选择具体值，不自建 PPN/PPV，也不直接配置目标 skuId。规则变更仅影响后续标单。</div></div>
         <div class="metric-grid" id="mappingMetrics"></div>
         <div class="card"><div class="card-body"><div class="filters" id="mappingFilters">
@@ -499,7 +500,7 @@
     const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
     let currentLanguage='zh';
     const I18N_EXACT={
-      '语言切换':'Language switch','首页':'Home','商家管理':'Merchant Management','商家列表':'Merchant List','系统配置':'System Configuration','门店管理':'Store Management','门店用户':'Store Users','店铺列表':'Store List','默认分账规则':'Default Revenue Share Rules','商品映射管理':'Product Mapping','PMS 属性映射规则':'PMS Attribute Mapping Rules','PMS 属性映射转化规则':'PMS Attribute Conversion Rules','竞拍运营':'Auction Operations','标单列表':'Lot List','标单详情':'Lot Details','竞拍轮次':'Auction Rounds','竞拍轮次详情':'Auction Round Details','订单中心':'Order Center','成交订单':'Completed Orders','订单详情':'Order Details','财务管理':'Finance','分账明细':'Fund Ledger','结算账单':'Settlement Bills','结算账单详情':'Settlement Bill Details','下载中心':'Downloads','我的文件':'My Files',
+      '语言切换':'Language switch','首页':'Home','商家管理':'Merchant Management','商家列表':'Merchant List','系统配置':'System Configuration','门店管理':'Store Management','门店用户':'Store Users','店铺列表':'Store List','默认分账规则':'Default Revenue Share Rules','商品映射管理':'Product Mapping','一级属性转换规则':'Primary Attribute Conversion Rules','一级属性推断规则':'Primary Attribute Inference Rules','价格管理与策略配置':'Price Management and Strategies','竞拍运营':'Auction Operations','标单列表':'Lot List','标单详情':'Lot Details','竞拍轮次':'Auction Rounds','竞拍轮次详情':'Auction Round Details','订单中心':'Order Center','成交订单':'Completed Orders','订单详情':'Order Details','财务管理':'Finance','分账明细':'Fund Ledger','结算账单':'Settlement Bills','结算账单详情':'Settlement Bill Details','下载中心':'Downloads','我的文件':'My Files',
       '导出':'Export','添加商家':'Add Merchant','查询':'Search','重置':'Reset','查看':'View','编辑':'Edit','保存':'Save','取消':'Cancel','关闭':'Close','确认':'Confirm','提交':'Submit','删除':'Delete','返回':'Back','启用':'Enable','停用':'Disable','开启':'Enabled','创建':'Create','新增':'Add','更正':'Correct','冲正':'Reverse','驳回':'Reject','处理':'Process','详情':'Details','操作':'Actions','状态':'Status','全部':'All','请选择':'Select','选填':'Optional','必填':'Required','是':'Yes','否':'No','无':'None','未分配':'Unassigned','正常':'Active','异常':'Exception','成功':'Success','失败':'Failed','有效':'Valid','无效':'Invalid',
       '商家名称':'Merchant Name','商家名称 / ID':'Merchant Name / ID','商家类型':'Merchant Type','商家状态':'Merchant Status','商家账号':'Merchant Account','商家主账号':'Merchant Primary Account','所属商家':'Merchant','商家 / 店铺':'Merchant / Store','商家 / 店铺 / 操作人':'Merchant / Store / Operator','商家 / ID':'Merchant / ID','店铺':'Store','店铺名称':'Store Name','店铺地址':'Store Address','店铺状态':'Store Status','门店用户应收':'Store User Receivable','维护人':'Owner','操作人':'Operator','确认人':'Confirmed By','创建人':'Created By','卖家':'Seller','供货卖家':'Supplier','回收商':'Recycler','付款方':'Payer','收款方':'Payee','付款方 / 收款方':'Payer / Payee',
       '账号状态':'Account Status','认证状态':'Verification Status','出价权限':'Bidding Permission','建拍权限':'Listing Permission','联系电话':'Contact Number','创建时间':'Created At','更新时间':'Updated At','处理时间':'Processed At','申请时间':'Requested At','成交时间':'Deal Time','实际取货时间':'Actual Pickup Time','支付时间':'Paid At','发起时间':'Initiated At','完成时间':'Completed At','取消时间':'Cancelled At','检测时间':'Check Time','数据来源':'Data Source','原因':'Reason','原因说明':'Reason Details','变更原因':'Change Reason','调整原因':'Adjustment Reason','备注':'Notes','操作日志':'Activity Log',
@@ -717,7 +718,7 @@
       $$('.page').forEach(x=>x.classList.remove('active'));
       const page=$(`#${view}Page`);if(!page)return;
       page.classList.add('active');
-      const names={list:'商家列表',detail:'商家详情',add:'添加商家',store:'店铺列表',storeDetail:'店铺详情',staff:'店员列表',defaultRatio:'默认分账规则',mappingRule:'PMS 属性映射规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算单',settlementBillDetail:'结算单详情',settlementConfig:'结算配置',platformFundAccount:'平台资金账户'};
+      const names={list:'商家列表',detail:'商家详情',add:'添加商家',store:'店铺列表',storeDetail:'店铺详情',staff:'店员列表',defaultRatio:'默认分账规则',mappingRule:'一级属性转换规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算单',settlementBillDetail:'结算单详情',settlementConfig:'结算配置',platformFundAccount:'平台资金账户'};
       const navKey={storeDetail:'store',detail:'list',add:'list',bidDetail:'bidList',roundDetail:'roundList',orderDetail:'orderList',privacyList:'orderList',returnList:'orderList',adjustmentList:'orderList',adjustmentCreate:'orderList',adjustmentDetail:'orderList',settlementBillDetail:'settlementBill'}[view]||view;
       const group=view==='mappingRule'?'商品映射管理':['bidList','bidDetail','roundList','roundDetail'].includes(view)?'竞拍运营':['orderList','orderDetail','privacyList','returnList','adjustmentList','adjustmentCreate','adjustmentDetail'].includes(view)?'订单中心':['financeLedger','settlementBill','settlementBillDetail','settlementConfig','platformFundAccount'].includes(view)?'财务管理':view==='defaultRatio'?'系统配置':'商家管理';
       $('#crumbGroup').textContent=group;$('#crumbCurrent').textContent=names[view]||view;
@@ -2297,7 +2298,9 @@
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="platform-merchant-banks.js?v=20260909-1"></script>
   <script src="platform-shop-address.js?v=20260910-4"></script>
-  <script src="platform-pms-mapping.js?v=20260915-5"></script>
-  <script src="platform-report2-rules.js?v=20260916-2"></script>
+  <script src="platform-pms-mapping.js?v=20260916-3"></script>
+  <script src="platform-report2-rules.js?v=20260916-3"></script>
+  <script src="vendor/xlsx-0.20.3.min.js"></script>
+  <script src="platform-price-management.js?v=20260916-1"></script>
 </body>
 </html>

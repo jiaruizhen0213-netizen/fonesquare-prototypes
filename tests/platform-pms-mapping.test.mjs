@@ -7,8 +7,8 @@ const mappingPage = platform.match(/<section class="page" id="mappingRulePage">(
 const mappingModal = platform.match(/<div class="modal wide" id="mappingRuleModal">([\s\S]*?)<div class="modal xwide" id="businessModal">/)?.[1] ?? '';
 
 test('operations navigation exposes the generic PMS attribute mapping workflow', () => {
-  assert.match(platform, /PMS 属性映射规则/);
-  assert.match(platform, /PMS 属性映射转化规则/);
+  assert.match(platform, /一级属性转换规则/);
+  assert.doesNotMatch(platform, /PMS 属性映射规则|PMS 属性映射转化规则/);
   assert.doesNotMatch(platform, /PMS 版本映射规则/);
   assert.doesNotMatch(platform, /候选固化治理/);
 });
@@ -49,7 +49,7 @@ test('obsolete candidate state and functions are removed', () => {
 });
 
 test('the inline platform script compiles', () => {
-  const match = platform.match(/<script>([\s\S]*)<\/script>\s*<\/body>/);
-  assert.ok(match, 'inline script should exist');
-  assert.doesNotThrow(() => new Function(match[1]));
+  const scripts = [...platform.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]).filter(Boolean);
+  assert.ok(scripts.length, 'inline scripts should exist');
+  for (const source of scripts) assert.doesNotThrow(() => new Function(source));
 });
