@@ -29,3 +29,7 @@
 #pmsMappingDialog .pms-detail-scope select{margin-top:10px}
 #pmsMappingDialog .pms-advanced>.pms-form{padding-top:18px}
 #pmsMappingDialog [data-pms="extra-inline-new"]{font-size:12px;padding:6px 0}
+
+#pmsExtraDialog .field+.field{margin-top:18px}
+#pmsMappingDialog #pmTargetField{max-width:450px;margin-bottom:18px}
+#pmsMappingDialog .pms-detail-table th:last-child{width:auto}
