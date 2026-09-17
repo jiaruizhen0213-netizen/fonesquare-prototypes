@@ -4,8 +4,8 @@ const {JSDOM,VirtualConsole}=require(process.env.JSDOM_MODULE||'/tmp/order-audit
 const legacy=JSON.stringify({schema:1,state:{policies:[{id:'STEP-00001',version:4,rows:[{minutes:10,percent:85}],history:[]}]}});
 const dom=await JSDOM.fromURL('http://127.0.0.1:8796/quote-config.html',{resources:'usable',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.localStorage.setItem('fs-quote-config-demo-v1',legacy);}});const w=dom.window,d=w.document;await new Promise(r=>w.addEventListener('load',r));
 const el=s=>{const x=d.querySelector(s);assert.ok(x,s);return x;},click=s=>el(s).click(),input=(s,v)=>{el(s).value=v;el(s).dispatchEvent(new w.Event('input',{bubbles:true}));},change=(s,v)=>{el(s).value=v;el(s).dispatchEvent(new w.Event('change',{bubbles:true}));};
-assert.equal(d.querySelectorAll('[data-row]').length,3);assert.equal(d.querySelector('dialog,.map,.metrics,.explainer,.tabs,.operator'),null);
-for(const removed of ['流程演示','预计报价','最后一档必须','当前生效策略','生效策略档位','最高出价比例','操盘手控制台'])assert.ok(!d.body.textContent.includes(removed),removed);
+assert.equal(d.querySelectorAll('[data-row]').length,3);input('#preview-cap','3000');assert.match(el('[data-row="0"] .preview-amount').textContent,/2,550/);assert.equal(d.querySelector('dialog,.map,.metrics,.explainer,.tabs,.operator'),null);
+for(const removed of ['流程演示','最后一档必须','当前生效策略','生效策略档位','最高出价比例','操盘手控制台'])assert.ok(!d.body.textContent.includes(removed),removed);
 for(const label of ['竞拍剩余时间比例','首次出价比例','出价次数','包含首次出价的总次数'])assert.ok(d.body.textContent.includes(label));
 input('[data-row="0"] [data-field="remainingPercent"]','101');click('[data-action="save"]');assert.match(el('#error').textContent,/竞拍剩余时间比例/);click('[data-action="restore"]');
 input('[data-row="0"] [data-field="bidCount"]','1.5');click('[data-action="save"]');assert.match(el('#error').textContent,/正整数/);input('[data-row="0"] [data-field="bidCount"]','6');change('#enabled','true');click('[data-action="save"]');assert.match(el('.version').textContent,/v2/);assert.equal(el('#enabled').value,'true');assert.equal(el('[data-row="2"] [data-field="firstBidPercent"]').value,'95');
