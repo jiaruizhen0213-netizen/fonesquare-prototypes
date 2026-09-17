@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>报价配置 · FoneSquare</title>
-<link rel="stylesheet" href="quote-config.css?v=20260917-3">
-<script defer src="quote-config-core.js?v=20260917-3"></script>
-<script defer src="quote-config.js?v=20260917-3"></script>
+<link rel="stylesheet" href="quote-config.css?v=20260917-4">
+<script defer src="quote-config-core.js?v=20260917-4"></script>
+<script defer src="quote-config.js?v=20260917-4"></script>
+<script defer src="quote-merchants.js?v=20260917-4"></script>
 </head>
 <body>
 <aside class="shell-nav">
@@ -19,7 +20,12 @@
  <header class="shell-top"><span>首页　/　竞拍运营　/　<b>报价配置</b></span><span class="person">贾瑞真　<span class="avatar">贾</span></span></header>
  <main>
   <div class="heading"><h1>报价配置</h1><label class="permission">演示权限 <select id="permission"><option value="edit">查看与维护</option><option value="view">仅查看</option></select></label></div>
-  <div id="app"></div>
+  <nav class="quote-tabs" role="tablist" aria-label="报价配置">
+   <button id="rules-tab" role="tab" aria-selected="true" aria-controls="app" data-quote-tab="rules">报价规则</button>
+   <button id="merchants-tab" role="tab" aria-selected="false" aria-controls="merchants-panel" tabindex="-1" data-quote-tab="merchants">报价商家列表</button>
+  </nav>
+  <div id="app" role="tabpanel" aria-labelledby="rules-tab"></div>
+  <div id="merchants-panel" role="tabpanel" aria-labelledby="merchants-tab" hidden></div>
  </main>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>

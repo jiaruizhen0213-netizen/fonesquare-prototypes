@@ -12,6 +12,21 @@ input('[data-row="0"] [data-field="bidCount"]','1.5');click('[data-action="save"
 assert.equal(w.localStorage.getItem('fs-quote-config-demo-v1'),legacy);const persisted=JSON.parse(w.localStorage.getItem('fs-quote-config-v2'));assert.equal(persisted.current.rows[0].bidCount,6);
 click('[data-action="add"]');assert.equal(d.querySelectorAll('[data-row]').length,4);click('[data-action="save"]');assert.match(el('#error').textContent,/第4行/);click('[data-action="remove"][data-index="3"]');
 input('[data-row="0"] [data-field="bidCount"]','8');click('[data-action="history"]');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'8');assert.ok(d.querySelector('.history-card'));assert.match(el('.history-card').textContent,/旧版分钟配置/);click('[data-action="restore"]');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'6');
+// Merchant directory stays isolated from quotation rules and retains unsaved inputs across tabs.
+input('[data-row="0"] [data-field="bidCount"]','9');click('#merchants-tab');assert.equal(el('#app').hidden,true);assert.equal(el('#merchants-panel').hidden,false);
+click('[data-merchant-action="new"]');
+const submitMerchant=()=>el('#merchant-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+submitMerchant();assert.match(el('#merchant-error').textContent,/商家名称/);
+input('[name="name"]','<b>测试商家</b>');input('[name="address"]','Kuala Lumpur 测试地址');input('[name="longitude"]','181');input('[name="latitude"]','3.139');submitMerchant();assert.match(el('#merchant-error').textContent,/经度/);
+input('[name="longitude"]','101.6869');input('[name="latitude"]','91');submitMerchant();assert.match(el('#merchant-error').textContent,/纬度/);input('[name="latitude"]','3.139');
+click('#rules-tab');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'9');click('#merchants-tab');assert.equal(el('[name="address"]').value,'Kuala Lumpur 测试地址');submitMerchant();
+assert.equal(d.querySelector('#merchant-form'),null);assert.match(el('.merchant-table').textContent,/<b>测试商家<\/b>/);assert.equal(d.querySelector('.merchant-table tbody b'),null);
+const merchantSaved=w.localStorage.getItem('fs-quote-merchants-v1');assert.equal(JSON.parse(merchantSaved).length,1);assert.deepEqual(JSON.parse(w.localStorage.getItem('fs-quote-config-v2')),persisted);
+const reloaded=await JSDOM.fromURL('http://127.0.0.1:8796/quote-config.html',{resources:'usable',runScripts:'dangerously',beforeParse(rw){rw.localStorage.setItem('fs-quote-merchants-v1',merchantSaved);}});await new Promise(r=>reloaded.window.addEventListener('load',r));assert.match(reloaded.window.document.querySelector('.merchant-table').textContent,/101.6869/);reloaded.window.close();
+click('[data-merchant-action="delete"]');click('[data-merchant-action="keep"]');assert.equal(JSON.parse(w.localStorage.getItem('fs-quote-merchants-v1')).length,1);
+change('#permission','view');assert.equal(el('[data-merchant-action="new"]').disabled,true);assert.equal(el('[data-merchant-action="delete"]').disabled,true);
+change('#permission','edit');click('[data-merchant-action="delete"]');click('[data-merchant-action="confirm-delete"]');assert.equal(JSON.parse(w.localStorage.getItem('fs-quote-merchants-v1')).length,0);assert.match(el('.merchant-table').textContent,/暂无报价商家/);
+click('#rules-tab');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'9');click('[data-action="restore"]');
 change('#permission','view');assert.equal(el('[data-action="save"]').disabled,true);assert.equal(el('[data-row="0"] input').disabled,true);
 assert.deepEqual(errors,[]);dom.window.close();
 const host=new JSDOM('<div id="crumbGroup"></div><div id="crumbCurrent"></div><div data-nav="roundList"></div><section id="roundListPage" class="page active"></section>',{url:'https://example.test/platform.html#quoteConfig',runScripts:'outside-only'});host.window.setView=v=>{host.window.document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===v+'Page'));};host.window.eval(fs.readFileSync('platform-quote-config.js','utf8'));assert.ok(host.window.document.querySelector('#quoteConfigPage.active'));assert.match(host.window.document.querySelector('iframe').getAttribute('src'),/quote-config.html\?embed=1/);host.window.close();
