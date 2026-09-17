@@ -10,15 +10,18 @@ const editable=()=>document.querySelector('#permission').value==='edit';
 function capture(){if(!formOpen)return;draft.name=panel.querySelector('[name="name"]')?.value||'';if(addressEditor)draft.addressParts=addressEditor.read();}
 function render(){
  const disabled=editable()?'':'disabled';
- panel.innerHTML=`<section class="card"><div class="card-head"><h2>报价商家列表</h2><button class="primary" data-merchant-action="new" ${disabled}>＋ 新建商家</button></div><div class="card-body">
- <div class="error" id="merchant-error" role="alert"></div>
- ${formOpen?`<form id="merchant-form" class="merchant-form" novalidate><h2>新建商家</h2><div class="merchant-fields">
+ panel.innerHTML=formOpen
+  ? `<div class="merchant-back"><button data-merchant-action="cancel">← 返回商家列表</button></div><section class="card merchant-create"><div class="card-head"><h2>新建商家</h2></div><div class="card-body"><div class="error" id="merchant-error" role="alert"></div>
+<form id="merchant-form" class="merchant-form" novalidate><div class="merchant-fields">
  <label>商家名称 <span>*</span><input name="name" aria-label="商家名称" maxlength="100" value="${esc(draft.name)}" placeholder="请输入商家名称" required ${disabled}></label>
  <div class="field merchant-address-field"><label for="merchant-address">商家地址</label><input id="merchant-address"></div>
- </div><div class="merchant-form-actions"><button type="button" data-merchant-action="cancel">取消</button><button type="submit" class="primary" ${disabled}>保存</button></div></form>`:''}
+ </div><div class="merchant-form-actions"><button type="button" data-merchant-action="cancel">取消</button><button type="submit" class="primary" ${disabled}>保存</button></div></form>
+  </div></section>`
+  : `<section class="card"><div class="card-head"><h2>报价商家列表</h2><button class="primary" data-merchant-action="new" ${disabled}>＋ 新建商家</button></div><div class="card-body"><div class="error" id="merchant-error" role="alert"></div>
  <div class="table-wrap"><table class="merchant-table"><thead><tr><th>商家名称</th><th>商家地址</th><th>对应坐标（经度，纬度）</th><th>操作</th></tr></thead><tbody>
  ${merchants.length?merchants.map(m=>`<tr><td>${esc(m.name)}</td><td>${esc(m.address)}</td><td>${esc(m.longitude)}，${esc(m.latitude)}</td><td>${pendingDelete===m.id?`<div class="merchant-delete"><span>确认删除该商家？</span><button class="link" data-merchant-action="keep">取消</button><button class="delete" data-merchant-action="confirm-delete" data-id="${esc(m.id)}" ${disabled}>确认删除</button></div>`:`<button class="delete" data-merchant-action="delete" data-id="${esc(m.id)}" ${disabled}>删除</button>`}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">暂无报价商家，点击“新建商家”添加</td></tr>'}
- </tbody></table></div></div></section>`;
+ </tbody></table></div>
+  </div></section>`;
  addressEditor=null;
  if(formOpen){
   addressEditor=A.mount(panel.querySelector('#merchant-address'),draft.addressParts);

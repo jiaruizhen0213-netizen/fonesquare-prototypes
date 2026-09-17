@@ -14,7 +14,8 @@ click('[data-action="add"]');assert.equal(d.querySelectorAll('[data-row]').lengt
 input('[data-row="0"] [data-field="bidCount"]','8');click('[data-action="history"]');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'8');assert.ok(d.querySelector('.history-card'));assert.match(el('.history-card').textContent,/旧版分钟配置/);click('[data-action="restore"]');assert.equal(el('[data-row="0"] [data-field="bidCount"]').value,'6');
 // Merchant directory stays isolated from quotation rules and retains unsaved inputs across tabs.
 input('[data-row="0"] [data-field="bidCount"]','9');click('#merchants-tab');assert.equal(el('#app').hidden,true);assert.equal(el('#merchants-panel').hidden,false);
-click('[data-merchant-action="new"]');
+assert.equal(d.querySelector('#merchant-form'),null);click('[data-merchant-action="new"]');assert.equal(d.querySelector('.merchant-table'),null);assert.ok(d.querySelector('.merchant-create'));input('[name="name"]','未保存商家');click('.merchant-back button');assert.ok(d.querySelector('.merchant-table'));assert.equal(d.querySelector('#merchant-form'),null);assert.equal(w.localStorage.getItem('fs-quote-merchants-v1'),null);
+click('[data-merchant-action="new"]');assert.equal(el('[name="name"]').value,'');click('#merchant-form [data-merchant-action="cancel"]');assert.ok(d.querySelector('.merchant-table'));click('[data-merchant-action="new"]');assert.equal(d.querySelector('.merchant-table'),null);
 const submitMerchant=()=>el('#merchant-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
 submitMerchant();assert.match(el('#merchant-error').textContent,/商家名称/);
 input('[name="name"]','<b>测试商家</b>');
