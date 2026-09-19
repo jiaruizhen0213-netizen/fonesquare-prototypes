@@ -360,9 +360,7 @@
     .toast { position: fixed; left: 50%; bottom: 90px; z-index: 60; visibility: hidden; padding: 10px 16px; border-radius: 20px; color: #fff; background: rgba(20,20,20,.88); transform: translate(-50%, 12px); opacity: 0; transition: .2s ease; font-size: 13px; }
     .toast.show { visibility: visible; transform: translate(-50%, 0); opacity: 1; }
     html[lang="zh-CN"] .scratch-panel::before { content: "轻微划痕"; }
-    .lot-remarks { margin: 12px; padding: 14px; background: #fff8e8; border: 1px solid #f0d99c; border-radius: 12px; }
-    .lot-remarks h2 { margin: 0; font-size: 14px; }
-    .lot-remarks p { margin: 8px 0 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .lot-remarks { margin: 12px 0 0; font-size: 14px; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
     .lot-remarks[hidden] { display: none; }
   </style>
 </head>
@@ -444,6 +442,7 @@
       </div>
       <section class="section inspection" aria-label="Inspection report">
         <div class="inspection-heading"><div><h2>Inspection Report</h2><div class="inspection-time">Completed 21 Aug 2026, 09:30</div></div><div class="inspection-condition" aria-label="Condition A">A</div></div>
+        <p class="lot-remarks" id="auctionRemarks" hidden><span id="auctionRemarksTitle">Remarks</span>: <span id="auctionRemarksText"></span></p>
         <dl class="inspection-list">
           <div class="inspection-row"><dt>Screen Exterior</dt><dd class="issue">Minor scratches on screen/body</dd></div>
           <div class="inspection-row"><dt>Frame / Back</dt><dd>Perfect Casing</dd></div>
@@ -453,7 +452,6 @@
           <div class="inspection-row"><dt>Battery Health</dt><dd>90%–95% Health</dd></div>
         </dl>
       </section>
-      <section class="lot-remarks" id="auctionRemarks" hidden aria-labelledby="auctionRemarksTitle"><h2 id="auctionRemarksTitle">Lot remarks</h2><p id="auctionRemarksText"></p></section>
       <nav class="action-bar"><button class="action-button secondary" type="button">View My Bid</button><button class="action-button primary" id="openQuote" type="button">Place Bid</button></nav>
     </section>
 
@@ -639,7 +637,7 @@
     document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.back)));
 
     const zh = {
-      'Lot remarks': '建拍备注',
+      'Remarks': '备注',
       'Minor scratches on the lower-right frame.\nDevice only; charger and box are not included.': '边框右下角有轻微划痕。\n仅设备本体，不含充电器和包装盒。',
       'Small scratch on the back cover. See the device photos for details.': '后盖有细小划痕，具体情况请查看设备图片。',
 
