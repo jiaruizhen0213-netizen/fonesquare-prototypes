@@ -9,7 +9,7 @@
 - No new merchant tabs. Keep 商家列表 name.
 - Include every unified account, including FoneSquare-only and never-logged-in Store App accounts.
 - Role changes and account disablement retain membership and history.
-- Remove FoneSquare creation, KYC and detail routing; retain independent FoneSquare bidding controls and filters.
+- Remove FoneSquare creation and KYC editing; provide explicit in-module FoneSquare and Store profile pages, independent bidding controls and filters.
 - Keep all unrelated local work and quotation/finance modules unchanged.
 
 ## Tasks
@@ -27,3 +27,12 @@
 
 ## Follow-up acceptance
 - All unified accounts, FS bid enable/disable and stale-submit rejection, unconfigured permissions, Store App state filters, scoped exports and existing navigation tested in the browser.
+
+## Approved follow-up, 2026-09-19
+- Keep exact FoneSquare 资料 / 门店端资料 labels with independent in-module full pages; no selector dialog or external navigation.
+- Unified-account bidding defaults to closed regardless of profile existence, with two-state filter/export and isolated updates.
+- Shared staff detail retains bank and relationship edits; restore originating list state and scroll.
+- Match light screenshot theme, compact default filters and red text disable action.
+- Update only affected PRD blocks and existing diagram, fresh fetch/readback; validate browser paths and publish scoped changes.
+
+Follow-up validation: browser acceptance includes both profile entries, default closed permissions without merchant creation, staff bank edits, filter and scroll restoration; 9 bank/address unit tests passed. Feishu scoped paragraphs read back at revision 41 and original board token retained.

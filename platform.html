@@ -50,6 +50,7 @@
   </style>
   <link rel="stylesheet" href="platform-pms-mapping.css?v=20260916-5">
   <link rel="stylesheet" href="platform-price-management.css?v=20260916-2">
+  <link rel="stylesheet" href="platform-accounts.css?v=20260919-3" />
 </head>
 <body>
   <div class="app">
@@ -2249,9 +2250,9 @@
   const systemAwareSetView = setView;
 
   setView = function (view) {
-    if (['list','detail','store','storeDetail','staff'].includes(view)) renderSystemNavigation('auction');
+    if (['list','detail','accountInfo','store','storeDetail','staff'].includes(view)) renderSystemNavigation('auction');
     systemAwareSetView(view);
-    if (['list','detail','store','storeDetail','staff'].includes(view)) $('#crumbGroup').textContent='实时竞拍';
+    if (['list','detail','accountInfo','store','storeDetail','staff'].includes(view)) $('#crumbGroup').textContent='实时竞拍';
     if(view==='b2bHome') { $('#crumbGroup').textContent='海外 B2B 管理后台'; $('#crumbCurrent').textContent='首页'; }
     if ($('#' + view + 'Page') && $('#'+ view + 'Page').classList.contains('active')) systemLastView[currentSystem] = view;
   };
@@ -2299,7 +2300,7 @@
   renderSettlementConfigV2();
 })();
   </script>
-  <script src="platform-unified-accounts.js?v=20260919-2"></script>
+  <script src="platform-unified-accounts.js?v=20260919-3"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="platform-merchant-banks.js?v=20260909-1"></script>

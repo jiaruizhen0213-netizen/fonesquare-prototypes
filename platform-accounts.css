@@ -1,0 +1,20 @@
+/* Shared light shell; account-page presentation follows the existing B2B reference. */
+.sidebar{background:#fafafa;color:#595959;border-right:1px solid #ededed;padding-top:64px}
+.brand{position:fixed;top:0;left:0;width:310px;height:64px;background:#fff;border-bottom:1px solid #eee;z-index:12;box-sizing:border-box}
+.system-switch{color:#262626;font-size:17px}.brand-mark{color:#fff}.system-switch:hover,.system-switch[aria-expanded="true"]{background:#f5f5f5}
+.nav-group,.nav-group-link{color:#8c8c8c}.nav-group-link:hover{color:#1677ff}.nav-item{color:#595959}.nav-item.muted{color:#999}.nav-item.active{background:#ededed;color:#1677ff;border-left-color:#91caff}
+.topbar{height:64px;box-sizing:border-box}.topbar .crumb{margin-left:85px}
+body{background:#f7f7f7}
+#listPage,#detailPage,#accountInfoPage,#staffPage,#storePage,#storeDetailPage{padding:30px 32px 44px}
+#listPage>.alert{background:transparent;border:0;color:#8c8c8c;padding:0;margin-top:-4px;font-size:12px}#listPage>.alert>span{display:none}
+#listPage .card,#accountInfoPage .card{border:0;border-radius:8px;box-shadow:none}
+#listPage .card-body{padding:24px}#listPage .legacy-list-head{padding:20px 24px;font-size:14px;font-weight:600}
+#listPage .merchant-filters{grid-template-columns:minmax(260px,1fr) minmax(220px,1fr) auto;align-items:center;gap:20px 28px}
+#listPage .merchant-filters .field{display:flex;align-items:center;gap:10px}#listPage .merchant-filters label{white-space:nowrap;margin:0;font-size:13px;color:#262626}
+#listPage .control{height:36px;background:#f6f6f6;border-color:transparent}#listPage .filter-actions{grid-column:3;grid-row:1}
+#listPage .table-wrap{margin:0 24px}#listPage .table th{background:#fafafa;color:#262626;font-size:13px}#listPage .table td{padding-top:18px;padding-bottom:18px}
+#listPage .operations{white-space:nowrap;gap:12px}#listPage .account-danger,#detailPage #statusBtn.danger{color:#ff4d4f}#listPage .btn.link:disabled{color:#bfbfbf;cursor:not-allowed}
+#accountInfoPage .card-body{padding:24px}#accountInfoPage h3{margin-top:26px}#accountInfoPage .section-grid{gap:16px}
+
+#detailPage #statusBtn{background:transparent;border-color:transparent;color:#1677ff;padding:0 12px}#detailPage #statusBtn.account-danger{color:#ff4d4f}
+#expandAccountFilters::after{content:'';display:inline-block;width:6px;height:6px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg);margin-left:9px;vertical-align:3px}#expandAccountFilters[aria-expanded="true"]::after{transform:rotate(225deg);vertical-align:0}
