@@ -31,40 +31,62 @@ const fs=require('node:fs/promises');
   assert.equal(await row('1000806').locator('[data-fs-bid]').count(),1);
   assert.equal(await row('2000010').locator('[data-fs-bid]').count(),1);
   assert.equal(await page.evaluate(()=>prototypeState.realtimeBidValue('2000010')),'关闭');
-  assert.equal(await action('1000806','store').isDisabled(),true);
-  assert.equal(await action('1000806','store').getAttribute('title'),'尚未登录门店端');
+  assert.equal(await page.locator('[data-account-action="fs"],[data-account-action="store"]').count(),0);
   assert.equal(await page.locator('#merchantBidFilter').isVisible(),false);
-  await page.screenshot({path:'/tmp/realtime-merchant-list.png',fullPage:true});
-  await action('1000806','fs').scrollIntoViewIfNeeded();const listScroll=await page.evaluate(()=>window.scrollY);await action('1000806','fs').click();assert.equal(await page.locator('#accountInfoPage').isVisible(),true);assert.match(await page.locator('#accountInfoPage').innerText(),/认证状态/);assert.equal(await page.locator('#businessModal').isVisible(),false);await page.locator('#systemSwitch').click();await page.locator('[data-system-option="b2b"]').click();await page.locator('#systemSwitch').click();await page.locator('[data-system-option="auction"]').click();assert.equal(await page.locator('#crumbCurrent').innerText(),'FoneSquare 资料');await page.screenshot({path:'/tmp/realtime-fs-profile.png',fullPage:true});await page.locator('#accountInfoBack').click();await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>window.scrollY),listScroll);
-  await action('1000825','store').click();
-  assert.match(await page.locator('#accountInfoPage').innerText(),/已登录但未选择身份/);
-  assert.equal(await page.locator('#businessModal').isVisible(),false);await page.locator('#accountInfoBack').click();
-  // Account-level permission works without fabricating a merchant profile.
+  await page.screenshot({path:'/tmp/merged-account-list.png',fullPage:true});
+  const tab=key=>page.locator('#detailPage .tab[data-tab="'+key+'"]');
+  const back=()=>page.locator('#backBtn').click();
+  // Never logged in and no selected identity remain readable, without Store configuration.
+  for(const [id,message] of [['1000806','尚未登录门店端'],['1000825','尚未选择身份']]){
+   await action(id,'view').click();assert.equal(await page.locator('#detailPage').isVisible(),true);assert.equal(await page.locator('#businessModal').isVisible(),false);
+   assert.match(await page.locator('#tab-basic').innerText(),new RegExp(message));
+   assert.equal(await tab('share').isVisible(),false);assert.equal(await tab('merchant-banks').isVisible(),false);
+   await tab('permission').click();assert.equal(await page.locator('#tab-permission [data-fs-bid]').count(),1);
+   assert.equal(await page.locator('#tab-permission [data-permission="build"],#tab-permission [data-staff-build]').count(),0);
+   await back();
+  }
+  // Neither App business profile exists: viewing never enrolls the account.
+  await page.evaluate(()=>{users.push({id:'3000000',type:'统一账号',name:'No App Identity',account:'none***@example.com',status:'正常',createdAt:'2026-08-01 00:00',firstStoreLoginAt:null});renderList();});
+  const noProfileCount=await page.evaluate(()=>users.length);
+  await action('3000000','view').click();assert.match(await page.locator('#tab-basic').innerText(),/暂无 FoneSquare 商家资料[\s\S]*尚未登录门店端/);
+  await tab('kyc').click();assert.equal(await page.locator('#tab-kyc button').count(),0);await tab('limit').click();assert.equal(await page.locator('#tab-limit button').count(),0);
+  await tab('permission').click();await page.locator('#tab-permission [data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();assert.equal(await page.evaluate(()=>users.length),noProfileCount);await back();
+  await page.evaluate(()=>{users.splice(users.findIndex(u=>u.id==='3000000'),1);renderList();});
+  // A merchant has both App profiles plus independent share and bank data in one page.
+  await page.locator('#keyword').fill('1000835');await page.locator('#searchBtn').click();await action('1000835','view').click();
+  assert.match(await page.locator('#tab-basic').innerText(),/FoneSquare 商家记录[\s\S]*门店端商家记录/);
+  assert.equal(await tab('share').isVisible(),true);assert.equal(await tab('kyc').isVisible(),true);
+  await tab('merchant-banks').click();assert.equal(await page.locator('#addMerchantBank').isVisible(),true);
+  await tab('basic').click();await page.screenshot({path:'/tmp/merged-account-merchant.png',fullPage:true});await back();assert.equal(await page.locator('#keyword').inputValue(),'1000835');await reset();
+  // Missing FS record never materializes merely from viewing, editing bank, or changing bid.
   const usersBefore=await page.evaluate(()=>users.length);
-  await action('2000010','fs').click();assert.match(await page.locator('#accountInfoPage').innerText(),/商家资料，资料待完善/);
-  await page.locator('#accountInfoPage [data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
-  assert.match(await page.locator('#accountInfoPage').innerText(),/关闭 → 开启/);
-  assert.equal(await page.evaluate(()=>users.length),usersBefore);
-  await page.locator('#accountInfoBack').click();assert.equal(await page.evaluate(()=>prototypeState.realtimeBidValue('2000010')),'开启');
-  await row('2000010').locator('[data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
-  await page.locator('#expandAccountFilters').click();
-  await page.locator('#keyword').fill('1000835');await page.locator('#searchBtn').click();
-  await action('1000835','store').click();
-  assert.equal(await page.locator('#detailPage').isVisible(),true);
-  assert.equal(await page.locator('#businessModal').isVisible(),false);
-  assert.match(await page.locator('#tab-basic').innerText(),/门店端商家记录/);
-  assert.doesNotMatch(await page.locator('#detailPage').innerText(),/FoneSquare|KYC|限额与保证金|出价权限/);
-  await page.locator('[data-tab="merchant-banks"]').click();assert.equal(await page.locator('#addMerchantBank').isVisible(),true);
-  await page.locator('[data-tab="basic"]').click();await page.screenshot({path:'/tmp/realtime-merchant-detail.png',fullPage:true});
-  await page.locator('#backBtn').click();assert.equal(await page.locator('#keyword').inputValue(),'1000835');assert.equal(await page.locator('[data-unified-account]').count(),1);
-  await reset();await action('2000010','store').click();assert.match(await page.locator('#accountInfoPage').innerText(),/Kelvin Goh/);assert.equal(await page.locator('#businessModal').isVisible(),false);
-  const staffContent=await page.locator('#accountInfoPage > .card > .card-body').innerText();await page.locator('#accountInfoBack').click();
+  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/暂无 FoneSquare 商家资料/);
+  assert.match(await page.locator('#tab-basic').innerText(),/门店端店员资料/);assert.equal(await tab('share').isVisible(),false);
+  await tab('permission').click();await page.locator('#tab-permission [data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
+  await tab('log').click();assert.match(await page.locator('#tab-log').innerText(),/关闭 → 开启/);assert.equal(await page.evaluate(()=>users.length),usersBefore);
+  await back();await row('2000010').locator('[data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
+  await action('2000010','view').click();const staffContent=await page.locator('#tab-basic').innerText();await back();
   await page.locator('[data-nav="staff"]').click();await page.locator('#staffKeyword').fill('Kelvin');await page.evaluate(()=>applyStaffFilters());await page.locator('[data-staff-view="E3010"]').last().click();
-  assert.equal(await page.locator('#accountInfoPage > .card > .card-body').innerText(),staffContent);
-  await page.locator('#accountInfoPage [data-staff-action="edit-bank"]').click();
+  assert.equal(await page.locator('#tab-basic').innerText(),staffContent);
+  await tab('merchant-banks').click();await page.locator('#tab-merchant-banks [data-staff-action="edit-bank"]').click();
   await page.locator('#staffBankHolder').fill('Kelvin Goh');await page.locator('#staffBankName').fill('Test Bank');await page.locator('#staffBankNumber').fill('1234567890');await page.locator('#businessConfirmBtn').click();
-  await page.screenshot({path:'/tmp/realtime-staff-profile.png',fullPage:true});assert.match(await page.locator('#accountInfoPage').innerText(),/7890/);assert.doesNotMatch(await page.locator('#accountInfoPage').innerText(),/1234567890/);
-  await page.locator('#accountInfoBack').click();assert.equal(await page.locator('#staffPage').isVisible(),true);assert.equal(await page.locator('#staffKeyword').inputValue(),'Kelvin');assert.equal(await page.locator('#staffResultArea tbody tr').count(),1);await page.evaluate(()=>resetStaffFilters());await page.locator('[data-nav="list"]').click();
+  assert.match(await page.locator('#tab-merchant-banks').innerText(),/7890/);assert.doesNotMatch(await page.locator('#tab-merchant-banks').innerText(),/1234567890/);
+  await back();assert.equal(await page.locator('#staffPage').isVisible(),true);assert.equal(await page.locator('#staffKeyword').inputValue(),'Kelvin');assert.equal(await page.locator('#staffResultArea tbody tr').count(),1);
+  await page.evaluate(()=>resetStaffFilters());await page.locator('[data-nav="list"]').click();
+  // Employee with FS record sees both, and KYC edits cannot change their Store identity.
+  await page.evaluate(()=>{const fs=users.find(u=>u.type==='FoneSquare 回收商');users.push({...structuredClone(fs),id:'2000010',merchantId:'M-FS-EMPLOYEE',name:'Kelvin FS',firstStoreLoginAt:'2026-08-22 08:37'});renderList();});
+  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/FoneSquare 商家记录[\s\S]*门店端店员资料/);
+  await tab('kyc').click();await page.locator('[data-merged-action="kyc-company"]').click();await page.locator('#merged-companyName').fill('Employee FS Company');await page.locator('#businessConfirmBtn').click();
+  assert.match(await page.locator('#tab-kyc').innerText(),/Employee FS Company/);assert.equal(await page.evaluate(()=>prototypeState.realtimeAccountRows().find(a=>a.id==='2000010').role),'店员');
+  await page.locator('[data-merged-action="kyc-personal"]').click();await page.locator('#merged-documentNumber').fill('P123456789');await page.locator('#merged-documentFront').setInputFiles({name:'proof.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/5xkAAAAASUVORK5CYII=','base64')});await page.locator('#businessConfirmBtn').click();await page.waitForTimeout(100);
+  assert.match(await page.locator('#tab-kyc').innerText(),/proof.png/);await tab('log').click();assert.match(await page.locator('#tab-log').innerText(),/Employee FS Company/);assert.doesNotMatch(await page.locator('#tab-log').innerText(),/P123456789/);
+  await tab('basic').click();await page.screenshot({path:'/tmp/merged-account-staff.png',fullPage:true});await back();
+  // Profile changes are audited and remain local to their App record.
+  await action('1000806','view').click();await page.locator('[data-merged-action="profile"]').click();await page.locator('#editMerchantRemark').fill('资料合并验收');await page.locator('#businessConfirmBtn').click();await tab('log').click();assert.match(await page.locator('#tab-log').innerText(),/资料合并验收/);await tab('limit').click();await page.locator('[data-merged-action="limit"][data-site="迪拜"]').click();
+  await page.locator('#merged-daily').fill('100');await page.locator('#merged-deposit').fill('0');await page.locator('#merged-limit-reason').fill('测试独立卖场');await page.locator('#businessConfirmBtn').click();await page.waitForTimeout(100);
+  assert.equal(await page.evaluate(()=>users.find(u=>u.id==='1000806').limitsBySite['迪拜'].dailyLimit),100);
+  await tab('owner').click();await page.locator('#tab-owner [data-merchant-owner-edit]').first().click();await page.locator('#targetMerchantOwner').selectOption({index:1});await page.locator('#merchantOwnerReason').fill('测试维护人');await page.locator('#businessConfirmBtn').click();await tab('log').click();assert.match(await page.locator('#tab-log').innerText(),/测试维护人/);await back();
+  await page.locator('#expandAccountFilters').click();
   // Restored FS permission changes only the FS record, independent of Store App access.
   const storeBefore=await page.evaluate(()=>JSON.stringify(users.find(u=>u.id==='1000835'&&u.type==='供货商家')));
   await row('1000835').locator('[data-fs-bid]').click();assert.match(await page.locator('#businessModal').innerText(),/FoneSquare 出价权限/);await page.locator('#businessConfirmBtn').click();
@@ -83,7 +105,7 @@ const fs=require('node:fs/promises');
   // Unfiltered identity change retains row, closes old permissions, preserves login fact.
   await action('2000010','role').click();assert.equal(await page.locator('#businessConfirmBtn').isDisabled(),false);await page.locator('#businessConfirmBtn').click();
   assert.equal(await row('2000010').count(),1);assert.match(await row('2000010').innerText(),/商家[\s\S]*关闭[\s\S]*待完善/);
-  await action('2000010','store').click();assert.match(await page.locator('#tab-basic').innerText(),/待完善/);await page.locator('#backBtn').click();
+  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/待完善/);await page.locator('#backBtn').click();
   await page.locator('[data-nav="staff"]').click();assert.equal(await page.locator('[data-staff-view="E3010"]').count(),0);
   await page.locator('[data-nav="list"]').click();
   // Filtered identity change removes only the result, not the account.
@@ -119,6 +141,6 @@ const fs=require('node:fs/promises');
   await page.locator('[data-nav="bidList"]').click();assert.equal(await page.locator('#bidListPage').isVisible(),true);
   await page.locator('[data-nav="list"]').click();
   assert.deepEqual(errors,[]);
-  console.log('PASS: all unified accounts, separate FS bid permission and Store App permission, login-state filtering, deduplication, role-specific detail, identity transitions, permission guards, account disable/restore, store navigation/banking, filtered export and system navigation; no page errors.');
+  console.log('PASS: merged account detail including merchant/staff/no-role/no-profile, screenshot fields, KYC image and company editors, profile/limit/owner audit, all unified accounts, separate FS bid permission and Store App permission, login-state filtering, deduplication, role-specific detail, identity transitions, permission guards, account disable/restore, store navigation/banking, filtered export and system navigation; no page errors.');
  } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

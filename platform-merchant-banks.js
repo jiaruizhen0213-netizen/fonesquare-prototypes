@@ -63,6 +63,6 @@
   };
   const oldStoreDetail=openStoreDetail;
   openStoreDetail=function(s){oldStoreDetail(s);const card=document.querySelector('#storeDetailBody .card-body');const line=document.createElement('div');line.style.padding='9px 0';line.textContent='收款账户方式：'+(B.selection('pc:'+s.id).accountId?'商家收款账户（可在编辑店铺时切换）':'店铺独立账户');card.append(line);if(B.selection('pc:'+s.id).accountId){document.querySelectorAll('#storeDetailBody .subtle').forEach(n=>{if(n.textContent.includes('本店铺资料与其他店铺独立'))n.textContent='店铺地址独立维护；当前引用商家收款账户，可在编辑店铺时更换。商家账户变更会同步到引用店铺。';});}};
-  Object.assign(window.prototypeState,{openDetail,openStoreEditor,openMerchantBankEditor:editAccount,merchantBanks:B});
+  Object.assign(window.prototypeState,{openDetail,openStoreEditor,openMerchantBankEditor:editAccount,merchantBanks:B,renderMerchantBankAccounts:renderAccounts});
   window.addEventListener('merchant-banks-changed',()=>{renderStoreList();if(currentUser&&tab.style.display!=='none')renderAccounts();});
 })();

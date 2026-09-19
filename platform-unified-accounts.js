@@ -31,9 +31,9 @@
     }
     return accountStates.get(id);
   }
-  function log(id, action, before, after) {
+  function log(id, action, before, after, source='统一账号', reason='—') {
     if (!histories.has(id)) histories.set(id, []);
-    histories.get(id).push({action, before, after, operator:'平台运营', at:new Date().toLocaleString('zh-CN')});
+    histories.get(id).push({action, before, after, source, reason, operator:'平台运营', at:new Date().toLocaleString('zh-CN')});
   }
   function rows() {
     const ids = [...new Set([...users.map(u => u.id), ...employeeAccounts.map(staffId)])];
@@ -147,7 +147,7 @@
     const before=bidValue(id),next=before==='开启'?'关闭':'开启';
     openBusinessModal(next+' FoneSquare 出价权限','<p>'+esc(a.name)+'：'+esc(before)+' → '+next+'</p><p>仅调整 FoneSquare 出价权限；实际出价仍需满足认证等交易条件。不会自动创建商家资料，不改变门店端身份、建拍权限或商家关系；历史报价和订单保留。</p>','确认'+next,()=>{
       if(state(id)!=='启用'||bidValue(id)!==before){modalError('账号或权限状态已变化，请关闭弹窗后重新操作。');return;}
-      bidPermissions.set(id,next);if(fsFor(id))fsFor(id).bid=next;log(id,'FoneSquare 出价权限',before,next);closeModals();renderList();if($('#accountInfoPage').classList.contains('active'))openFsInfo(id);toast('FoneSquare 出价权限已'+next);
+      bidPermissions.set(id,next);if(fsFor(id))fsFor(id).bid=next;log(id,'FoneSquare 出价权限',before,next,'FoneSquare');closeModals();renderList();if($('#detailPage').classList.contains('active'))renderDetail();toast('FoneSquare 出价权限已'+next);
     });
   }
   function businessInfo(a) {
@@ -169,7 +169,7 @@
     $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1350px"><thead><tr>'+['账号 ID / 名称','统一账号','账号状态','门店端身份','FoneSquare 出价权限','门店端建拍权限','业务信息','维护人','账号注册时间','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
       const m=a.role==='商家'?a.store:null;
       const action=(kind,label)=>'<button '+(kind==='store'&&!a.firstStoreLoginAt?'disabled title="尚未登录门店端" ':'')+'class="btn link '+(kind==='toggle'&&a.status==='启用'?'account-danger':'')+'" data-account-action="'+kind+'" data-account-id="'+a.id+'">'+label+'</button>';
-      return '<tr data-unified-account="'+a.id+'"><td>'+'<strong>'+esc(a.name)+'</strong>'+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,a.storeState==='商家'?'cyan':a.storeState==='店员'?'blue':'gray')+'</td><td>'+fsBidSwitch(a)+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+businessInfo(a)+'</td><td>'+esc(a.owner)+'</td><td>'+esc(a.time.split(' ')[0])+'<div class="merchant-account">'+esc(a.time.split(' ')[1]||'')+'</div></td><td><div class="operations">'+action('fs','FoneSquare 资料')+action('store','门店端资料')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
+      return '<tr data-unified-account="'+a.id+'"><td>'+'<strong>'+esc(a.name)+'</strong>'+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,a.storeState==='商家'?'cyan':a.storeState==='店员'?'blue':'gray')+'</td><td>'+fsBidSwitch(a)+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+businessInfo(a)+'</td><td>'+esc(a.owner)+'</td><td>'+esc(a.time.split(' ')[0])+'<div class="merchant-account">'+esc(a.time.split(' ')[1]||'')+'</div></td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
     }).join('')+'</tbody></table>'+(list.length?'':'<div class="empty-compact">没有符合当前条件的账号</div>')+'</div><div class="pagination"><span>共 '+list.length+' 条记录 第 1 / 1 页</span><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">›</button></div>';
   };
   applyFilters=function(){activeState='normal';renderList();};
@@ -243,7 +243,7 @@
     e.preventDefault();e.stopImmediatePropagation();const id=btn.dataset.accountId;
     if(btn.dataset.accountBusiness){closeModals();overview(id);return;}
     if(btn.disabled)return;
-    if(btn.dataset.accountAction==='fs')openFsInfo(id);
+    if(btn.dataset.accountAction==='view')window.prototypeState.openUnifiedDetail(id);
     if(btn.dataset.accountAction==='store')overview(id);
     if(btn.dataset.accountAction==='toggle')toggle(id);
     if(btn.dataset.accountAction==='role')roleModal(id);
@@ -262,6 +262,7 @@
     const csv=[header,...filters().map(a=>[a.id,a.name,a.account,a.status,a.storeState==='未选择'?'已登录但未选择身份':a.storeState,bidValue(a.id),a.role==='商家'?a.store.build:a.role==='店员'?a.staff.personalBuild:'—',a.time,a.owner])].map(r=>r.map(escapeCell).join(',')).join('\r\n');
     const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})),link=document.createElement('a');link.href=url;link.download='实时竞拍商家列表.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
   };
+  window.realtimeAccounts={rows,state,role,storeFor,staffFor,fsFor,staffId,log,histories,bidValue,fsBidSwitch,requestFsBid,toggle,rememberOrigin,goBack,returnPoint:()=>returnPoint};
   Object.assign(window.prototypeState,{realtimeAccountRows:rows,filteredRealtimeAccounts:filters,realtimeBidValue:bidValue,openStaffDetail});
   refresh();
 })();
