@@ -1,9 +1,22 @@
 /* Unified account view. App business records retain their existing IDs and history. */
 (function () {
   const accountStates = new Map(), roles = new Map(), histories = new Map();
-  const oldRenderList = renderList, oldOpenDetail = openDetail;
+  const oldOpenDetail = openDetail;
   const oldStaffAccounts = staffAccounts;
   employeeAccounts.forEach((s, i) => { s.accountId = s.accountId || String(2000001 + i); });
+  // Explicit demo login facts, independent of current identity, status, or registration App.
+  const storeLoginFixtures = {
+    '1000835':'2026-08-20 13:44', '1000834':'2026-08-20 11:18',
+    '1000832':'2026-08-19 16:35', '1000818':'2026-08-17 14:02',
+    '1000829':'2026-08-19 10:10', '1000825':'2026-08-18 17:25',
+    '2000001':'2026-08-10 08:46', '2000002':'2026-08-11 12:21',
+    '2000003':'2026-08-12 09:06', '2000004':'2026-08-13 16:41',
+    '2000005':'2026-08-15 09:26', '2000006':'2026-08-16 18:11',
+    '2000007':'2026-08-17 13:09', '2000008':'2026-08-21 10:19',
+    '2000009':'2026-08-21 11:07', '2000010':'2026-08-22 08:37'
+  };
+  users.forEach(u=>{u.firstStoreLoginAt=storeLoginFixtures[u.id]||null;});
+  employeeAccounts.forEach(s=>{s.firstStoreLoginAt=storeLoginFixtures[s.accountId]||null;});
   function staffId(s) { return s.accountId || s.id; }
   function records(id) { return users.filter(u => u.id === id); }
   function staffFor(id) { return employeeAccounts.find(s => staffId(s) === id); }
@@ -25,9 +38,10 @@
     const ids = [...new Set([...users.map(u => u.id), ...employeeAccounts.map(staffId)])];
     return ids.map(id => {
       const rs = records(id), staff = staffFor(id), first = [...rs].sort((a,b) => String(a.createdAt || a.time).localeCompare(String(b.createdAt || b.time)))[0];
-      const u = first || staff;
-      return {id, name:u.name, account:u.account, raw:[...rs.flatMap(accountKeys),staff?.rawAccount || ''].join(' '), fs:fsFor(id), store:storeFor(id), staff, role:role(id), status:state(id), owner:first?.owner || '未分配', source:first?.firstRegisteredApp || (first ? merchantSource(first) : '门店端'), time:first?.createdAt || first?.time || staff?.registeredAt || '—'};
-    }).sort((a,b) => b.time.localeCompare(a.time));
+      const u = storeFor(id) || staff || first;
+      const firstStoreLoginAt=[...rs,staff].filter(Boolean).map(x=>x.firstStoreLoginAt).filter(Boolean).sort()[0]||null;
+      return {id, firstStoreLoginAt, name:u.name, account:u.account, raw:[...rs.flatMap(accountKeys),staff?.rawAccount || ''].join(' '), fs:fsFor(id), store:storeFor(id), staff, role:role(id), status:state(id), owner:storeFor(id)?.owner || first?.owner || '未分配', source:first?.firstRegisteredApp || (first ? merchantSource(first) : '门店端'), time:first?.createdAt || first?.time || staff?.registeredAt || '—'};
+    }).filter(a=>a.firstStoreLoginAt).sort((a,b) => b.firstStoreLoginAt.localeCompare(a.firstStoreLoginAt));
   }
   function unlink(s) {
     if (s.merchantId) { s.relationHistory ||= []; s.relationHistory.push({merchantId:s.merchantId,status:'已解除',endedAt:new Date().toLocaleString('zh-CN')}); }
@@ -56,13 +70,14 @@
   }
   function changeRole(id,target) {
     const before=role(id);
+    if(!['商家','店员'].includes(target))return '请选择有效的目标身份。';
     if(!['商家','店员'].includes(before) || target===before) return '请选择不同的目标身份。';
     const reason=businessReason(id); if(reason)return reason;
     if(target==='商家') {
       const s=staffFor(id); unlink(s);
       const archived=records(id).find(u=>u.type==='供货商家');
-      if(archived)archived.identityArchived=false;
-      else users.push({id,merchantId:'M-UA-'+id,name:s.name,account:s.account,rawAccount:s.rawAccount,type:'供货商家',status:state(id)==='启用'?'正常':'停用',accountStatus:state(id)==='启用'?'正常':'停用',build:'关闭',bid:'关闭',kyc:'—',ratioStatus:'未配置',merchantMain:true,employeeAppAccess:true,owner:'未分配',time:s.registeredAt,createdAt:s.registeredAt,firstRegisteredApp:rows().find(a=>a.id===id)?.source || '门店端'});
+      if(archived){archived.identityArchived=false;archived.build='关闭';}
+      else users.push({id,merchantId:'M-UA-'+id,name:s.name,account:s.account,rawAccount:s.rawAccount,type:'供货商家',status:state(id)==='启用'?'正常':'停用',accountStatus:state(id)==='启用'?'正常':'停用',build:'关闭',bid:'关闭',kyc:'—',ratioStatus:'未配置',profileStatus:'待完善',firstStoreLoginAt:s.firstStoreLoginAt,merchantMain:true,employeeAppAccess:true,owner:'未分配',time:s.registeredAt,createdAt:s.registeredAt,firstRegisteredApp:rows().find(a=>a.id===id)?.source || '门店端'});
     } else {
       const m=storeFor(id); m.identityArchived=true;
       stores.filter(s=>s.merchantId===m.merchantId).forEach(s=>{s.status='停用';s.identityArchived=true;});
@@ -73,7 +88,7 @@
   }
   function roleModal(id) {
     const before=role(id),reason=businessReason(id);
-    openBusinessModal('修改门店端身份','<p>当前身份：'+before+'</p><div class="field"><label>目标身份</label><select class="control" id="accountRoleTarget"><option>'+ (before==='商家'?'店员':'商家') +'</option></select></div><p>仅从未发生门店端业务时可修改；FoneSquare 业务不影响判断。账号及历史数据保留。</p><p id="accountRoleError" style="color:var(--red)">'+esc(reason)+'</p>','确认修改',()=>{const error=changeRole(id,$('#accountRoleTarget').value);if(error){$('#accountRoleError').textContent=error;return;}closeModals();toast(role(id)==='商家'?'身份已修改，请在门店端完善商家和店铺资料':'身份已修改，请在店员列表关联商家');},'primary');
+    openBusinessModal('修改门店端身份','<p>当前身份：'+before+'</p><div class="field"><label>目标身份</label><select class="control" id="accountRoleTarget"><option>'+ (before==='商家'?'店员':'商家') +'</option></select></div><p>仅从未发生门店端业务时可修改；FoneSquare 业务不影响判断。账号及历史数据保留。</p><p id="accountRoleError" style="color:var(--red)">'+esc(reason)+'</p>','确认修改',()=>{const error=changeRole(id,$('#accountRoleTarget').value);if(error){$('#accountRoleError').textContent=error;return;}closeModals();const excluded=$('#accountRoleFilter').value && $('#accountRoleFilter').value!==role(id);toast('身份已修改为'+role(id)+(excluded?'，当前身份筛选下不再展示':role(id)==='商家'?'，请在门店端完善商家和店铺资料':'，请在店员列表关联商家'));},'primary');
     $('#businessConfirmBtn').disabled=!!reason;
   }
   staffAccounts=function(){return oldStaffAccounts().filter(s=>role(staffId(s))==='店员');};
@@ -113,25 +128,56 @@
   toggleMerchantBusiness=function(u){toggle(u.id);};
   function filters() {
     const val=id=>$(id).value.trim(),kw=val('#keyword').toLowerCase();
-    return rows().filter(a=>(!kw||[a.id,a.name,a.account,a.raw].join(' ').toLowerCase().includes(kw))&&(!val('#businessStatusFilter')||a.status===val('#businessStatusFilter'))&&(!val('#accountRoleFilter')||a.role===val('#accountRoleFilter'))&&(!val('#merchantSourceFilter')||a.source===val('#merchantSourceFilter'))&&(!val('#ownerFilter')||a.owner===val('#ownerFilter'))&&(!val('#kycFilter')||a.fs?.kyc===val('#kycFilter'))&&(!val('#merchantBuildFilter')||((a.role==='商家'?a.store?.build:a.role==='店员'?a.staff?.personalBuild:null)===val('#merchantBuildFilter')))&&(!val('#merchantBidFilter')||a.fs?.bid===val('#merchantBidFilter'))&&(!val('#merchantTypeFilter')||records(a.id).some(u=>!u.identityArchived&&legacyMerchantRoles(u).includes(val('#merchantTypeFilter')))));
+    return rows().filter(a=>(!kw||[a.id,a.name,a.account,a.raw].join(' ').toLowerCase().includes(kw))&&(!val('#businessStatusFilter')||a.status===val('#businessStatusFilter'))&&(!val('#accountRoleFilter')||a.role===val('#accountRoleFilter'))&&(!val('#ownerFilter')||a.owner===val('#ownerFilter'))&&(!val('#merchantBuildFilter')||((a.role==='商家'?a.store?.build:a.role==='店员'?a.staff?.personalBuild:null)===val('#merchantBuildFilter'))));
+  }
+  function businessInfo(a) {
+    const m=a.role==='商家'?a.store:null;
+    if(m)return '<div>'+esc(m.profileStatus||'已完善')+' · 分账：'+esc(m.ratioStatus||'未配置')+'</div><button class="btn link" data-merchant-stores="'+m.merchantId+'">店铺 '+merchantStoreCount(m)+'</button> / <button class="btn link" data-merchant-staff="'+m.merchantId+'">店员 '+merchantStaffCount(m)+'</button>';
+    if(a.role==='店员')return staffMerchantCell(a.staff)+'<div class="merchant-account">'+esc(staffRelationStatus(a.staff))+'</div>';
+    return '<span class="subtle">门店端身份未选择</span>';
   }
   renderList=function(){
-    if(activeState!=='normal')return oldRenderList();
     const list=filters();
-    $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1900px"><thead><tr>'+['账号 ID / 名称','统一账号','首次注册 App','账号状态','门店端身份','KYC 认证状态','建拍权限','出价权限','分账规则','店铺数','店员数','账号注册时间','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
-      const m=a.role==='商家'?a.store:null,fs=a.fs;
+    $('#resultSummary').textContent='共 '+list.length+' 条，按首次登录门店端时间倒序';
+    if(activeState!=='normal') {
+      const box=$('#resultArea');
+      if(activeState==='loading')box.innerHTML='<div class="state-box">正在加载门店端账号…</div>';
+      else if(activeState==='failed'){box.innerHTML='<div class="state-box"><div>账号加载失败，当前筛选条件已保留。<button class="btn" id="retryBtn">重新加载</button></div></div>';$('#retryBtn').onclick=()=>{activeState='normal';renderList();};}
+      else box.innerHTML='<div class="state-box">暂无成功登录门店端的账号</div>';
+      return;
+    }
+    $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1350px"><thead><tr>'+['账号 ID / 名称','统一账号','账号状态','门店端身份','建拍权限','业务信息','维护人','首次登录门店端','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
+      const m=a.role==='商家'?a.store:null;
       const action=(kind,label)=>'<button class="btn link" data-account-action="'+kind+'" data-account-id="'+a.id+'">'+label+'</button>';
-      return '<tr data-unified-account="'+a.id+'"><td>'+action('view',esc(a.name))+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+tag(a.source,a.source==='FoneSquare'?'orange':'cyan')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.role,a.role==='商家'?'cyan':a.role==='店员'?'blue':'gray')+'</td><td>'+statusTag(fs?.kyc||'未完善')+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+(fs?permissionSwitch(fs,'bid'):'未配置')+'</td><td>'+(m?statusTag(m.ratioStatus):'—')+'</td><td>'+(m?'<button class="btn link" data-view-stores="'+m.merchantId+'">'+merchantStoreCount(m)+'</button>':'—')+'</td><td>'+(m?'<button class="btn link" data-merchant-staff="'+m.merchantId+'">'+merchantStaffCount(m)+'</button>':'—')+'</td><td>'+esc(a.time)+'</td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
+      return '<tr data-unified-account="'+a.id+'"><td>'+action('view',esc(a.name))+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.role,a.role==='商家'?'cyan':a.role==='店员'?'blue':'gray')+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+businessInfo(a)+'</td><td>'+esc(a.owner)+'</td><td>'+esc(a.firstStoreLoginAt.split(' ')[0])+'<div class="merchant-account">'+esc(a.firstStoreLoginAt.split(' ')[1]||'')+'</div></td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用账号':'启用账号')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
     }).join('')+'</tbody></table>'+(list.length?'':'<div class="empty-compact">没有符合当前条件的账号</div>')+'</div><div class="pagination"><span>共 '+list.length+' 条记录 第 1 / 1 页</span><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">›</button></div>';
   };
   applyFilters=function(){activeState='normal';renderList();};
   resetFilters=function(){$$('#listPage .filters input').forEach(e=>e.value='');$$('#listPage .filters select').forEach(e=>e.value='');applyFilters();};
   function overview(id) {
     const a=rows().find(a=>a.id===id);if(!a)return;
-    const buttons=(a.fs?'<button class="btn" data-account-business="fs" data-account-id="'+id+'">FoneSquare 资料</button>':'<p>FoneSquare：可使用启用账号登录，业务资料未完善，交易按权限开放。</p>')+(a.role==='商家'?'<button class="btn" data-account-business="store" data-account-id="'+id+'">门店端商家资料</button>':a.role==='店员'?'<button class="btn" data-account-business="staff" data-account-id="'+id+'">门店端店员资料</button>':'<p>门店端：首次登录时选择身份。</p>');
-    openBusinessModal('账号详情 · '+a.name,'<p>统一账号：'+esc(id)+'　'+esc(a.account)+'</p><p>账号状态：'+a.status+'　门店端身份：'+a.role+'</p>'+buttons+'<div style="margin-top:16px">'+(histories.get(id)||[]).map(h=>'<p>'+esc(h.at+' · '+h.operator+' · '+h.action+'：'+h.before+' → '+h.after)+'</p>').join('')+'</div>','关闭',closeModals);
+    if(a.role==='商家'){openDetail(a.store);return;}
+    if(a.role==='店员'){openStaffDetail(a.staff.id);return;}
+    openBusinessModal('门店端账号资料 · '+a.name,'<p>统一账号：'+esc(id)+'　'+esc(a.account)+'</p><p>账号状态：'+a.status+'</p><p>门店端身份：未选择</p><p>首次登录门店端：'+esc(a.firstStoreLoginAt)+'</p><p>用户尚未选择门店端身份，暂无商家或店员资料。请由用户在门店端选择身份后继续完善资料。</p>','关闭',closeModals);
   }
-  openDetail=function(u,tab){oldOpenDetail(u,tab);$('#detailTags').innerHTML=statusTag(state(u.id))+tag(role(u.id),'blue');$('#statusBtn').onclick=()=>toggle(u.id);$('#statusBtn').textContent=state(u.id)==='启用'?'停用':'启用';};
+  const baseMerchantFields=merchantDetailFields;
+  merchantDetailFields=function(u){return baseMerchantFields(u).filter(f=>!['来源 App','商家类型'].includes(f[0])).map(f=>['账号状态','商家状态'].includes(f[0])?[f[0],state(u.id)]:f).concat([['资料完善情况',u.profileStatus||'已完善']]);};
+  let detailReturnView='list';
+  openDetail=function(u,tab){
+    if(!u)return;
+    const merchant=storeFor(u.id);
+    if(!merchant){overview(u.id);return;}
+    const origin=$('.page.active')?.id?.replace(/Page$/,'');
+    if(['list','store','storeDetail','staff'].includes(origin))detailReturnView=origin;
+    closeModals();
+    oldOpenDetail(merchant,tab);
+    $('#backBtn').hidden=false;$('#backBtn').className='btn';$('#backBtn').textContent='← 返回'+({list:'商家列表',store:'店铺列表',storeDetail:'店铺详情',staff:'店员列表'}[detailReturnView]);$('#backBtn').onclick=()=>setView(detailReturnView);
+    $('#detailTags').innerHTML=statusTag(state(u.id))+tag(role(u.id),'blue');
+    $('#statusBtn').onclick=()=>toggle(u.id);$('#statusBtn').textContent=state(u.id)==='启用'?'停用账号':'启用账号';
+    $('#crumbCurrent').textContent='门店端商家资料';
+    const history=histories.get(u.id)||[];
+    if(history.length)$('#tab-log').insertAdjacentHTML('beforeend','<div class="card"><div class="card-head">账号与身份操作记录</div><div class="card-body">'+history.map(h=>'<p>'+esc(h.at+' · '+h.action+'：'+h.before+' → '+h.after)+'</p>').join('')+'</div></div>');
+  };
   $('#merchantBuildFilter').previousElementSibling.textContent='建拍权限';
   $('#businessStatusFilter').previousElementSibling.textContent='账号状态';
   $('#merchantSourceFilter').previousElementSibling.textContent='首次注册 App';
@@ -145,7 +191,7 @@
     if(permission){e.preventDefault();e.stopImmediatePropagation();if(!permission.disabled)requestStaffBuild(permission.dataset.staffBuild);return;}
     const btn=e.target.closest('[data-account-action],[data-account-business]');if(!btn)return;
     e.preventDefault();e.stopImmediatePropagation();const id=btn.dataset.accountId;
-    if(btn.dataset.accountBusiness){closeModals();if(btn.dataset.accountBusiness==='staff')openStaffDetail(staffFor(id).id);else openDetail(btn.dataset.accountBusiness==='fs'?fsFor(id):storeFor(id));return;}
+    if(btn.dataset.accountBusiness){closeModals();overview(id);return;}
     if(btn.dataset.accountAction==='view')overview(id);
     if(btn.dataset.accountAction==='toggle')toggle(id);
     if(btn.dataset.accountAction==='role')roleModal(id);
@@ -157,5 +203,13 @@
   users.forEach(u=>{if(u.kyc==='已拒绝-账号受限')u.kyc='认证失败';});
   Array.from($('#kycFilter').options).filter(o=>o.value==='已拒绝-账号受限').forEach(o=>o.remove());
   rows().forEach(a=>{records(a.id).forEach(u=>{u.accountStatus=a.status==='启用'?'正常':'停用';u.status=u.accountStatus;});});
+  $('#addBtn').onclick=null;
+  $('#exportBtn').onclick=()=>{
+    const header=['账号 ID','名称','统一账号','账号状态','门店端身份','建拍权限','首次登录门店端','维护人'];
+    const escapeCell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+    const csv=[header,...filters().map(a=>[a.id,a.name,a.account,a.status,a.role,a.role==='商家'?a.store.build:a.role==='店员'?a.staff.personalBuild:'—',a.firstStoreLoginAt,a.owner])].map(r=>r.map(escapeCell).join(',')).join('\r\n');
+    const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})),link=document.createElement('a');link.href=url;link.download='实时竞拍商家列表.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+  Object.assign(window.prototypeState,{realtimeAccountRows:rows,filteredRealtimeAccounts:filters});
   refresh();
 })();

@@ -18,6 +18,7 @@
     .system-switch{width:100%;padding:8px 6px;border:0;border-radius:5px;background:transparent;color:#fff;display:flex;align-items:center;gap:9px;text-align:left;font-size:14px;font-weight:700}.system-switch:hover,.system-switch[aria-expanded="true"]{background:rgba(255,255,255,.08)}
     .brand-mark{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border-radius:6px;background:var(--primary);font-size:11px}.system-name{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.system-arrow{font-size:10px;transition:transform .15s}.system-switch[aria-expanded="true"] .system-arrow{transform:rotate(180deg)}
     .system-menu{display:none;position:absolute;top:56px;left:12px;right:12px;padding:6px;background:#fff;border:1px solid var(--border);border-radius:6px;box-shadow:var(--shadow);z-index:20}.system-menu.show{display:block}.system-option{width:100%;padding:10px 12px;border:0;border-radius:4px;background:#fff;color:var(--text);display:flex;align-items:center;justify-content:space-between;text-align:left}.system-option:hover{background:#f5f5f5}.system-option.active{background:#e6f4ff;color:var(--primary);font-weight:600}.system-option.active::after{content:"✓"}
+    #listPage [hidden]{display:none!important}
     [data-system-nav][hidden]{display:none!important}.nav-group{padding:18px 18px 7px;color:rgba(255,255,255,.34);font-size:10px;letter-spacing:1px}.nav-group-link{cursor:pointer}.nav-group-link:hover{color:rgba(255,255,255,.76)}
     .nav-item{margin:0 8px;padding:11px 13px;border-left:3px solid transparent;border-radius:3px;display:flex;gap:9px;align-items:center;color:rgba(255,255,255,.7)}
     .nav-item.active{color:#fff;background:var(--primary);border-left-color:#fff}.nav-item.muted{cursor:default;color:rgba(255,255,255,.42)}
@@ -54,19 +55,18 @@
   <div class="app">
     <aside class="sidebar">
       <div class="brand">
-        <button type="button" class="system-switch" id="systemSwitch" aria-haspopup="menu" aria-expanded="false"><span class="brand-mark">FS</span><span class="system-name" id="systemName">海外 B2B 管理后台</span><span class="system-arrow">▼</span></button>
+        <button type="button" class="system-switch" id="systemSwitch" aria-haspopup="menu" aria-expanded="false"><span class="brand-mark">FS</span><span class="system-name" id="systemName">实时竞拍</span><span class="system-arrow">▼</span></button>
         <div class="system-menu" id="systemMenu" role="menu">
-          <button type="button" class="system-option active" data-system-option="b2b" role="menuitem">海外 B2B 管理后台</button>
-          <button type="button" class="system-option" data-system-option="auction" role="menuitem">实时竞拍</button>
+          <button type="button" class="system-option" data-system-option="b2b" role="menuitem">海外 B2B 管理后台</button>
+          <button type="button" class="system-option active" data-system-option="auction" role="menuitem">实时竞拍</button>
         </div>
       </div>
-      <div data-system-nav="b2b">
+      <div data-system-nav="b2b" hidden></div>
+      <div data-system-nav="auction">
         <div class="nav-group">商家管理</div>
         <div class="nav-item active" data-nav="list">▤ <span>商家列表</span></div>
         <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
         <div class="nav-item" data-nav="staff">♙ <span>店员列表</span></div>
-      </div>
-      <div data-system-nav="auction" hidden>
         <div class="nav-group">系统配置</div>
         <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
         <div class="nav-group">商品映射管理</div>
@@ -89,25 +89,28 @@
 
     <main class="main">
       <header class="topbar">
-        <div class="crumb"><span>首页</span>　/　<span id="crumbGroup">商家管理</span>　/　<b id="crumbCurrent">商家列表</b></div>
+        <div class="crumb"><span>首页</span>　/　<span id="crumbGroup">实时竞拍</span>　/　<b id="crumbCurrent">商家列表</b></div>
         <div class="top-right"><span class="lang" role="group" aria-label="语言切换"><button type="button" class="active" data-language="zh" aria-pressed="true">简体中文</button><button type="button" data-language="en" aria-pressed="false">English</button></span><span>♢</span><span class="avatar">贾</span><span>贾瑞真</span></div>
       </header>
 
+      <section class="page" id="b2bHomePage"><div class="card"><div class="card-body"><h2>海外 B2B 管理后台</h2><p>商家列表、店铺列表和店员列表已迁至实时竞拍。</p><button class="btn primary" onclick="setView('list')">进入实时竞拍商家列表</button></div></div></section>
       <section class="page active" id="listPage">
+        <div class="page-title"><h1>商家列表</h1></div>
+        <div class="alert"><span>ⓘ</span><div>展示曾成功登录门店端的全部账号，包含未选择身份、商家和店员。账号停用或身份变更后仍保留记录。</div></div>
         <div class="card legacy-filter-card"><div class="card-body"><div class="filters merchant-filters">
           <div class="field"><label>商家名称</label><input class="control" id="keyword" placeholder="请输入名称关键词" /></div>
-          <div class="field"><label>商家类型</label><select class="control" id="merchantTypeFilter"><option value="">全部</option><option>买家商家</option><option>卖家</option></select></div>
+          <div class="field" hidden><label>商家类型</label><select class="control" id="merchantTypeFilter"><option value="">全部</option><option>买家商家</option><option>卖家</option></select></div>
           <div class="field"><label>商家状态</label><select class="control" id="businessStatusFilter"><option value="">全部</option><option>启用</option><option>停用</option></select></div>
-          <div class="field"><label>认证状态</label><select class="control" id="kycFilter"><option value="">全部</option><option>已认证</option><option>未认证</option><option>已拒绝-账号受限</option><option>认证失败</option></select></div>
+          <div class="field" hidden><label>认证状态</label><select class="control" id="kycFilter"><option value="">全部</option><option>已认证</option><option>未认证</option><option>已拒绝-账号受限</option><option>认证失败</option></select></div>
           <div class="field"><label>维护人</label><select class="control" id="ownerFilter"><option value="">全部</option><option>未分配</option><option>贾瑞真</option><option>李敏</option><option>王杰</option></select></div>
-          <div class="field"><label>来源 App</label><select class="control" id="merchantSourceFilter"><option value="">全部</option><option>FoneSquare</option><option>门店端</option></select></div>
+          <div class="field" hidden><label>来源 App</label><select class="control" id="merchantSourceFilter"><option value="">全部</option><option>FoneSquare</option><option>门店端</option></select></div>
           <div class="field"><label>商家建拍权限</label><select class="control" id="merchantBuildFilter"><option value="">全部</option><option>开启</option><option>关闭</option></select></div>
-          <div class="field"><label>出价权限</label><select class="control" id="merchantBidFilter"><option value="">全部</option><option>开启</option><option>关闭</option></select></div>
+          <div class="field" hidden><label>出价权限</label><select class="control" id="merchantBidFilter"><option value="">全部</option><option>开启</option><option>关闭</option></select></div>
           <div class="filter-actions"><button class="btn primary" id="searchBtn">查询</button><button class="btn" id="resetBtn">↻ 重置</button><button class="btn" id="exportBtn">导出</button></div>
         </div></div></div>
 
         <div class="card legacy-list-card">
-          <div class="card-head legacy-list-head"><span id="resultSummary" hidden></span><button class="btn primary" id="addBtn">添加商家</button></div>
+          <div class="card-head legacy-list-head"><span id="resultSummary"></span><button class="btn primary" id="addBtn" hidden disabled>添加商家</button></div>
           <div id="resultArea"></div>
         </div>
         <select id="stateDemo" hidden><option value="normal">正常</option><option value="loading">加载中</option><option value="failed">加载失败</option><option value="empty">空数据</option></select>
@@ -2241,12 +2244,15 @@
   });
 
   const systemLabels = {b2b:'海外 B2B 管理后台',auction:'实时竞拍'};
-  const systemLastView = {b2b:'list',auction:'bidList'};
-  let currentSystem = 'b2b';
+  const systemLastView = {b2b:'b2bHome',auction:'list'};
+  let currentSystem = 'auction';
   const systemAwareSetView = setView;
 
   setView = function (view) {
+    if (['list','detail','store','storeDetail','staff'].includes(view)) renderSystemNavigation('auction');
     systemAwareSetView(view);
+    if (['list','detail','store','storeDetail','staff'].includes(view)) $('#crumbGroup').textContent='实时竞拍';
+    if(view==='b2bHome') { $('#crumbGroup').textContent='海外 B2B 管理后台'; $('#crumbCurrent').textContent='首页'; }
     if ($('#' + view + 'Page') && $('#'+ view + 'Page').classList.contains('active')) systemLastView[currentSystem] = view;
   };
 
@@ -2293,7 +2299,7 @@
   renderSettlementConfigV2();
 })();
   </script>
-  <script src="platform-unified-accounts.js?v=cc299bd"></script>
+  <script src="platform-unified-accounts.js?v=20260919-1"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="platform-merchant-banks.js?v=20260909-1"></script>
