@@ -39,7 +39,7 @@ const fs=require('node:fs/promises');
   // Never logged in and no selected identity remain readable, without Store configuration.
   for(const [id,message] of [['1000806','尚未登录门店端'],['1000825','尚未选择身份']]){
    await action(id,'view').click();assert.equal(await page.locator('#detailPage').isVisible(),true);assert.equal(await page.locator('#businessModal').isVisible(),false);
-   assert.match(await page.locator('#tab-basic').innerText(),new RegExp(message));
+   await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),new RegExp(message));assert.equal(await page.locator('#tab-store-info button').count(),0);
    assert.equal(await tab('share').isVisible(),false);assert.equal(await tab('merchant-banks').isVisible(),false);
    await tab('permission').click();assert.equal(await page.locator('#tab-permission [data-fs-bid]').count(),1);
    assert.equal(await page.locator('#tab-permission [data-permission="build"],#tab-permission [data-staff-build]').count(),0);
@@ -48,26 +48,40 @@ const fs=require('node:fs/promises');
   // Neither App business profile exists: viewing never enrolls the account.
   await page.evaluate(()=>{users.push({id:'3000000',type:'统一账号',name:'No App Identity',account:'none***@example.com',status:'正常',createdAt:'2026-08-01 00:00',firstStoreLoginAt:null});renderList();});
   const noProfileCount=await page.evaluate(()=>users.length);
-  await action('3000000','view').click();assert.match(await page.locator('#tab-basic').innerText(),/暂无 FoneSquare 商家资料[\s\S]*尚未登录门店端/);
+  await action('3000000','view').click();assert.match(await page.locator('#tab-basic').innerText(),/暂无 FoneSquare 商家资料/);await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),/尚未登录门店端/);
   await tab('kyc').click();assert.equal(await page.locator('#tab-kyc button').count(),0);await tab('limit').click();assert.equal(await page.locator('#tab-limit button').count(),0);
   await tab('permission').click();await page.locator('#tab-permission [data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();assert.equal(await page.evaluate(()=>users.length),noProfileCount);await back();
   await page.evaluate(()=>{users.splice(users.findIndex(u=>u.id==='3000000'),1);renderList();});
   // A merchant has both App profiles plus independent share and bank data in one page.
   await page.locator('#keyword').fill('1000835');await page.locator('#searchBtn').click();await action('1000835','view').click();
-  assert.match(await page.locator('#tab-basic').innerText(),/FoneSquare 商家记录[\s\S]*门店端商家记录/);
+  assert.equal(await page.locator('#tab-basic > .card').count(),1);
+  assert.deepEqual(await page.locator('#tab-basic .account-fact > span').allTextContents(),['创建来源','统一账号','商家 ID','商家名称','账号状态','商家类型','姓 / 名','手机','邮箱','所在地区','备注','FoneSquare KYC 状态']);
+  assert.doesNotMatch(await page.locator('#tab-basic').innerText(),/门店端商家|门店端身份|首次登录/);
+  await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),/门店端商家信息/);
+  assert.doesNotMatch(await page.locator('#tab-store-info').innerText(),/分账规则|银行卡|建拍权限|维护人/);assert.equal(await page.locator('#tab-store-info .store-card').count(),0);
+  await page.screenshot({path:'/tmp/store-tab-merchant.png',fullPage:true});
+  await tab('permission').click();assert.equal(await page.locator('#tab-permission #editRatioBtn').count(),0);
   assert.equal(await tab('share').isVisible(),true);assert.equal(await tab('kyc').isVisible(),true);
   await tab('merchant-banks').click();assert.equal(await page.locator('#addMerchantBank').isVisible(),true);
   await tab('basic').click();await page.screenshot({path:'/tmp/merged-account-merchant.png',fullPage:true});await back();assert.equal(await page.locator('#keyword').inputValue(),'1000835');await reset();
   // Missing FS record never materializes merely from viewing, editing bank, or changing bid.
   const usersBefore=await page.evaluate(()=>users.length);
   await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/暂无 FoneSquare 商家资料/);
-  assert.match(await page.locator('#tab-basic').innerText(),/门店端店员资料/);assert.equal(await tab('share').isVisible(),false);
+  await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),/门店端店员信息/);assert.doesNotMatch(await page.locator('#tab-store-info').innerText(),/银行卡|建拍权限|分账规则/);assert.equal(await tab('share').isVisible(),false);
   await tab('permission').click();await page.locator('#tab-permission [data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
   await tab('log').click();assert.match(await page.locator('#tab-log').innerText(),/关闭 → 开启/);assert.equal(await page.evaluate(()=>users.length),usersBefore);
   await back();await row('2000010').locator('[data-fs-bid]').click();await page.locator('#businessConfirmBtn').click();
-  await action('2000010','view').click();const staffContent=await page.locator('#tab-basic').innerText();await back();
+  await action('2000010','view').click();await tab('store-info').click();const staffContent=await page.locator('#tab-store-info').innerText();await back();
   await page.locator('[data-nav="staff"]').click();await page.locator('#staffKeyword').fill('Kelvin');await page.evaluate(()=>applyStaffFilters());await page.locator('[data-staff-view="E3010"]').last().click();
-  assert.equal(await page.locator('#tab-basic').innerText(),staffContent);
+  await tab('store-info').click();assert.equal(await page.locator('#tab-store-info').innerText(),staffContent);
+  // Current relationship is maintained here; history appears only in logs.
+  await page.locator('#tab-store-info [data-staff-action="bind"]').click();await page.locator('#targetStaffMerchant').selectOption('M1002');await page.locator('#businessConfirmBtn').click();
+  assert.match(await page.locator('#tab-store-info').innerText(),/当前关联时间/);assert.equal(await page.locator('#tab-store-info [data-staff-merchant="M1002"]').count(),1);
+  await page.locator('#tab-store-info [data-staff-action="unbind"]').click();await page.locator('#staffUnbindReason').fill('门店端信息验收');await page.locator('#businessConfirmBtn').click();
+  assert.match(await page.locator('#tab-store-info').innerText(),/最近解除时间/);assert.equal(await page.locator('#tab-store-info .timeline').count(),0);
+  await tab('log').click();assert.match(await page.locator('#mergedStaffHistory').innerText(),/Siti Nur/);
+  await page.locator('#mergedLogSource').selectOption('门店端店员');assert.equal(await page.locator('#mergedStaffHistory').isVisible(),true);
+  await page.locator('#mergedLogSource').selectOption('FoneSquare');assert.equal(await page.locator('#mergedStaffHistory').isVisible(),false);
   await tab('merchant-banks').click();await page.locator('#tab-merchant-banks [data-staff-action="edit-bank"]').click();
   await page.locator('#staffBankHolder').fill('Kelvin Goh');await page.locator('#staffBankName').fill('Test Bank');await page.locator('#staffBankNumber').fill('1234567890');await page.locator('#businessConfirmBtn').click();
   assert.match(await page.locator('#tab-merchant-banks').innerText(),/7890/);assert.doesNotMatch(await page.locator('#tab-merchant-banks').innerText(),/1234567890/);
@@ -75,7 +89,7 @@ const fs=require('node:fs/promises');
   await page.evaluate(()=>resetStaffFilters());await page.locator('[data-nav="list"]').click();
   // Employee with FS record sees both, and KYC edits cannot change their Store identity.
   await page.evaluate(()=>{const fs=users.find(u=>u.type==='FoneSquare 回收商');users.push({...structuredClone(fs),id:'2000010',merchantId:'M-FS-EMPLOYEE',name:'Kelvin FS',firstStoreLoginAt:'2026-08-22 08:37'});renderList();});
-  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/FoneSquare 商家记录[\s\S]*门店端店员资料/);
+  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/FoneSquare 商家记录/);assert.doesNotMatch(await page.locator('#tab-basic').innerText(),/门店端店员/);await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),/门店端店员信息/);await page.screenshot({path:'/tmp/store-tab-staff.png',fullPage:true});
   await tab('kyc').click();await page.locator('[data-merged-action="kyc-company"]').click();await page.locator('#merged-companyName').fill('Employee FS Company');await page.locator('#businessConfirmBtn').click();
   assert.match(await page.locator('#tab-kyc').innerText(),/Employee FS Company/);assert.equal(await page.evaluate(()=>prototypeState.realtimeAccountRows().find(a=>a.id==='2000010').role),'店员');
   await page.locator('[data-merged-action="kyc-personal"]').click();await page.locator('#merged-documentNumber').fill('P123456789');await page.locator('#merged-documentFront').setInputFiles({name:'proof.png',mimeType:'image/png',buffer:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/5xkAAAAASUVORK5CYII=','base64')});await page.locator('#businessConfirmBtn').click();await page.waitForTimeout(100);
@@ -105,7 +119,7 @@ const fs=require('node:fs/promises');
   // Unfiltered identity change retains row, closes old permissions, preserves login fact.
   await action('2000010','role').click();assert.equal(await page.locator('#businessConfirmBtn').isDisabled(),false);await page.locator('#businessConfirmBtn').click();
   assert.equal(await row('2000010').count(),1);assert.match(await row('2000010').innerText(),/商家[\s\S]*关闭[\s\S]*待完善/);
-  await action('2000010','view').click();assert.match(await page.locator('#tab-basic').innerText(),/待完善/);await page.locator('#backBtn').click();
+  await action('2000010','view').click();await tab('store-info').click();assert.match(await page.locator('#tab-store-info').innerText(),/待完善/);await page.locator('#backBtn').click();
   await page.locator('[data-nav="staff"]').click();assert.equal(await page.locator('[data-staff-view="E3010"]').count(),0);
   await page.locator('[data-nav="list"]').click();
   // Filtered identity change removes only the result, not the account.

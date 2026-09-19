@@ -6,10 +6,10 @@
   merchantDetailFields=u=>storeFields(u).filter(([label])=>!['统一账号','账号状态','商家状态'].includes(label));
   const row=id=>A.rows().find(a=>a.id===id);
   const e=v=>esc(v==null||v===''?'—':String(v));
-  const fields=items=>'<div class="account-facts">'+items.map(([label,value])=>'<div class="account-fact"><span>'+e(label)+'</span><div>'+e(value)+'</div></div>').join('')+'</div>';
+  const fields=items=>'<div class="account-facts">'+items.map(([label,value,html=false])=>'<div class="account-fact"><span>'+e(label)+'</span><div>'+(html?value:e(value))+'</div></div>').join('')+'</div>';
   const card=(title,body,actions='')=>'<div class="card legacy-detail-card"><div class="card-head"><h3 class="section-title">'+title+'</h3>'+actions+'</div><div class="card-body">'+body+'</div></div>';
   const button=(action,id,label='编辑',extra='')=>'<button class="btn link" data-merged-action="'+action+'" data-record="'+id+'" '+extra+'>'+label+'</button>';
-  const tabs=[['basic','基本信息'],['kyc','KYC 认证材料'],['limit','限额与保证金'],['permission','业务权限'],['share','分账规则'],['merchant-banks','收款账户'],['owner','维护人绑定'],['log','操作日志']];
+  const tabs=[['basic','基本信息'],['store-info','门店端信息'],['kyc','KYC 认证材料'],['limit','限额与保证金'],['permission','业务权限'],['share','分账规则'],['merchant-banks','收款账户'],['owner','维护人绑定'],['log','操作日志']];
   function selectedTab(){return $('#detailPage .tab.active')?.dataset.tab||'basic';}
   function context(a){currentUser=a.store||a.fs||{id:a.id,name:a.name,account:a.account};}
   function available(a,key){return key==='share'?a.role==='商家':key==='merchant-banks'?['商家','店员'].includes(a.role):true;}
@@ -17,8 +17,8 @@
   function recordChanges(id,source,before,after,reason='—'){
     for(const key of Object.keys(after))if(JSON.stringify(before[key])!==JSON.stringify(after[key])){const mask=v=>/证件号码|证照编号/.test(key)&&v&&v!=='—'?maskedDocumentNumber(v):v;A.log(id,key,mask(before[key])??'—',mask(after[key])??'—',source,reason);}
   }
-  function fsBasic(fs){return card('FoneSquare 商家记录',fields([
-    ['创建来源',fs.firstRegisteredApp?fs.firstRegisteredApp+' 注册':'FoneSquare 注册'],['商家 ID',fs.merchantId],['商家名称',fs.name],['商家类型',legacyMerchantRoles(fs).join(' / ')],['姓 / 名',[fs.lastName,fs.firstName].filter(Boolean).join(' ')],['手机',fs.rawPhone?maskPhone(fs.rawPhone):'—'],['邮箱',fs.rawEmail?maskEmail(fs.rawEmail):'—'],['所在地区',fs.region],['备注',fs.remark],['FoneSquare KYC 状态',fs.kyc]
+  function fsBasic(fs,a){return card('FoneSquare 商家记录',fields([
+    ['创建来源',fs.firstRegisteredApp?fs.firstRegisteredApp+' 注册':'FoneSquare 注册'],['统一账号',a.id+' · '+(a.account||'—')],['商家 ID',fs.merchantId],['商家名称',fs.name],['账号状态',statusTag(a.status),true],['商家类型',legacyMerchantRoles(fs).map(r=>tag(r==='买家商家'?'买家':r==='卖家商家'?'卖家':r,'blue')).join(' '),true],['姓 / 名',[fs.lastName,fs.firstName].filter(Boolean).join(' ')],['手机',fs.rawPhone?maskPhone(fs.rawPhone):'—'],['邮箱',fs.rawEmail?maskEmail(fs.rawEmail):'—'],['所在地区',fs.region],['备注',fs.remark],['FoneSquare KYC 状态',statusTag(fs.kyc||'未认证'),true]
   ]),button('profile',fs.merchantId));}
   function maskPhone(value){return String(value).replace(/(.{3}).*(.{3})$/,'$1****$2');}
   function maskEmail(value){return String(value).replace(/^(.{1,3})[^@]*(@.*)$/,'$1***$2');}
@@ -36,8 +36,21 @@
       return card(site+'卖场',fields([['每日下单限额（'+currency+'）',v.dailyLimit],['保证金金额（'+currency+'）',v.depositAmount],['免保上限（'+currency+'）',fs.guaranteeFreeLimit]])+'<div class="attachment-grid">保证金转账记录：'+attachment(v.proof||v.depositTransfer)+'</div>',button('limit',fs.merchantId,'编辑','data-site="'+site+'"'));
     }).join('');
   }
-  function staffBasic(a){const s=a.staff,m=staffRelationStatus(s)==='已关联'?merchantById(s.merchantId):null;
-    return card('门店端店员资料',fields([['成员 ID',s.id],['门店端身份','店员'],['关联状态',staffRelationStatus(s)],['当前所属商家',m?m.name+' · '+m.merchantId:'—'],['首次登录门店端',a.firstStoreLoginAt],['关联时间',s.linkedAt],['解除时间',s.unlinkedAt]])+'<h3>历史所属商家</h3><div class="timeline">'+staffRelationHistory(s)+'</div>',staffDetailActions(s).replace(/<button[^>]+data-staff-action="edit-bank"[\s\S]*?<\/button>/,''));
+  function storeInfo(a){
+    const login=['首次登录门店端',a.firstStoreLoginAt];
+    if(a.role==='商家'){
+      const m=a.store;
+      return card('门店端商家信息',fields([['门店端身份','商家'],['门店端商家 ID',m.merchantId],['商家名称',m.name],['资料完善情况',m.profileStatus||'已完善'],login,['门店端业务开通时间',m.time]])+
+        '<div class="account-related"><span>业务关联</span><button class="btn link" data-merchant-stores="'+m.merchantId+'">查看店铺（'+merchantStoreCount(m)+'）</button><button class="btn link" data-merchant-staff="'+m.merchantId+'">查看店员（'+merchantStaffCount(m)+'）</button></div>',
+        '<button class="btn link" data-merchant-profile-edit="'+m.merchantId+'">编辑门店端资料</button>');
+    }
+    if(a.role==='店员'){
+      const s=a.staff,relation=staffRelationStatus(s),m=relation==='已关联'?merchantById(s.merchantId):null;
+      const merchant=m?'<button class="btn link" data-staff-merchant="'+esc(m.merchantId)+'">'+esc(m.name)+' · '+esc(m.merchantId)+'</button>':'—';
+      return card('门店端店员信息',fields([['门店端身份','店员'],['成员 ID',s.id],['店员姓名',s.name],login,['关联状态',statusTag(relation),true],['当前所属商家',merchant,true],...(relation==='已关联'?[['当前关联时间',s.linkedAt]]:relation==='已解除'?[['最近解除时间',s.unlinkedAt]]:[])])+ '<p class="subtle">关联与解除历史在“操作日志”中查看。</p>',
+        staffDetailActions(s).replace(/<button[^>]+data-staff-action="edit-bank"[\s\S]*?<\/button>/,''));
+    }
+    return card('门店端信息',fields([['门店端使用状态',a.firstStoreLoginAt?'已登录但未选择身份':'未登录'],login])+ '<p class="subtle">'+(a.firstStoreLoginAt?'尚未选择身份，请由用户在门店端选择商家或店员后完善资料。':'尚未登录门店端，登录并选择身份后展示对应资料。')+'</p>');
   }
   function staffBank(a){return card('店员个人收款账户','<p>'+e(maskedBankAccount(a.staff.bank))+'</p><p class="subtle">本人银行卡与所属商家关系独立；转移或解除关系不会清除。</p>','<button class="btn" data-staff-action="edit-bank" data-staff-id="'+a.staff.id+'">维护银行卡</button>');}
   function renderLogs(a){
@@ -50,25 +63,24 @@
     if(a.store)for(const h of prototypeState.merchantBanks.history(a.store.merchantId))events.push({...h,source:'门店端收款账户'});
     const render=(source='')=>{const shown=events.filter(h=>!source||h.source===source).sort((a,b)=>String(b.at).localeCompare(String(a.at)));
       $('#mergedLogs').innerHTML=shown.length?'<table class="table"><thead><tr>'+['时间','所属业务','字段 / 动作','变更','原因','操作人'].map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+shown.map(h=>'<tr>'+[h.at,h.source,h.action,String(h.before??'—')+' → '+String(h.after??'—'),h.reason||'—',h.operator].map(x=>'<td>'+e(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table>':'<div class="empty-compact">暂无操作日志</div>';};
-    $('#tab-log').innerHTML=card('操作日志','<div class="table-wrap" id="mergedLogs"></div>','<select class="control" id="mergedLogSource" style="width:180px"><option value="">全部业务</option>'+[...new Set(events.map(x=>x.source))].map(x=>'<option>'+e(x)+'</option>').join('')+'</select>');
-    render();$('#mergedLogSource').onchange=ev=>render(ev.target.value);
+    $('#tab-log').innerHTML=card('操作日志','<div class="table-wrap" id="mergedLogs"></div>','<select class="control" id="mergedLogSource" style="width:180px"><option value="">全部业务</option>'+[...new Set([...events.map(x=>x.source),...(a.staff?.relationHistory?.length?['门店端店员']:[])])].map(x=>'<option>'+e(x)+'</option>').join('')+'</select>');
+    render();$('#mergedLogSource').onchange=ev=>{render(ev.target.value);const history=$('#mergedStaffHistory');if(history)history.hidden=!!ev.target.value&&ev.target.value!=='门店端店员';};
+    if(a.staff?.relationHistory?.length)$('#tab-log').insertAdjacentHTML('beforeend','<div id="mergedStaffHistory">'+card('门店端历史所属商家','<div class="timeline">'+staffRelationHistory(a.staff)+'</div>')+'</div>');
   }
   function renderMerged(){
     const a=row(activeId);if(!a)return;const selected=selectedTab();context(a);
-    let storeBasic='',storePermissions='';
-    if(a.role==='商家'&&a.store){baseRender();storeBasic=$('#tab-basic').innerHTML;storePermissions=$('#tab-permission').innerHTML;prototypeState.renderMerchantBankAccounts();}
+    let storePermissions='';
+    if(a.role==='商家'&&a.store){baseRender();const permission=$('#tab-permission');permission.querySelector('#editRatioBtn')?.closest('.card').remove();storePermissions=permission.innerHTML;prototypeState.renderMerchantBankAccounts();}
     else {$('#tab-share').innerHTML='';$('#tab-merchant-banks').innerHTML=a.role==='店员'?staffBank(a):'';}
     $('#detailName').textContent='账号详情 · '+a.name;$('#detailTags').innerHTML=statusTag(a.status)+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,'blue');
     $('#detailMerchantId').textContent=a.id;$('#detailOwner').textContent=a.owner;$('#detailCreatedAt').textContent=a.time;
     $('#detailMeta').textContent='统一账号';$('#detailSourceBadge').textContent='';
-    const noRole=a.firstStoreLoginAt?'已登录门店端，尚未选择身份。请由用户在门店端选择身份后完善资料。':'尚未登录门店端。首次登录并选择身份后，再展示对应业务资料。';
-    $('#tab-basic').innerHTML=card('统一账号',fields([['统一账号',a.account],['账号状态',a.status],['账号 ID',a.id],['账号注册时间',a.time],['门店端使用状态',a.storeState==='未选择'?'已登录但未选择身份':a.storeState],['首次登录门店端',a.firstStoreLoginAt]]))+
-      (a.fs?fsBasic(a.fs):card('FoneSquare 商家记录','<p class="subtle">暂无 FoneSquare 商家资料，资料待完善。出价权限可在“业务权限”中独立维护。</p>'))+
-      (a.role==='商家'?storeBasic:a.role==='店员'?staffBasic(a):card('门店端资料','<p class="subtle">'+noRole+'</p>'));
+    $('#tab-basic').innerHTML=a.fs?fsBasic(a.fs,a):card('基础账号信息',fields([['统一账号',a.id+' · '+(a.account||'—')],['姓名',a.name],['账号状态',statusTag(a.status),true]])+'<p class="subtle">暂无 FoneSquare 商家资料，资料待完善。出价权限可在“业务权限”中独立维护。</p>');
+    $('#tab-store-info').innerHTML=storeInfo(a);
     $('#tab-kyc').innerHTML=kyc(a.fs);$('#tab-limit').innerHTML=limits(a.fs);
     $('#tab-permission').innerHTML=card('FoneSquare 出价权限',A.fsBidSwitch(a)+'<p class="subtle">出价仍需满足认证等交易条件；开启不会创建商家资料或门店端身份。</p>')+
-      (a.role==='商家'?storePermissions:a.role==='店员'?card('店员个人建拍权限',fields([['设置值',memberBuildState(a.staff).configured],['实际状态',memberBuildState(a.staff).effective]])+'<p class="subtle">在商家列表维护；须已关联商家、双方账号启用且商家建拍权限开启才可生效。</p>'):card('门店端建拍权限','<p class="subtle">'+noRole+' 当前不提供建拍配置。</p>'));
-    $('#tab-owner').innerHTML=[a.fs,a.store].filter(Boolean).map(u=>'<div class="account-business-label">'+(u===a.fs?'FoneSquare':'门店端')+' · '+e(u.merchantId)+'</div>'+renderOwnerPanel(u)).join('')||card('维护人绑定','<p class="subtle">暂无可绑定维护人的商家业务记录；店员与商家的关系在基本信息中维护。</p>');
+      (a.role==='商家'?storePermissions:a.role==='店员'?card('店员个人建拍权限',fields([['设置值',memberBuildState(a.staff).configured],['实际状态',memberBuildState(a.staff).effective]])+'<p class="subtle">在商家列表维护；须已关联商家、双方账号启用且商家建拍权限开启才可生效。</p>'):'');
+    $('#tab-owner').innerHTML=[a.fs,a.store].filter(Boolean).map(u=>'<div class="account-business-label">'+(u===a.fs?'FoneSquare':'门店端')+' · '+e(u.merchantId)+'</div>'+renderOwnerPanel(u)).join('')||card('维护人绑定','<p class="subtle">暂无可绑定维护人的商家业务记录；店员与商家的关系在“门店端信息”中维护。</p>');
     renderLogs(a);
     for(const [key,label] of tabs){const b=$('#detailPage .tab[data-tab="'+key+'"]');b.textContent=label;b.style.display=available(a,key)?'':'none';b.onclick=()=>tabTo(key);}
     $('#statusBtn').textContent=a.status==='启用'?'停用':'启用';$('#statusBtn').className='btn link '+(a.status==='启用'?'account-danger':'');$('#statusBtn').onclick=()=>A.toggle(a.id);
@@ -80,7 +92,7 @@
     $$('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===(origin==='staff'?'staff':origin==='store'?'store':'list')));
   }
   // Global entry points keep existing store links and edit-save callbacks on this same detail.
-  openDetail=(u,tab)=>{if(u)openUnified(u.accountId||u.id,tab);};
+  openDetail=(u,tab)=>{if(u)openUnified(u.accountId||u.id,tab==='basic'&&u.type==='供货商家'?'store-info':tab);};
   openStaffDetail=id=>{const s=staffAccounts().find(s=>s.id===id);if(s)openUnified(A.staffId(s));};
   renderDetail=()=>{if(activeId)renderMerged();};
   const refreshStaff=refreshStaffViews;
@@ -134,6 +146,8 @@
   const ownerEditor=openMerchantOwnerEditor;
   openMerchantOwnerEditor=u=>withAudit(()=>ownerEditor(u),u,merchantSource(u)==='FoneSquare'?'FoneSquare':'门店端',()=>({'维护人':u.owner}));
   Object.assign(prototypeState,{openUnifiedDetail:openUnified,openDetail,openStaffDetail});
+  const storeTab=document.createElement('button');storeTab.className='tab';storeTab.dataset.tab='store-info';storeTab.textContent='门店端信息';$('#detailPage .tabs').append(storeTab);
+  const storePanel=document.createElement('div');storePanel.className='tab-panel';storePanel.id='tab-store-info';$('#detailPage').append(storePanel);
   // Keep tab order stable regardless of the order in which legacy extensions created panels.
   tabs.forEach(([key])=>$('#detailPage .tabs').append($('#detailPage .tab[data-tab="'+key+'"]')));
 })();

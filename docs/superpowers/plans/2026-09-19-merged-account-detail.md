@@ -10,3 +10,10 @@ User approved: a single 查看 action; merge FoneSquare, Store merchant and staf
 6. Commit scoped files, publish main, verify Pages deployment and served files.
 
 Validation completed: browser scenarios passed for merged merchant/staff, both no-role states, neither App profile, KYC/company/image/profile/limit/owner edits and audit, independent bid changes, identity changes, bank edits, disabled accounts and export; zero page errors. Existing bank/address tests: 9 passed. Merchant/staff screenshots inspected. Feishu targeted changes read back at revision 56; original whiteboard token retained and visually checked.
+
+## Approved refinement: Basic information + Store App tab
+- Basic tab becomes the screenshot's single FoneSquare merchant-record card, with exact field order and status/type tags. Missing FS record shows actual unified-account information plus empty-state notice, never invented profile data.
+- Add 门店端信息 after 基本信息 for every account. Merchant: role, merchant ID/name, completeness, first-login/business-opening dates and links to scoped store/staff lists. Staff: role, member ID/name, current merchant/relation and applicable relation timestamp, preserving relation operations. No-role: explicit never-login vs logged-unselected state.
+- Keep permission/share/bank/owner management in their existing tabs. Remove embedded shop/staff lists and duplicated share table; move historical employee relations to the operation-log tab without dropping history.
+- Retain unified 查看 entry and role-aware bank/share availability; verify role branches, scoped links, relation updates, editing return and empty states. Update only affected PRD paragraphs, publish and verify files.
+Refinement validation: exact 12-field Basic card, all Store-tab identity branches, no duplicate share table or list cards, staff bind/unbind refresh and source-filtered history tested; full account browser suite passed without page errors. Basic/merchant/staff screenshots inspected. Feishu scoped paragraphs verified at revision 62; adjacent KYC, limit, finance and permission rules preserved.
