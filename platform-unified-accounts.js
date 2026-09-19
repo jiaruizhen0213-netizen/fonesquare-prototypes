@@ -168,7 +168,7 @@
     }
     $('#resultArea').innerHTML='<div class="table-wrap"><table class="table merchant-list-table" style="min-width:1350px"><thead><tr>'+['账号 ID / 名称','统一账号','账号状态','门店端身份','FoneSquare 出价权限','门店端建拍权限','业务信息','维护人','账号注册时间','操作'].map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+list.map(a=>{
       const m=a.role==='商家'?a.store:null;
-      const action=(kind,label)=>'<button '+(kind==='store'&&!a.firstStoreLoginAt?'disabled title="尚未登录门店端" ':'')+'class="btn link '+(kind==='toggle'&&a.status==='启用'?'account-danger':'')+'" data-account-action="'+kind+'" data-account-id="'+a.id+'">'+label+'</button>';
+      const action=(kind,label)=>'<button '+(kind==='view'?'aria-haspopup="true" aria-expanded="false" ':'')+(kind==='store'&&!a.firstStoreLoginAt?'disabled title="尚未登录门店端" ':'')+'class="btn link '+(kind==='toggle'&&a.status==='启用'?'account-danger':'')+'" data-account-action="'+kind+'" data-account-id="'+a.id+'">'+label+'</button>';
       return '<tr data-unified-account="'+a.id+'"><td>'+'<strong>'+esc(a.name)+'</strong>'+'<div class="merchant-account">'+a.id+'</div></td><td>'+esc(a.account||'—')+'</td><td>'+statusTag(a.status)+'</td><td>'+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,a.storeState==='商家'?'cyan':a.storeState==='店员'?'blue':'gray')+'</td><td>'+fsBidSwitch(a)+'</td><td>'+(m?permissionSwitch(m,'build'):a.role==='店员'?staffBuildSwitch(a.staff):'—')+'</td><td>'+businessInfo(a)+'</td><td>'+esc(a.owner)+'</td><td>'+esc(a.time.split(' ')[0])+'<div class="merchant-account">'+esc(a.time.split(' ')[1]||'')+'</div></td><td><div class="operations">'+action('view','查看')+action('toggle',a.status==='启用'?'停用':'启用')+(a.role==='未选择'?'':action('role','修改门店端身份'))+'</div></td></tr>';
     }).join('')+'</tbody></table>'+(list.length?'':'<div class="empty-compact">没有符合当前条件的账号</div>')+'</div><div class="pagination"><span>共 '+list.length+' 条记录 第 1 / 1 页</span><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">›</button></div>';
   };
@@ -243,7 +243,7 @@
     e.preventDefault();e.stopImmediatePropagation();const id=btn.dataset.accountId;
     if(btn.dataset.accountBusiness){closeModals();overview(id);return;}
     if(btn.disabled)return;
-    if(btn.dataset.accountAction==='view')window.prototypeState.openUnifiedDetail(id);
+    if(btn.dataset.accountAction==='view')window.prototypeState.showAccountViewMenu(id,btn);
     if(btn.dataset.accountAction==='store')overview(id);
     if(btn.dataset.accountAction==='toggle')toggle(id);
     if(btn.dataset.accountAction==='role')roleModal(id);

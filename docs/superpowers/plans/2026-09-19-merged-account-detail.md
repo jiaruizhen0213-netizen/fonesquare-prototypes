@@ -17,3 +17,11 @@ Validation completed: browser scenarios passed for merged merchant/staff, both n
 - Keep permission/share/bank/owner management in their existing tabs. Remove embedded shop/staff lists and duplicated share table; move historical employee relations to the operation-log tab without dropping history.
 - Retain unified 查看 entry and role-aware bank/share availability; verify role branches, scoped links, relation updates, editing return and empty states. Update only affected PRD paragraphs, publish and verify files.
 Refinement validation: exact 12-field Basic card, all Store-tab identity branches, no duplicate share table or list cards, staff bind/unbind refresh and source-filtered history tested; full account browser suite passed without page errors. Basic/merchant/staff screenshots inspected. Feishu scoped paragraphs verified at revision 62; adjacent KYC, limit, finance and permission rules preserved.
+
+## Approved split into two independent pages
+- Replace merged presentation with fsRecordPage and storeRecordPage, sharing rendering helpers only. 查看 opens a small selection menu with direct page links; staff/store links enter Store details.
+- FS page: only 基本信息/KYC 认证材料/限额与保证金/维护人绑定/操作日志; exact screenshot fields, no Store identity, permissions, banking, share rules or summary cards. Bidding remains on the existing list.
+- Store page: own basic information, role-specific permission/share/bank/owner/log tabs. Staff and no-role behavior preserved without FS content.
+- Scope owners/logs to selected business, preserve unified-account status impacts, edit-save route, originating list state, and bank/relationship functions.
+- Update conflicting PRD paragraphs and existing flow, then validate each page's visible tabs/content and editing paths before deployment.
+Split validation: browser suite passed for independent pages, exact FS screenshot fields/five tabs, business-scoped logs/owners, missing profiles, identity branches, edit-save routes, staff relations/bank, account status and system navigation; zero page errors. Bank/address regressions: 9 passed. Both page screenshots visually inspected. Feishu scoped updates verified at revision 76; existing whiteboard retained and read back. Syntax and diff checks passed.

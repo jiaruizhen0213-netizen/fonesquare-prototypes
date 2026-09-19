@@ -1,7 +1,7 @@
 /* One account detail; App-specific records and permissions keep their original ownership. */
 (function () {
   const A=window.realtimeAccounts, baseRender=renderDetail;
-  let activeId=null;
+  let activeId=null, activeScope='fs';
   const storeFields=merchantDetailFields;
   merchantDetailFields=u=>storeFields(u).filter(([label])=>!['统一账号','账号状态','商家状态'].includes(label));
   const row=id=>A.rows().find(a=>a.id===id);
@@ -11,8 +11,8 @@
   const button=(action,id,label='编辑',extra='')=>'<button class="btn link" data-merged-action="'+action+'" data-record="'+id+'" '+extra+'>'+label+'</button>';
   const tabs=[['basic','基本信息'],['store-info','门店端信息'],['kyc','KYC 认证材料'],['limit','限额与保证金'],['permission','业务权限'],['share','分账规则'],['merchant-banks','收款账户'],['owner','维护人绑定'],['log','操作日志']];
   function selectedTab(){return $('#detailPage .tab.active')?.dataset.tab||'basic';}
-  function context(a){currentUser=a.store||a.fs||{id:a.id,name:a.name,account:a.account};}
-  function available(a,key){return key==='share'?a.role==='商家':key==='merchant-banks'?['商家','店员'].includes(a.role):true;}
+  function context(a){currentUser=(activeScope==='fs'?a.fs:a.store)||{id:a.id,name:a.name,account:a.account};}
+  function available(a,key){if(activeScope==='fs')return ['basic','kyc','limit','owner','log'].includes(key);return key==='basic'||key==='log'||(key==='permission'&&a.role!=='未选择')||(key==='owner'&&a.role==='商家')||(key==='share'&&a.role==='商家')||(key==='merchant-banks'&&['商家','店员'].includes(a.role));}
   function tabTo(key){const a=row(activeId);if(!a)return;context(a);if(key==='log')renderLogs(a);activateTab(available(a,key)?key:'basic');}
   function recordChanges(id,source,before,after,reason='—'){
     for(const key of Object.keys(after))if(JSON.stringify(before[key])!==JSON.stringify(after[key])){const mask=v=>/证件号码|证照编号/.test(key)&&v&&v!=='—'?maskedDocumentNumber(v):v;A.log(id,key,mask(before[key])??'—',mask(after[key])??'—',source,reason);}
@@ -54,51 +54,67 @@
   }
   function staffBank(a){return card('店员个人收款账户','<p>'+e(maskedBankAccount(a.staff.bank))+'</p><p class="subtle">本人银行卡与所属商家关系独立；转移或解除关系不会清除。</p>','<button class="btn" data-staff-action="edit-bank" data-staff-id="'+a.staff.id+'">维护银行卡</button>');}
   function renderLogs(a){
-    const events=[...(A.histories.get(a.id)||[])];
-    for(const u of [a.fs,a.store].filter(Boolean)){
+    const belongs=h=>activeScope==='fs'?(h.source==='FoneSquare'||h.action==='账号状态'):(h.source==='统一账号'||h.source?.startsWith('门店端'));
+    const events=(A.histories.get(a.id)||[]).filter(belongs);
+    for(const u of [activeScope==='fs'?a.fs:a.store].filter(Boolean)){
       const source=u===a.fs?'FoneSquare':'门店端';
       events.push({at:merchantCreatedAt(u),source,action:'创建商家',before:'—',after:u.merchantId,reason:'已有业务记录',operator:'系统'});
       for(const h of u.ownerHistory||[])events.push({at:h.unboundAt,source,action:'维护人历史',before:h.owner,after:'已解绑',reason:h.reason,operator:h.operator});
     }
-    if(a.store)for(const h of prototypeState.merchantBanks.history(a.store.merchantId))events.push({...h,source:'门店端收款账户'});
+    if(activeScope==='store'&&a.store)for(const h of prototypeState.merchantBanks.history(a.store.merchantId))events.push({...h,source:'门店端收款账户'});
     const render=(source='')=>{const shown=events.filter(h=>!source||h.source===source).sort((a,b)=>String(b.at).localeCompare(String(a.at)));
       $('#mergedLogs').innerHTML=shown.length?'<table class="table"><thead><tr>'+['时间','所属业务','字段 / 动作','变更','原因','操作人'].map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+shown.map(h=>'<tr>'+[h.at,h.source,h.action,String(h.before??'—')+' → '+String(h.after??'—'),h.reason||'—',h.operator].map(x=>'<td>'+e(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table>':'<div class="empty-compact">暂无操作日志</div>';};
-    $('#tab-log').innerHTML=card('操作日志','<div class="table-wrap" id="mergedLogs"></div>','<select class="control" id="mergedLogSource" style="width:180px"><option value="">全部业务</option>'+[...new Set([...events.map(x=>x.source),...(a.staff?.relationHistory?.length?['门店端店员']:[])])].map(x=>'<option>'+e(x)+'</option>').join('')+'</select>');
+    $('#tab-log').innerHTML=card('操作日志','<div class="table-wrap" id="mergedLogs"></div>','<select class="control" id="mergedLogSource" style="width:180px"><option value="">全部业务</option>'+[...new Set([...events.map(x=>x.source),...(activeScope==='store'&&a.staff?.relationHistory?.length?['门店端店员']:[])])].map(x=>'<option>'+e(x)+'</option>').join('')+'</select>');
     render();$('#mergedLogSource').onchange=ev=>{render(ev.target.value);const history=$('#mergedStaffHistory');if(history)history.hidden=!!ev.target.value&&ev.target.value!=='门店端店员';};
-    if(a.staff?.relationHistory?.length)$('#tab-log').insertAdjacentHTML('beforeend','<div id="mergedStaffHistory">'+card('门店端历史所属商家','<div class="timeline">'+staffRelationHistory(a.staff)+'</div>')+'</div>');
+    if(activeScope==='store'&&a.staff?.relationHistory?.length)$('#tab-log').insertAdjacentHTML('beforeend','<div id="mergedStaffHistory">'+card('门店端历史所属商家','<div class="timeline">'+staffRelationHistory(a.staff)+'</div>')+'</div>');
   }
   function renderMerged(){
     const a=row(activeId);if(!a)return;const selected=selectedTab();context(a);
     let storePermissions='';
-    if(a.role==='商家'&&a.store){baseRender();const permission=$('#tab-permission');permission.querySelector('#editRatioBtn')?.closest('.card').remove();storePermissions=permission.innerHTML;prototypeState.renderMerchantBankAccounts();}
-    else {$('#tab-share').innerHTML='';$('#tab-merchant-banks').innerHTML=a.role==='店员'?staffBank(a):'';}
-    $('#detailName').textContent='账号详情 · '+a.name;$('#detailTags').innerHTML=statusTag(a.status)+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,'blue');
+    if(activeScope==='store'&&a.role==='商家'&&a.store){baseRender();const permission=$('#tab-permission');permission.querySelector('#editRatioBtn')?.closest('.card').remove();storePermissions=permission.innerHTML;prototypeState.renderMerchantBankAccounts();}
+    else {$('#tab-share').innerHTML='';$('#tab-merchant-banks').innerHTML=activeScope==='store'&&a.role==='店员'?staffBank(a):'';}
+    $('#detailName').textContent=activeScope==='fs'?(a.fs?.name||a.name):'门店端资料 · '+a.name;$('#detailTags').innerHTML=activeScope==='store'?statusTag(a.status)+tag(a.storeState==='未选择'?'已登录未选择身份':a.storeState,'blue'):'';$('#detailPage').dataset.scope=activeScope;
     $('#detailMerchantId').textContent=a.id;$('#detailOwner').textContent=a.owner;$('#detailCreatedAt').textContent=a.time;
     $('#detailMeta').textContent='统一账号';$('#detailSourceBadge').textContent='';
-    $('#tab-basic').innerHTML=a.fs?fsBasic(a.fs,a):card('基础账号信息',fields([['统一账号',a.id+' · '+(a.account||'—')],['姓名',a.name],['账号状态',statusTag(a.status),true]])+'<p class="subtle">暂无 FoneSquare 商家资料，资料待完善。出价权限可在“业务权限”中独立维护。</p>');
-    $('#tab-store-info').innerHTML=storeInfo(a);
-    $('#tab-kyc').innerHTML=kyc(a.fs);$('#tab-limit').innerHTML=limits(a.fs);
-    $('#tab-permission').innerHTML=card('FoneSquare 出价权限',A.fsBidSwitch(a)+'<p class="subtle">出价仍需满足认证等交易条件；开启不会创建商家资料或门店端身份。</p>')+
-      (a.role==='商家'?storePermissions:a.role==='店员'?card('店员个人建拍权限',fields([['设置值',memberBuildState(a.staff).configured],['实际状态',memberBuildState(a.staff).effective]])+'<p class="subtle">在商家列表维护；须已关联商家、双方账号启用且商家建拍权限开启才可生效。</p>'):'');
-    $('#tab-owner').innerHTML=[a.fs,a.store].filter(Boolean).map(u=>'<div class="account-business-label">'+(u===a.fs?'FoneSquare':'门店端')+' · '+e(u.merchantId)+'</div>'+renderOwnerPanel(u)).join('')||card('维护人绑定','<p class="subtle">暂无可绑定维护人的商家业务记录；店员与商家的关系在“门店端信息”中维护。</p>');
+    $('#tab-basic').innerHTML=activeScope==='store'?storeInfo(a):a.fs?fsBasic(a.fs,a):card('基础账号信息',fields([['统一账号',a.id+' · '+(a.account||'—')],['姓名',a.name],['账号状态',statusTag(a.status),true]])+'<p class="subtle">暂无 FoneSquare 商家资料，资料待完善。</p>');
+    $('#tab-store-info').innerHTML='';
+    $('#tab-kyc').innerHTML=activeScope==='fs'?kyc(a.fs):'';$('#tab-limit').innerHTML=activeScope==='fs'?limits(a.fs):'';
+    $('#tab-permission').innerHTML=activeScope==='store'?(a.role==='商家'?storePermissions:a.role==='店员'?card('店员个人建拍权限',fields([['设置值',memberBuildState(a.staff).configured],['实际状态',memberBuildState(a.staff).effective]])+'<p class="subtle">在商家列表维护；须已关联商家、双方账号启用且商家建拍权限开启才可生效。</p>'):''):'';
+    const ownerRecord=activeScope==='fs'?a.fs:a.store;
+    $('#tab-owner').innerHTML=ownerRecord?renderOwnerPanel(ownerRecord):card('维护人绑定','<p class="subtle">暂无商家记录</p>');
     renderLogs(a);
     for(const [key,label] of tabs){const b=$('#detailPage .tab[data-tab="'+key+'"]');b.textContent=label;b.style.display=available(a,key)?'':'none';b.onclick=()=>tabTo(key);}
     $('#statusBtn').textContent=a.status==='启用'?'停用':'启用';$('#statusBtn').className='btn link '+(a.status==='启用'?'account-danger':'');$('#statusBtn').onclick=()=>A.toggle(a.id);
-    tabTo(selected);$('#crumbCurrent').textContent='账号详情';
+    tabTo(selected);$('#crumbCurrent').textContent=activeScope==='fs'?'FoneSquare 商家记录':'门店端资料';
   }
-  function openUnified(id,tab='basic'){
-    const a=row(String(id));if(!a)return;A.rememberOrigin();activeId=a.id;closeModals();context(a);setView('detail');renderMerged();tabTo(tab);
+  function openUnified(id,tab='basic',scope=activeScope){
+    const a=row(String(id));if(!a)return;A.rememberOrigin();activeId=a.id;activeScope=scope;closeModals();context(a);setView('detail');renderMerged();tabTo(tab);
     const origin=A.returnPoint().view;$('#backBtn').hidden=false;$('#backBtn').className='btn';$('#backBtn').textContent='← 返回'+({staff:'店员列表',store:'店铺列表',storeDetail:'店铺详情',list:'商家列表'}[origin]||'列表');$('#backBtn').onclick=A.goBack;
     $$('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===(origin==='staff'?'staff':origin==='store'?'store':'list')));
   }
   // Global entry points keep existing store links and edit-save callbacks on this same detail.
-  openDetail=(u,tab)=>{if(u)openUnified(u.accountId||u.id,tab==='basic'&&u.type==='供货商家'?'store-info':tab);};
-  openStaffDetail=id=>{const s=staffAccounts().find(s=>s.id===id);if(s)openUnified(A.staffId(s));};
+  openDetail=(u,tab)=>{if(u)openUnified(u.accountId||u.id,tab||'basic',u.type==='FoneSquare 回收商'?'fs':u.type==='供货商家'?'store':activeScope);};
+  openStaffDetail=id=>{const s=staffAccounts().find(s=>s.id===id);if(s)openUnified(A.staffId(s),'basic','store');};
   renderDetail=()=>{if(activeId)renderMerged();};
   const refreshStaff=refreshStaffViews;
   refreshStaffViews=function(){refreshStaff();if($('#detailPage').classList.contains('active')&&row(activeId)?.role==='店员')renderMerged();};
+  // Distinct pages reuse the detail renderer, never a merged App tab set.
+  for(const id of ['fsRecord','storeRecord']){const page=document.createElement('section');page.id=id+'Page';page.className='page account-record-page';$('#listPage').after(page);}
+  $('#detailPage').classList.remove('page');$('#fsRecordPage').append($('#detailPage'));
   const viewBase=setView;
-  setView=function(v){viewBase(v);if(v==='detail'&&activeId){$('#crumbCurrent').textContent='账号详情';const origin=A.returnPoint().view;$$('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===(origin==='staff'?'staff':origin==='store'?'store':'list')));}};
+  setView=function(v){
+    if(v==='fsRecord')activeScope='fs';if(v==='storeRecord')activeScope='store';
+    const detail=['detail','fsRecord','storeRecord'].includes(v),target=detail?(activeScope==='fs'?'fsRecord':'storeRecord'):v;
+    if(detail)$('#'+target+'Page').append($('#detailPage'));
+    viewBase(target);$('#detailPage').classList.toggle('active',detail);
+    if(detail&&activeId){$('#crumbGroup').textContent='实时竞拍';$('#crumbCurrent').textContent=activeScope==='fs'?'FoneSquare 商家记录':'门店端资料';const origin=A.returnPoint().view;$$('[data-nav]').forEach(n=>n.classList.toggle('active',n.dataset.nav===(origin==='staff'?'staff':origin==='store'?'store':'list')));}
+  };
+  const viewMenu=document.createElement('div');viewMenu.className='account-view-menu';viewMenu.hidden=true;document.body.append(viewMenu);
+  function hideViewMenu(){viewMenu.hidden=true;document.querySelectorAll('[data-account-action="view"]').forEach(b=>b.setAttribute('aria-expanded','false'));}
+  function showViewMenu(id,anchor){if(!viewMenu.hidden&&viewMenu.dataset.accountId===id){hideViewMenu();return;}hideViewMenu();viewMenu.dataset.accountId=id;viewMenu.innerHTML='<button data-profile-page="fs">FoneSquare 商家记录</button><button data-profile-page="store">门店端资料</button>';const r=anchor.getBoundingClientRect();viewMenu.style.left=Math.min(r.left,innerWidth-220)+'px';viewMenu.style.top=Math.min(r.bottom+4,innerHeight-95)+'px';viewMenu.hidden=false;anchor.setAttribute('aria-expanded','true');viewMenu.querySelector('button').focus({preventScroll:true});}
+  viewMenu.onclick=ev=>{const b=ev.target.closest('[data-profile-page]');if(b){const id=viewMenu.dataset.accountId;hideViewMenu();openUnified(id,'basic',b.dataset.profilePage);}};
+  document.addEventListener('click',ev=>{if(!viewMenu.contains(ev.target)&&!ev.target.closest('[data-account-action="view"]'))hideViewMenu();});
+  document.addEventListener('keydown',ev=>{if(ev.key==='Escape')hideViewMenu();});window.addEventListener('scroll',()=>{if(viewMenu.hidden)return;const anchor=document.querySelector('[data-unified-account="'+viewMenu.dataset.accountId+'"] [data-account-action="view"]');if(!anchor){hideViewMenu();return;}const r=anchor.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight){hideViewMenu();return;}viewMenu.style.left=Math.min(r.left,innerWidth-220)+'px';viewMenu.style.top=Math.min(r.bottom+4,innerHeight-95)+'px';},true);
 
   const personal=[['documentType','证件类型'],['documentNumber','证件号码'],['kycLastName','证件上的姓'],['kycFirstName','证件上的名'],['documentExpiry','证件有效期','date'],['kycSource','资料来源']];
   const company=[['companyName','企业名称'],['companyLicenseType','证照类型'],['companyRegistrationNo','证照编号'],['companyLegalRepresentative','法定代表 / 董事'],['companyAddress','企业地址'],['companyLicenseExpiry','证照有效期','date']];
@@ -145,7 +161,7 @@
   openMerchantProfileEditor=u=>withAudit(()=>profileEditor(u),u,merchantSource(u)==='FoneSquare'?'FoneSquare':'门店端',()=>({'名':u.firstName,'姓':u.lastName,'所在地区':u.region,'备注':u.remark,'手机':maskPhone(u.rawPhone||''),'邮箱':maskEmail(u.rawEmail||'')}));
   const ownerEditor=openMerchantOwnerEditor;
   openMerchantOwnerEditor=u=>withAudit(()=>ownerEditor(u),u,merchantSource(u)==='FoneSquare'?'FoneSquare':'门店端',()=>({'维护人':u.owner}));
-  Object.assign(prototypeState,{openUnifiedDetail:openUnified,openDetail,openStaffDetail});
+  Object.assign(prototypeState,{openUnifiedDetail:openUnified,showAccountViewMenu:showViewMenu,openDetail,openStaffDetail});
   const storeTab=document.createElement('button');storeTab.className='tab';storeTab.dataset.tab='store-info';storeTab.textContent='门店端信息';$('#detailPage .tabs').append(storeTab);
   const storePanel=document.createElement('div');storePanel.className='tab-panel';storePanel.id='tab-store-info';$('#detailPage').append(storePanel);
   // Keep tab order stable regardless of the order in which legacy extensions created panels.
