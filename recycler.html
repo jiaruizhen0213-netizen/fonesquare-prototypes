@@ -360,6 +360,10 @@
     .toast { position: fixed; left: 50%; bottom: 90px; z-index: 60; visibility: hidden; padding: 10px 16px; border-radius: 20px; color: #fff; background: rgba(20,20,20,.88); transform: translate(-50%, 12px); opacity: 0; transition: .2s ease; font-size: 13px; }
     .toast.show { visibility: visible; transform: translate(-50%, 0); opacity: 1; }
     html[lang="zh-CN"] .scratch-panel::before { content: "轻微划痕"; }
+    .lot-remarks { margin: 12px; padding: 14px; background: #fff8e8; border: 1px solid #f0d99c; border-radius: 12px; }
+    .lot-remarks h2 { margin: 0; font-size: 14px; }
+    .lot-remarks p { margin: 8px 0 0; font-size: 14px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .lot-remarks[hidden] { display: none; }
   </style>
 </head>
 <body>
@@ -404,6 +408,7 @@
 
     <section class="page" id="auctionPage" data-page="auction">
       <header class="topbar"><button class="icon-button" type="button" data-back="market" aria-label="Back">‹</button><h1>Auction Details</h1><span></span></header>
+      <section class="lot-remarks" id="auctionRemarks" hidden aria-labelledby="auctionRemarksTitle"><h2 id="auctionRemarksTitle">Lot remarks</h2><p id="auctionRemarksText"></p></section>
       <section class="image-section" aria-label="Device photos">
         <div class="image-strip" id="deviceImages">
           <div class="device-shot" aria-label="Device back photo"><div class="phone-back"></div></div>
@@ -634,6 +639,10 @@
     document.querySelectorAll('[data-back]').forEach(button => button.addEventListener('click', () => showPage(button.dataset.back)));
 
     const zh = {
+      'Lot remarks': '建拍备注',
+      'Minor scratches on the lower-right frame.\nDevice only; charger and box are not included.': '边框右下角有轻微划痕。\n仅设备本体，不含充电器和包装盒。',
+      'Small scratch on the back cover. See the device photos for details.': '后盖有细小划痕，具体情况请查看设备图片。',
+
       'Market': '市场', 'Orders': '订单', 'Me': '我的',
       'Search lot, product, brand or model': '搜索批次、产品、品牌或型号',
       'Model': '型号', 'Specs': '规格', 'Condition': '成色', 'Sort': '排序',
@@ -763,16 +772,19 @@
 
     const lots = {
       ordinary: {
+        remarks: 'Minor scratches on the lower-right frame.\nDevice only; charger and box are not included.',
         product: 'iPhone 17 Pro Max 512G Starry Orange', specs: 'CN Version · Battery Health 90%–95% · Dual SIM',
         condition: 'A', number: 'FS-HK-260821-0186', bid: 2350, inherited: null, referenceAvailable: true,
         editSeconds: 24, quoteNote: 'Place a normal bid. A successful first bid starts the fixed 30-second edit window.'
       },
       inherited: {
+        remarks: 'Small scratch on the back cover. See the device photos for details.',
         product: 'Huawei Mate 70 Pro 512G Gold', specs: 'CN Version · Battery Health 85%–90%',
         condition: 'B', number: 'FS-HK-260821-0214-R2', bid: null, inherited: 3080, referenceAvailable: true,
         editSeconds: null, quoteNote: 'Enter an amount higher than MYR 3,080. The inherited bid itself has not started an edit window.'
       },
       'no-reference': {
+        remarks: '',
         product: 'Samsung Galaxy S25 Ultra 256G Titanium Blue', specs: 'HK Version · Battery Health 80%–85%',
         condition: 'C', number: 'FS-HK-260821-0249', bid: null, inherited: null, referenceAvailable: false,
         editSeconds: null, quoteNote: 'No reference price is available, but you can still place a normal bid.'
@@ -802,6 +814,9 @@
 
     renderAuction = () => {
       const lot = currentLot();
+      const remarks = (lot.remarks || '').trim();
+      document.getElementById('auctionRemarks').hidden = !remarks;
+      document.getElementById('auctionRemarksText').textContent = translate(remarks);
       auctionProduct.textContent = translate(lot.product);
       auctionSpecs.textContent = translate(lot.specs);
       auctionCondition.textContent = lot.condition;

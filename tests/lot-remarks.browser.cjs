@@ -1,0 +1,78 @@
+const assert = require('node:assert/strict');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const errors = [];
+  page.on('pageerror', error => { errors.push(error.message); console.error(error.message); });
+  page.setDefaultTimeout(8000);
+  const base = process.env.PROTOTYPE_BASE_URL || 'http://127.0.0.1:8841';
+  try {
+    await page.goto(base + '/store.html');
+    // Enter the existing inspection flow; complete manual fields through the UI.
+    await page.evaluate(() => { roleSwitch.value = 'employee'; applyRoleScope(); showPage('auctions'); });
+    await page.locator('#createLotFab').click();
+    await page.locator('#scanStandardDevice').click();
+    for (const row of await page.locator('[data-inspection-item][data-kind=manual]').all()) {
+      await row.locator('.inspection-toggle').click();
+      await row.locator('.manual-answer').click();
+      await page.locator('#inspectionChoiceOptions button').first().click();
+    }
+    await page.locator('#confirmInspection').click();
+    await page.locator('#lotRemark').waitFor({ state: 'visible' }).catch(async error => { console.log(await page.evaluate(() => ({ active: document.querySelector('.page.active')?.id, ready: isInspectionReady(), button: confirmInspection.outerHTML }))); throw error; });
+    const note = '边框划痕\n<img src=x onerror=alert(1)> 不含配件';
+    await page.locator('#lotRemark').fill(note);
+    assert.equal(await page.locator('#lotRemarkCount').innerText(), `${note.length} / 1000`);
+    await page.locator('#reportPage [data-back="inspection"]').last().click();
+    await page.locator('#confirmInspection').click();
+    await page.locator('#lotRemark').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#lotRemark').inputValue(), note);
+    await page.evaluate(() => applyLanguage('en'));
+    assert.equal(await page.locator('#lotRemark').inputValue(), note);
+    assert.equal(await page.locator('#lotRemark').getAttribute('maxlength'), '1000');
+    await page.screenshot({ path: '/tmp/lot-remarks-store-input.png', fullPage: true });
+    await page.locator('#publishLot').click();
+    await page.locator('#publishedLotRemark').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#publishedLotRemarkText').innerText(), note);
+    assert.equal(await page.locator('#publishedLotRemarkText img').count(), 0);
+    await page.evaluate(() => { lotRemark.value = 'Changed draft'; applyLanguage('zh'); });
+    assert.equal(await page.locator('#publishedLotRemarkText').innerText(), note);
+    await page.screenshot({ path: '/tmp/lot-remarks-store-published.png', fullPage: true });
+    await page.locator('#createAnother').click();
+    assert.equal(await page.locator('#lotRemark').inputValue(), '');
+    await page.evaluate(() => showPage('report'));
+    await page.locator('#lotRemark').fill(' '.repeat(3));
+    await page.locator('#publishLot').click();
+    await page.locator('#lotPage').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('#publishedLotRemark').isVisible(), false);
+    await page.evaluate(() => { showPage('report'); lotRemark.value = '长'.repeat(1001); });
+    await page.locator('#publishLot').click();
+    assert.equal(await page.locator('#reportPage').isVisible(), true);
+    assert.equal(await page.locator('#loadingOverlay').isVisible(), false);
+    await page.locator('#lotRemark').fill('长'.repeat(1000));
+    await page.locator('#publishLot').click();
+    await page.locator('#publishedLotRemark').waitFor({ state: 'visible' });
+    assert.equal((await page.locator('#publishedLotRemarkText').innerText()).length, 1000);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    await page.goto(base + '/recycler.html');
+    await page.locator('[data-lot="ordinary"]').click();
+    assert.equal(await page.locator('#auctionRemarks').isVisible(), true);
+    assert.ok(await page.locator('#auctionRemarksText').innerText());
+    const remarksBox = await page.locator('#auctionRemarks').boundingBox();
+    const photosBox = await page.locator('#auctionPage .image-section').boundingBox();
+    assert.ok(remarksBox.y + remarksBox.height <= photosBox.y);
+    await page.evaluate(() => setLanguage('zh'));
+    assert.equal(await page.locator('#auctionRemarksTitle').innerText(), '建拍备注');
+    assert.ok((await page.locator('#auctionRemarksText').innerText()).includes('边框'));
+    await page.screenshot({ path: '/tmp/lot-remarks-recycler.png', fullPage: true });
+    await page.locator('#auctionPage [data-back]').click();
+    await page.locator('[data-lot="inherited"]').click();
+    assert.ok((await page.locator('#auctionRemarksText').innerText()).includes('后盖'));
+    await page.locator('#auctionPage [data-back]').click();
+    await page.locator('[data-lot="no-reference"]').click();
+    assert.equal(await page.locator('#auctionRemarks').isVisible(), false);
+    assert.equal(await page.locator('#auctionRemarksText').innerText(), '');
+    assert.deepEqual(errors, []);
+    console.log('PASS: draft retention, character limit, frozen plain-text snapshot, empty state, new-lot reset, language switching, recycler placement and per-lot isolation, mobile overflow.');
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exit(1); });
