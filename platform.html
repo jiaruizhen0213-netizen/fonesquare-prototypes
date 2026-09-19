@@ -96,7 +96,7 @@
       <section class="page" id="b2bHomePage"><div class="card"><div class="card-body"><h2>海外 B2B 管理后台</h2><p>商家列表、店铺列表和店员列表已迁至实时竞拍。</p><button class="btn primary" onclick="setView('list')">进入实时竞拍商家列表</button></div></div></section>
       <section class="page active" id="listPage">
         <div class="page-title"><h1>商家列表</h1></div>
-        <div class="alert"><span>ⓘ</span><div>展示曾成功登录门店端的全部账号，包含未选择身份、商家和店员。账号停用或身份变更后仍保留记录。</div></div>
+        <div class="alert"><span>ⓘ</span><div>展示两端全部统一账号，分别维护 FoneSquare 出价权限与门店端建拍权限。是否登录门店端、选择身份或完善资料不影响展示。</div></div>
         <div class="card legacy-filter-card"><div class="card-body"><div class="filters merchant-filters">
           <div class="field"><label>商家名称</label><input class="control" id="keyword" placeholder="请输入名称关键词" /></div>
           <div class="field" hidden><label>商家类型</label><select class="control" id="merchantTypeFilter"><option value="">全部</option><option>买家商家</option><option>卖家</option></select></div>
@@ -105,7 +105,7 @@
           <div class="field"><label>维护人</label><select class="control" id="ownerFilter"><option value="">全部</option><option>未分配</option><option>贾瑞真</option><option>李敏</option><option>王杰</option></select></div>
           <div class="field" hidden><label>来源 App</label><select class="control" id="merchantSourceFilter"><option value="">全部</option><option>FoneSquare</option><option>门店端</option></select></div>
           <div class="field"><label>商家建拍权限</label><select class="control" id="merchantBuildFilter"><option value="">全部</option><option>开启</option><option>关闭</option></select></div>
-          <div class="field" hidden><label>出价权限</label><select class="control" id="merchantBidFilter"><option value="">全部</option><option>开启</option><option>关闭</option></select></div>
+          <div class="field"><label>FoneSquare 出价权限</label><select class="control" id="merchantBidFilter"><option value="">全部</option><option>开启</option><option>关闭</option><option>未配置</option></select></div>
           <div class="filter-actions"><button class="btn primary" id="searchBtn">查询</button><button class="btn" id="resetBtn">↻ 重置</button><button class="btn" id="exportBtn">导出</button></div>
         </div></div></div>
 
@@ -2299,7 +2299,7 @@
   renderSettlementConfigV2();
 })();
   </script>
-  <script src="platform-unified-accounts.js?v=20260919-1"></script>
+  <script src="platform-unified-accounts.js?v=20260919-2"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="platform-merchant-banks.js?v=20260909-1"></script>
