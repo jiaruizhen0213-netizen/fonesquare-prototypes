@@ -363,6 +363,7 @@
     .lot-remarks { margin: 12px 0 0; font-size: 14px; font-weight: 700; line-height: 1.6; overflow-wrap: anywhere; }
     .lot-remarks[hidden] { display: none; }
   </style>
+  <link rel="stylesheet" href="order-list-cards.css?v=20260920-1" />
 </head>
 <body>
   <main class="phone-shell" aria-label="FoneSquare recycler prototype">
@@ -459,30 +460,12 @@
       <header class="topbar"><span></span><h1>Winning Orders</h1><span></span></header>
       <div class="tabs" aria-label="Order status filters">
         <button class="tab active" type="button" data-status="all">All</button>
-        <button class="tab" type="button" data-status="pending">Pending Pickup</button>
-        <button class="tab" type="button" data-status="complete">Picked Up</button>
+        <button class="tab" type="button" data-status="pending">Awaiting pickup</button>
+        <button class="tab" type="button" data-status="complete">Collected</button>
       </div>
       <div class="card-list" id="orderList">
-        <button class="product-card order-card" type="button" data-order-status="pending" data-open="won">
-          <span class="device-thumb"><span class="mini-phone"></span></span>
-          <span class="card-body">
-            <span class="title-line"><span class="condition-tag">A</span><span class="product-name">iPhone 17 Pro Max 512G Starry Orange</span></span>
-            <span class="specs">CN Version · Battery Health 90%–95%</span>
-            <span class="order-row"><span class="order-label">Status</span><span class="order-state">Pending Pickup</span></span>
-            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 2,350</span></span>
-            <span class="order-row"><span class="order-label">21 Aug 2026, 11:02</span><span>FSO-260821-0098</span></span>
-          </span>
-        </button>
-        <button class="product-card order-card" type="button" data-order-status="complete" data-open="won">
-          <span class="device-thumb" style="background:linear-gradient(145deg,#e7ddd4,#c6b5a6)"><span class="mini-phone" style="background:linear-gradient(145deg,#d7b193,#8e6b54)"></span></span>
-          <span class="card-body">
-            <span class="title-line"><span class="condition-tag">B</span><span class="product-name">Huawei Mate 70 Pro 512G Gold</span></span>
-            <span class="specs">CN Version · Battery Health 85%–90%</span>
-            <span class="order-row"><span class="order-label">Status</span><span class="order-state complete">Picked Up</span></span>
-            <span class="order-row"><span class="order-label">Transaction Amount</span><span class="money">MYR 1,980</span></span>
-            <span class="order-row"><span class="order-label">12 Aug 2026, 16:40</span><span>FSO-260812-0041</span></span>
-          </span>
-        </button>
+<button class="unified-order-card" type="button" data-order-status="pending" data-open="won" data-order-id="FSO-260821-0098"><span class="unified-order-head"><span><strong>iPhone 17 Pro Max 512GB</strong><small>FSO-260821-0098 · FS Retail Malaysia · Central Flagship Store</small></span><span class="unified-order-status pending">Awaiting pickup</span></span><span class="unified-order-facts"><span><span>Transaction price</span><strong>MYR 2,350.00</strong></span><span><span>Actual listing operator</span><strong>Jia Ruizhen</strong></span><span class="unified-pickup-time"><span>Actual pickup time</span><strong>—</strong></span></span></button>
+<button class="unified-order-card" type="button" data-order-status="complete" data-open="won" data-order-id="FSO-260820-0048"><span class="unified-order-head"><span><strong>Huawei Mate 70 Pro 512GB</strong><small>FSO-260820-0048 · FS Retail Malaysia · Central Flagship Store</small></span><span class="unified-order-status complete">Collected</span></span><span class="unified-order-facts"><span><span>Transaction price</span><strong>MYR 1,980.00</strong></span><span><span>Actual listing operator</span><strong>Aina Rahman</strong></span><span class="unified-pickup-time"><span>Actual pickup time</span><strong>2026-08-21 17:42</strong></span></span></button>
       </div>
     </section>
 
@@ -675,6 +658,9 @@
       'Repair Status': '维修情况', 'No Repairs': '无维修', 'Battery Health': '电池健康度', '90%–95% Health': '健康度 90%–95%',
       'View My Bid': '查看我的出价', 'Place Bid': '出价',
       'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货',
+      'Transaction price': '成交价格', 'Actual listing operator': '实际建拍操作人', 'Actual pickup time': '实际取货时间', 'Awaiting pickup': '待取货', 'Collected': '已取货', 'Jia Ruizhen': '贾瑞真',
+      'FSO-260821-0098 · FS Retail Malaysia · Central Flagship Store': 'FSO-260821-0098 · FS Retail Malaysia · 中心旗舰店',
+      'FSO-260820-0048 · FS Retail Malaysia · Central Flagship Store': 'FSO-260820-0048 · FS Retail Malaysia · 中心旗舰店',
       'Status': '状态', 'Transaction Amount': '成交金额', 'Order Details': '订单详情', '✓ Formally Won': '✓ 已正式中标',
       '21 Aug 2026, 11:02': '2026年8月21日 11:02', '12 Aug 2026, 16:40': '2026年8月12日 16:40', '30 Jul 2026, 10:18': '2026年7月30日 10:18',
       'Pickup is recorded by the platform supervisor for the units actually collected. The recycler can view the pickup result but cannot edit it.': '平台督导按实际提走设备记录提货结果；回收商可查看结果，但不可修改。',
