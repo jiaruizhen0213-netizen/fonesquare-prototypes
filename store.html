@@ -711,7 +711,7 @@
       <div class="callout warning" id="preWinnerStatus">预中标 · 等待卖家决定</div>
       <section class="section device-summary"><div class="device-thumb" style="background:linear-gradient(145deg,#e9edf5,#b9c3d5)"><div class="mini-phone" style="background:linear-gradient(145deg,#c8d0dc,#69758a)"></div></div><div><span class="condition-tag">A-</span><h2 class="product-name">Samsung Galaxy S25 Ultra</h2><p class="specs">256GB · 银影蓝<br>标单号 FS-MY-260823-0197</p></div></section>
       <section class="section"><p class="section-kicker">竞拍结果</p><h2 class="section-title">中标价格</h2><div class="summary-row"><span>中标价格</span><strong id="winningPrice">MYR 3,280</strong></div><div class="summary-row"><span>中标回收商</span><strong>Recycle Partner MY</strong></div><div class="summary-row"><span>实际建拍操作人</span><strong>贾瑞真 · 店员</strong></div></section>
-      <section class="section"><h2 class="section-title">卖家决定</h2><p class="small muted" style="margin:0" id="preWinnerPermissionNote">请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。</p></section>
+      <section class="section"><h2 class="section-title">卖家决定</h2><p class="small muted" style="margin:0" id="preWinnerPermissionNote">请向卖家确认中标价格。接受后维护合同和 +60 手机号；拒绝后选择重拍或结束标单。</p></section>
       <nav class="action-bar" id="preWinnerDecisionActions"><button class="action-button secondary" id="rejectPreWinner" type="button">不接受</button><button class="action-button primary" id="acceptPreWinner" type="button">接受预中标价</button></nav>
     </section>
 
@@ -901,9 +901,6 @@
         <p class="inline-error" id="acceptContractError">请先确认已维护卖家合同。</p>
         <label class="form-field"><span>卖家手机号 · 马来西亚（+60） <i class="required">*</i></span><input id="acceptSellerMobile" type="tel" placeholder="+60 12 345 6789" autocomplete="tel"></label>
         <p class="inline-error" id="acceptSellerMobileError">请输入有效的马来西亚手机号（+60 1X XXXX XXXX）。</p>
-        <button class="wide-button tertiary" id="sendAcceptOtp" type="button">发送 OTP</button>
-        <label class="form-field"><span>OTP 验证码 <i class="required">*</i></span><input id="acceptOtpCode" type="text" inputmode="numeric" maxlength="6" placeholder="请输入 6 位验证码" autocomplete="one-time-code"></label>
-        <p class="inline-error" id="acceptOtpError">请先发送并输入 6 位 OTP 验证码。</p>
         <div class="dialog-actions"><button class="secondary" type="button" id="cancelSellerDecision">取消</button><button class="primary" type="button" id="confirmSellerDecisionButton">确认成交</button></div>
       </section>
       <section id="sellerRejectPanel" hidden>
@@ -1033,10 +1030,7 @@
       '确认已维护卖家合同': 'Confirm seller contract maintained',
       '合同仅在卖家接受预中标价后维护。': 'The contract is maintained only after the seller accepts the pre-winning price.',
       '请先确认已维护卖家合同。': 'Confirm that the seller contract has been maintained.',
-      '发送 OTP': 'Send OTP',
-      'OTP 验证码': 'OTP code',
       '请输入 6 位验证码': 'Enter the 6-digit code',
-      '请先发送并输入 6 位 OTP 验证码。': 'Send and enter the 6-digit OTP code.',
       '确认成交': 'Confirm transaction',
       '卖家拒绝后，由本轮实际创建人选择重拍或结束标单。': 'After rejection, the actual creator chooses to re-auction or end the lot.',
       '质检报告完成不超过 1 小时': 'Inspection report completed within 1 hour',
@@ -1048,14 +1042,12 @@
       '完成': 'Done',
       '卖家接受预中标价': 'Seller accepts the pre-winning price',
       '卖家拒绝预中标价': 'Seller rejects the pre-winning price',
-      '接受后维护合同和 +60 手机号，并完成 OTP 验证。': 'After acceptance, maintain the contract and +60 mobile number, then complete OTP verification.',
+      '接受后维护合同和 +60 手机号，确认后生成成交订单。': 'After acceptance, maintain the contract and +60 mobile number, then confirm to create the transaction order.',
       '请选择重拍或结束标单；系统不会自动替你决定。': 'Choose to re-auction or end the lot; the system does not decide automatically.',
-      'OTP 已发送': 'OTP sent',
-      'OTP 已发送到卖家手机号': 'OTP sent to the seller mobile number',
       '成交订单已存在，已返回同一订单': 'The transaction order already exists; the same order was returned.',
       '卖家接受，唯一成交订单已生成': 'Seller accepted; the single transaction order was created.',
       '卖家已接受 · 成交订单已生成': 'Seller accepted · Transaction order created',
-      '合同、手机号和 OTP 已校验，唯一成交订单已生成；重复确认返回同一订单。': 'Contract, mobile and OTP verified. One transaction order was created; repeat confirmation returns the same order.',
+      '合同和手机号已校验，唯一成交订单已生成；重复确认返回同一订单。': 'Contract and mobile checked. One transaction order was created; repeat confirmation returns the same order.',
       '卖家拒绝 · 已创建第 2 轮': 'Seller declined · Round 2 created',
       '结果：卖家拒绝 · 已重拍': 'Result: Seller declined · Re-auctioned',
       '重拍条件已通过，新轮次已创建。历史最高有效主动报价自动沿用。': 'Re-auction checks passed and a new round was created. The highest valid active bid is inherited automatically.',
@@ -1065,7 +1057,7 @@
       '重拍条件已通过 · 新轮次第 2 轮已创建。每个回收商最近一轮最高有效主动报价自动沿用，固定 48 小时（自原轮次结束起）；沿用价不触发 30 秒窗口。': 'Re-auction checks passed · Round 2 was created. Each recycler’s latest highest valid active bid is inherited automatically for a fixed 48 hours from the original round end; an inherited bid does not trigger the 30-second window.',
       '不满足重拍条件，标单已结束。请重新质检后再发布新标单。': 'Re-auction conditions failed and the lot ended. Complete a new inspection before publishing a new lot.',
       '已按实际创建人的选择结束标单，未创建新轮次。': 'The lot ended by the actual creator’s choice; no new round was created.',
-      '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。': 'Confirm the winning price with the seller. After acceptance maintain contract, +60 mobile and OTP; after rejection choose re-auction or end lot.',
+      '请向卖家确认中标价格。接受后维护合同和 +60 手机号；拒绝后选择重拍或结束标单。': 'Confirm the winning price with the seller. After acceptance maintain contract and +60 mobile; after rejection choose re-auction or end lot.',
       '本标单由员工贾瑞真创建。商家主账号只读，不能替实际建拍操作人记录卖家决定。': 'This lot was created by Jia Ruizhen. The merchant admin has read-only access and cannot record the seller decision for the actual creator.',
       '在门店端通过飞书登录，进入全部订单的现场取货工作台': 'Use Feishu in the Store App to access the all-orders pickup workspace',
       '门店端登录分流演示': 'Store App Sign-in Routing Demo',
@@ -1653,14 +1645,13 @@
     const sellerAcceptPanel = document.getElementById('sellerAcceptPanel');
     const sellerRejectPanel = document.getElementById('sellerRejectPanel');
     const sellerDecisionResult = document.getElementById('sellerDecisionResult');
-    let acceptOtpSent = false;
     let transactionOrderCreated = false;
     const showSellerDecisionPanel = (decision) => {
       sellerAcceptPanel.hidden = decision !== 'accept';
       sellerRejectPanel.hidden = decision !== 'reject';
       sellerDecisionResult.hidden = true;
       document.getElementById('sellerDecisionTitle').textContent = decision === 'accept' ? '卖家接受预中标价' : '卖家拒绝预中标价';
-      document.getElementById('sellerDecisionMessage').textContent = decision === 'accept' ? '接受后维护合同和 +60 手机号，并完成 OTP 验证。' : '请选择重拍或结束标单；系统不会自动替你决定。';
+      document.getElementById('sellerDecisionMessage').textContent = decision === 'accept' ? '接受后维护合同和 +60 手机号，确认后生成成交订单。' : '请选择重拍或结束标单；系统不会自动替你决定。';
       sellerDecisionDialog.showModal();
     };
     document.getElementById('acceptPreWinner').addEventListener('click', () => showSellerDecisionPanel('accept'));
@@ -1668,26 +1659,13 @@
     document.getElementById('cancelSellerDecision').addEventListener('click', () => sellerDecisionDialog.close());
     const acceptContractConfirm = document.getElementById('acceptContractConfirm');
     const acceptSellerMobile = document.getElementById('acceptSellerMobile');
-    const acceptOtpCode = document.getElementById('acceptOtpCode');
     acceptContractConfirm.addEventListener('change', () => document.getElementById('acceptContractError').classList.remove('show'));
     acceptSellerMobile.addEventListener('input', () => document.getElementById('acceptSellerMobileError').classList.remove('show'));
-    acceptOtpCode.addEventListener('input', () => {
-      acceptOtpCode.value = acceptOtpCode.value.replace(/\D/g, '').slice(0, 6);
-      document.getElementById('acceptOtpError').classList.remove('show');
-    });
-    document.getElementById('sendAcceptOtp').addEventListener('click', () => {
-      const validMobile = /^\+601\d{8,9}$/.test(acceptSellerMobile.value.trim().replace(/[\s-]/g, ''));
-      document.getElementById('acceptSellerMobileError').classList.toggle('show', !validMobile);
-      if (!validMobile) { acceptSellerMobile.focus(); return; }
-      acceptOtpSent = true;
-      document.getElementById('sendAcceptOtp').textContent = 'OTP 已发送';
-      showToast('OTP 已发送到卖家手机号');
-    });
     const completeSellerDecision = (result) => {
       const status = document.getElementById('preWinnerStatus');
       status.className = result === 'accepted' || result === 'reauction' ? 'callout success' : 'callout warning';
       const copies = {
-        accepted: ['卖家已接受 · 成交订单已生成', '结果：卖家已接受 · MYR 3,280', '合同、手机号和 OTP 已校验，唯一成交订单已生成；重复确认返回同一订单。'],
+        accepted: ['卖家已接受 · 成交订单已生成', '结果：卖家已接受 · MYR 3,280', '合同和手机号已校验，唯一成交订单已生成；重复确认返回同一订单。'],
         reauction: ['卖家拒绝 · 已创建第 2 轮', '结果：卖家拒绝 · 已重拍', '重拍条件已通过，新轮次已创建。历史最高有效主动报价自动沿用。'],
         ended: ['卖家拒绝 · 标单已结束', '结果：卖家拒绝 · 已结束', '本轮实际创建人已选择结束标单，未生成成交订单。']
       };
@@ -1703,11 +1681,9 @@
       if (transactionOrderCreated) { showToast('成交订单已存在，已返回同一订单'); sellerDecisionDialog.close(); return; }
       const validContract = acceptContractConfirm.checked;
       const validMobile = /^\+601\d{8,9}$/.test(acceptSellerMobile.value.trim().replace(/[\s-]/g, ''));
-      const validOtp = acceptOtpSent && /^\d{6}$/.test(acceptOtpCode.value);
       document.getElementById('acceptContractError').classList.toggle('show', !validContract);
       document.getElementById('acceptSellerMobileError').classList.toggle('show', !validMobile);
-      document.getElementById('acceptOtpError').classList.toggle('show', !validOtp);
-      if (!validContract || !validMobile || !validOtp) return;
+      if (!validContract || !validMobile) return;
       transactionOrderCreated = true;
       document.getElementById('generatedOrderCard').removeAttribute('hidden');
       completeSellerDecision('accepted');
@@ -2063,7 +2039,7 @@
       const decisionActions = document.getElementById('preWinnerDecisionActions');
       if (decisionActions.dataset.decided !== 'true') {
         decisionActions.style.display = canDecidePreWinner ? 'grid' : 'none';
-        document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后维护合同、+60 手机号和 OTP；拒绝后选择重拍或结束标单。' : copy.decision;
+        document.getElementById('preWinnerPermissionNote').textContent = canDecidePreWinner ? '请向卖家确认中标价格。接受后维护合同和 +60 手机号；拒绝后选择重拍或结束标单。' : copy.decision;
       }
       document.querySelectorAll('#auctionsPage [data-owner]').forEach((card) => card.style.display = role === 'employee' && card.dataset.owner !== 'jia' ? 'none' : 'grid');
       renderProfileScope();

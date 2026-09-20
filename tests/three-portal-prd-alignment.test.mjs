@@ -51,7 +51,7 @@ test('supplier roles and publishing fields match the PRDs', () => {
 });
 
 test('supplier seller decision collects details after pre-win and offers re-auction', () => {
-  for (const id of ['acceptContractConfirm', 'acceptSellerMobile', 'sendAcceptOtp', 'acceptOtpCode', 'chooseReauction', 'chooseEndLot']) {
+  for (const id of ['acceptContractConfirm', 'acceptSellerMobile', 'chooseReauction', 'chooseEndLot']) {
     assert.match(store, new RegExp(`id="${id}"`));
   }
   for (const copy of ['重拍', '结束标单', '固定 48 小时', '自动沿用']) {
