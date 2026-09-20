@@ -364,6 +364,7 @@
     .lot-remarks[hidden] { display: none; }
   </style>
   <link rel="stylesheet" href="order-list-cards.css?v=20260920-2" />
+  <link rel="stylesheet" href="detail-report.css?v=20260920-2">
 </head>
 <body>
   <main class="phone-shell" aria-label="FoneSquare recycler prototype">
@@ -462,10 +463,12 @@
         <button class="tab active" type="button" data-status="all">All</button>
         <button class="tab" type="button" data-status="pending">Awaiting pickup</button>
         <button class="tab" type="button" data-status="complete">Collected</button>
+        <button class="tab" type="button" data-status="delivered">Delivered</button>
       </div>
       <div class="card-list" id="orderList">
 <button class="unified-order-card" type="button" data-order-status="pending" data-open="won" data-order-id="FSO-260821-0098"><span class="unified-order-head"><span><strong>iPhone 17 Pro Max 512GB</strong><small>FSO-260821-0098 · FS Retail Malaysia · Central Flagship Store</small></span><span class="unified-order-status pending">Awaiting pickup</span></span><span class="unified-order-facts"><span><span>Transaction price</span><strong>MYR 2,350.00</strong></span><span><span>Actual listing operator</span><strong>Jia Ruizhen</strong></span><span class="unified-pickup-time"><span>Actual pickup time</span><strong>—</strong></span></span></button>
 <button class="unified-order-card" type="button" data-order-status="complete" data-open="won" data-order-id="FSO-260820-0048"><span class="unified-order-head"><span><strong>Huawei Mate 70 Pro 512GB</strong><small>FSO-260820-0048 · FS Retail Malaysia · Central Flagship Store</small></span><span class="unified-order-status complete">Collected</span></span><span class="unified-order-facts"><span><span>Transaction price</span><strong>MYR 1,980.00</strong></span><span><span>Actual listing operator</span><strong>Aina Rahman</strong></span><span class="unified-pickup-time"><span>Actual pickup time</span><strong>2026-08-21 17:42</strong></span></span></button>
+<button class="unified-order-card" type="button" data-order-status="delivered" data-open="won" data-order-id="FSO-260819-0039"><span class="unified-order-head"><span><strong>Huawei Mate 70 Pro 512GB</strong><small>FSO-260819-0039 · FS Retail Malaysia · Central Flagship Store</small></span><span class="unified-order-status delivered">Delivered</span></span><span class="unified-order-facts"><span><span>Transaction price</span><strong>MYR 1,980.00</strong></span><span><span>Actual listing operator</span><strong>Aina Rahman</strong></span><span class="unified-pickup-time"><span>Actual pickup time</span><strong>2026-08-20 15:20</strong></span></span></button>
       </div>
     </section>
 
@@ -637,8 +640,8 @@
       'CN Version · Battery Health 90%–95% · Dual SIM': '国行 · 电池健康度 90%–95% · 双卡',
       'Ends in 01:28:36': '距结束 01:28:36', 'Ends in 03:16:08': '距结束 03:16:08', 'Ends in 05:40:21': '距结束 05:40:21',
       'My bid MYR 2,350': '我的出价 MYR 2,350', 'Inherited MYR 3,080': '已沿用 MYR 3,080', 'Not bid': '未出价',
-      'Auction Details': '竞拍详情', 'Lot number': '批次号', 'Execution status': '执行状态',
-      'Bidding': '竞价中', 'Round result': '本轮结果', 'Time left': '剩余时间', 'Currency': '币种',
+      'Auction Details': '竞拍详情', 'Lot number': '标单号', 'Execution status': '竞拍状态',
+      'Bidding': '竞拍中', 'Round result': '本轮结果', 'Time left': '剩余时间', 'Currency': '币种',
       'My latest bid': '我的最新出价', 'Bid status': '出价状态', 'Valid': '有效', 'Not submitted': '未提交', 'Inherited': '已沿用',
       'Highest valid active bid from the previous round has been inherited': '历史最高有效主动报价已沿用',
       'From round R1 · MYR 3,080 · Valid until 23 Aug 2026, 09:40': '来源轮次 R1 · MYR 3,080 · 固定 48 小时，有效至 2026年8月23日 09:40',
@@ -657,9 +660,10 @@
       'Perfect Display': '显示完好', 'Functionality': '功能情况', 'Fully Functional': '功能正常',
       'Repair Status': '维修情况', 'No Repairs': '无维修', 'Battery Health': '电池健康度', '90%–95% Health': '健康度 90%–95%',
       'View My Bid': '查看我的出价', 'Place Bid': '出价',
-      'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货',
+      'Delivered': '已送达', 'Winning Orders': '中标订单', 'All': '全部', 'Pending Pickup': '待提货', 'Picked Up': '已提货',
       'Transaction price': '成交价格', 'Actual listing operator': '实际建拍操作人', 'Actual pickup time': '实际取货时间', 'Awaiting pickup': '待取货', 'Collected': '已取货', 'Jia Ruizhen': '贾瑞真',
       'FSO-260821-0098 · FS Retail Malaysia · Central Flagship Store': 'FSO-260821-0098 · FS Retail Malaysia · 中心旗舰店',
+      'FSO-260819-0039 · FS Retail Malaysia · Central Flagship Store': 'FSO-260819-0039 · FS Retail Malaysia · 中心旗舰店',
       'FSO-260820-0048 · FS Retail Malaysia · Central Flagship Store': 'FSO-260820-0048 · FS Retail Malaysia · 中心旗舰店',
       'Status': '状态', 'Transaction Amount': '成交金额', 'Order Details': '订单详情', '✓ Formally Won': '✓ 已正式中标',
       '21 Aug 2026, 11:02': '2026年8月21日 11:02', '12 Aug 2026, 16:40': '2026年8月12日 16:40', '30 Jul 2026, 10:18': '2026年7月30日 10:18',
@@ -919,6 +923,8 @@
   </script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="recycler-contact.js?v=20260910-1"></script>
-  <script src="order-details.js?v=20260920-1"></script>
+  <script src="detail-report.js?v=20260920-2"></script>
+  <script src="auction-detail-alignment.js?v=20260920-2"></script>
+  <script src="order-details.js?v=20260920-2"></script>
 </body>
 </html>
