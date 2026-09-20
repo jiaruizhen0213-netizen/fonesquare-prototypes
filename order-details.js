@@ -20,10 +20,23 @@
   const owner=card.dataset.owner==='jia'||!['FSO-260820-0048','FSO-260819-0039'].includes(selected)?t('贾瑞真','Jia Ruizhen'):'Aina Rahman';
   const amount=card.querySelector('.unified-order-facts>span strong').textContent;
   page.innerHTML='<header class="topbar"><button class="icon-button" type="button" id="orderDetailBack" aria-label="'+t('返回订单','Back to orders')+'">‹</button><h1>'+t('订单详情','Order Details')+'</h1><span></span></header>'+
-   S.product(S.models[data.model||'iphone'])+'<section class="section">'+row(t('订单号','Order number'),selected)+row(t('商家名称','Merchant'),'FS Retail Malaysia')+row(t('店铺名称','Store'),t('中心旗舰店','Central Flagship Store'))+row(t('实际建拍操作人','Actual listing operator'),owner)+'</section>'+
-   '<section class="section">'+row(isStore?t('卖家应得金额','Seller proceeds'):t('成交价格','Transaction price'),amount)+(data.lot?row(t('标单号','Lot number'),data.lot):'')+(data.sold?row(t('成交时间','Transaction time'),data.sold):'')+(data.source?row(t('成交来源','Transaction source'),data.source[en?1:0]):'')+'</section>'+
-   '<section class="section"><h2 class="section-title">'+t('取货结果','Pickup result')+'</h2>'+row(t('取货状态','Pickup status'),pending?t('待取货','Pending Pickup'):delivered?t('已送达','Delivered'):t('已取货','Picked Up'))+row(t('实际取货时间','Actual pickup time'),pending?'—':card.querySelector('.unified-pickup-time strong').textContent)+(delivered?row(t('实际送达时间','Actual delivery time'),data.deliveredAt):'')+'<p class="small muted">'+t('取货结果由平台督导维护，本页面只读。','Pickup is recorded by the platform supervisor. This page is read-only.')+'</p></section>'+
-   (data.privacy?'<section class="section">'+row(t('隐私结果','Privacy result'),data.privacy[en?1:0])+row(t('退回状态','Return status'),data.returns[en?1:0])+'</section>':'');
+   S.product(S.models[data.model||'iphone'])+'<section class="section order-identity">'+row(t('订单号','Order number'),selected)+row(t('商家名称','Merchant'),'FS Retail Malaysia')+row(t('店铺名称','Store'),t('中心旗舰店','Central Flagship Store'))+row(t('实际建拍操作人','Actual listing operator'),owner)+'</section>'+
+   '<section class="section order-transaction">'+row(isStore?t('卖家应得金额','Seller proceeds'):t('成交价格','Transaction price'),amount)+(data.lot?row(t('标单号','Lot number'),data.lot):'')+(data.sold?row(t('成交时间','Transaction time'),data.sold):'')+(data.source?row(t('成交来源','Transaction source'),data.source[en?1:0]):'')+'</section>'+
+   '<section class="section order-pickup"><h2 class="section-title">'+t('取货结果','Pickup result')+'</h2>'+row(t('取货状态','Pickup status'),pending?t('待取货','Pending Pickup'):delivered?t('已送达','Delivered'):t('已取货','Picked Up'))+row(t('实际取货时间','Actual pickup time'),pending?'—':card.querySelector('.unified-pickup-time strong').textContent)+(delivered?row(t('实际送达时间','Actual delivery time'),data.deliveredAt):'')+'<p class="small muted">'+t('取货结果由平台督导维护，本页面只读。','Pickup is recorded by the platform supervisor. This page is read-only.')+'</p></section>'+
+   (isStore&&data.privacy?'<section class="section">'+row(t('隐私结果','Privacy result'),data.privacy[en?1:0])+row(t('退回状态','Return status'),data.returns[en?1:0])+'</section>':'');
+  if(!isStore){
+   const basic=document.createElement('section');
+   basic.className='section order-basic-info';
+   basic.innerHTML='<h2 class="section-title">'+t('基础信息','Basic information')+'</h2>';
+   page.appendChild(basic);
+   basic.appendChild(page.querySelector('.shared-product'));
+   for(const selector of ['.order-identity','.order-transaction','.order-pickup']){
+    const section=page.querySelector(selector);
+    section.querySelectorAll('h2,p').forEach(node=>node.remove());
+    basic.append(...section.childNodes);
+    section.remove();
+   }
+  }
   const reportData=snapshots[selected]?{...S.models[data.model||'iphone']}:null;
   if(reportData&&data.reportTime)reportData.time=data.reportTime;
   page.insertAdjacentHTML('beforeend',S.report(reportData));
