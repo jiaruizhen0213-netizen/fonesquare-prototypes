@@ -16,3 +16,7 @@
 #ordersPage .tabs{display:flex;gap:0;background:#fff;padding:0 12px;border-radius:0}
 #ordersPage .tabs .tab{flex:1;margin:0;padding:14px 0;border:0;border-radius:0;border-bottom:2px solid transparent;background:#fff;color:#888;font-size:12px;text-align:center}
 #ordersPage .tabs .tab.active{color:#ff4d0a;border-bottom-color:#ff4d0a}
+#storeOrderDetailPage .summary-row,#wonPage .summary-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:12px 0;border-bottom:1px solid #eee;font-size:12px}
+#storeOrderDetailPage .summary-row>span,#wonPage .summary-row>span{color:#888;flex-shrink:0}
+#storeOrderDetailPage .summary-row strong,#wonPage .summary-row strong{text-align:right;overflow-wrap:anywhere}
+#storeOrderDetailPage .section-title,#wonPage .section-title{font-size:16px;line-height:1.5}

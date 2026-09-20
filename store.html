@@ -514,7 +514,7 @@
     #lotRemark { width: 100%; padding: 13px 12px; border: 1px solid #ddd; border-radius: 11px; font: inherit; font-size: 14px; min-height: 112px; resize: vertical; }
     #accountRolePage .case-card { grid-template-columns: 1fr auto; }
   </style>
-  <link rel="stylesheet" href="order-list-cards.css?v=20260920-1" />
+  <link rel="stylesheet" href="order-list-cards.css?v=20260920-2" />
 </head>
 <body>
   <main class="phone-shell" aria-label="供货端门店端与店员 App 原型">
@@ -734,6 +734,8 @@
       </div>
       <section class="section"><h2 class="section-title">取货结果</h2><p class="small muted" style="margin:0">供货端只读查看每笔订单的待取货或已取货结果，不需要执行取货操作。</p></section>
     </section>
+
+    <section class="page" id="storeOrderDetailPage" data-page="storeOrderDetail" data-no-i18n></section>
 
     <section class="page" data-page="bills" id="billsPage" data-no-i18n></section>
 
@@ -2143,5 +2145,6 @@
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="store-merchant-banks.js?v=20260910-1"></script>
+  <script src="order-details.js?v=20260920-1"></script>
 </body>
 </html>
