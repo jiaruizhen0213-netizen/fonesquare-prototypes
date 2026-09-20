@@ -1,0 +1,43 @@
+const assert = require('node:assert/strict');
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH });
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const errors = [];
+  page.on('pageerror', e => errors.push(e.message));
+  try {
+    await page.goto((process.env.PROTOTYPE_BASE_URL || 'http://127.0.0.1:8841') + '/store.html');
+    await page.locator('[data-case-entry="account"]').click();
+    await page.locator('#submitAccountAccess').click();
+    assert.equal(await page.locator('#accountAccessResult').isVisible(), true);
+    await page.locator('#submitAccountAccess').click();
+    await page.locator('#accountPassword').fill('');
+    await page.locator('#submitAccountAccess').click();
+    assert.equal(await page.locator('#accountRolePage').isVisible(), false);
+    await page.locator('#accountPassword').fill('prototype');
+    await page.locator('#submitAccountAccess').click();
+    assert.equal(await page.locator('#accountRolePage').isVisible(), true);
+    assert.equal(await page.locator('#auctionsPage').isVisible(), false);
+    await page.screenshot({ path: '/tmp/store-login-role.png', fullPage: true });
+    await page.locator('#accountRolePage [data-role-entry="employee"]').click();
+    assert.equal(await page.locator('#auctionsPage').isVisible(), true);
+    assert.equal(await page.locator('#roleSwitch').inputValue(), 'employee');
+    assert.equal(await page.locator('#auctionsPage [data-owner="li"]').count() ? await page.locator('#auctionsPage [data-owner="li"]').first().isVisible() : false, false);
+    await page.evaluate(() => showPage('caseHub'));
+    await page.locator('[data-case-entry="account"]').click();
+    await page.locator('#accountModeLogin').click();
+    await page.locator('#submitAccountAccess').click();
+    assert.equal(await page.locator('#accountRolePage').isVisible(), true);
+    await page.evaluate(() => applyLanguage('en'));
+    assert.equal(await page.locator('#accountRolePage h1').innerText(), 'Choose Your Role');
+    await page.locator('#accountRolePage [data-back]').click();
+    assert.equal(await page.locator('#accountAccessPage').isVisible(), true);
+    await page.locator('#submitAccountAccess').click();
+    await page.locator('#accountRolePage [data-role-entry="merchant"]').click();
+    assert.equal(await page.locator('#roleSwitch').inputValue(), 'merchant');
+    assert.equal(await page.locator('#auctionsPage').isVisible(), true);
+    for (const card of await page.locator('#auctionsPage [data-owner]').all()) assert.equal(await card.isVisible(), true);
+    assert.deepEqual(errors, []);
+    console.log('PASS: registration/login, failed-login guard, role selection on every login, staff/merchant scope, back navigation and English UI');
+  } finally { await browser.close(); }
+})().catch(e => { console.error(e); process.exit(1); });
