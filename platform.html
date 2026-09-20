@@ -68,6 +68,7 @@
         <div class="nav-item active" data-nav="list">▤ <span>商家列表</span></div>
         <div class="nav-item" data-nav="store">⌂ <span>店铺列表</span></div>
         <div class="nav-item" data-nav="staff">♙ <span>店员列表</span></div>
+        <div class="nav-item" data-nav="maxDevices">▣ <span>Max 设备</span></div>
         <div class="nav-group">系统配置</div>
         <div class="nav-item" data-nav="defaultRatio">％ <span>默认分账规则</span></div>
         <div class="nav-group">商品映射管理</div>
@@ -2250,9 +2251,9 @@
   const systemAwareSetView = setView;
 
   setView = function (view) {
-    if (['list','detail','fsRecord','storeRecord','accountInfo','store','storeDetail','staff'].includes(view)) renderSystemNavigation('auction');
+    if (['list','detail','fsRecord','storeRecord','accountInfo','store','storeDetail','staff','maxDevices'].includes(view)) renderSystemNavigation('auction');
     systemAwareSetView(view);
-    if (['list','detail','fsRecord','storeRecord','accountInfo','store','storeDetail','staff'].includes(view)) $('#crumbGroup').textContent='实时竞拍';
+    if (['list','detail','fsRecord','storeRecord','accountInfo','store','storeDetail','staff','maxDevices'].includes(view)) $('#crumbGroup').textContent='实时竞拍';
     if(view==='b2bHome') { $('#crumbGroup').textContent='海外 B2B 管理后台'; $('#crumbCurrent').textContent='首页'; }
     if ($('#' + view + 'Page') && $('#'+ view + 'Page').classList.contains('active')) systemLastView[currentSystem] = view;
   };
@@ -2311,5 +2312,6 @@
   <script src="platform-price-management.js?v=20260916-2"></script>
   <script src="platform-quote-config.js?v=20260917-6"></script>
   <script src="platform-account-detail.js?v=20260919-6"></script>
+  <script src="platform-max-devices.js?v=20260920-1"></script>
 </body>
 </html>
