@@ -446,6 +446,7 @@
     .supervisor-order:last-child { border-bottom: 0; }
     .supervisor-order.disabled { opacity: .48; }
     .supervisor-order-main { min-width: 0; }
+    .supervisor-order.delivered-card { grid-template-columns: minmax(0, 1fr); }
     .supervisor-order-head { display: flex; justify-content: space-between; gap: 8px; }
     .supervisor-order-head strong { font-size: 13px; }
     .supervisor-order-main small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; line-height: 1.45; }
@@ -840,7 +841,7 @@
         <button class="handover-tab" type="button" data-supervisor-status="picked">已取货</button>
         <button class="handover-tab" type="button" data-supervisor-status="delivered">已送达</button>
       </div>
-      <div class="batch-selection-tools"><p class="batch-selection-note" id="supervisorSelectionNote">选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。</p><button class="batch-select-button" id="toggleSupervisorBatchSelection" type="button">批量勾选</button></div>
+      <div class="batch-selection-tools"><p class="batch-selection-note" id="supervisorSelectionNote">选择订单后，仅可继续选择同一门店的待取货订单。</p><button class="batch-select-button" id="toggleSupervisorBatchSelection" type="button">批量勾选</button></div>
       <div class="batch-list" id="supervisorOrderList"></div>
       <nav class="action-bar single supervisor-workbench-action"><button class="action-button primary" id="openSupervisorBatch" type="button" disabled>批量确认已取货</button></nav>
     </section>
@@ -941,9 +942,9 @@
       '批量确认已送达': 'Confirm Selected Delivered',
       '确认送达': 'Confirm Delivery',
       '请再次核对送达订单。确认后逐单更新为已送达，状态不可撤销。': 'Review the delivered orders. Confirmation marks each order delivered and cannot be undone.',
-      '选择同一门店、同一回收商的已取货订单，确认已送达。': 'Select picked-up orders for the same store and recycler to confirm delivery.',
-      '仅可同时选择同一门店、同一回收商、同一状态的订单。': 'Select orders with the same store, recycler and status.',
-      '仅可同时确认同一门店、同一回收商的已取货订单。': 'Only picked-up orders for the same store and recycler can be confirmed together.',
+      '选择同一回收商的已取货订单，确认已送达。': 'Select picked-up orders for the same recycler to confirm delivery.',
+      '确认取货须同一门店，确认送达须同一回收商。': 'Pickup requires the same store; delivery requires the same recycler.',
+      '仅可同时确认同一回收商的已取货订单。': 'Only picked-up orders for the same recycler can be confirmed together.',
 
       '门店名称': 'Store name',
       '回收商名称': 'Recycler name',
@@ -1141,7 +1142,7 @@
       '回收商': 'Recycler',
       '全部回收商': 'All Recyclers',
       '订单号、标单号、商品或 SKU': 'Order, lot, product or SKU',
-      '选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。': 'After selecting an order, only pending orders from the same store and recycler can be selected.',
+      '选择订单后，仅可继续选择同一门店的待取货订单。': 'After selecting an order, only pending orders from the same store can be selected.',
       '批量确认已取货': 'Confirm Selected as Picked Up',
       '批量勾选': 'Select Multiple',
       '取消勾选': 'Clear Selection',
@@ -1177,7 +1178,7 @@
       '订单摘要': 'Order Summary',
       '现场核对': 'On-site Verification',
       '取货督导': 'Pickup Supervisor',
-      '仅可同时选择同一门店、同一回收商的待取货订单。': 'Only pending orders from the same store and recycler can be selected together.',
+      '仅可同时选择同一门店的待取货订单。': 'Only pending orders from the same store can be selected together.',
       '飞书登录成功 · OB 督导 李敏': 'Feishu sign-in successful · OB Supervisor Li Min',
       '正在前往飞书': 'Opening Feishu',
       '完成授权后将自动返回门店端。': 'After authorization, you will return to the Store App automatically.',
@@ -1229,8 +1230,8 @@
       if (match) return 'Total ' + match[1] + ' items · ' + match[2] + ' complete · ' + match[3] + ' pending · IMEI filled by scan · Foldable Photos · Screen-on ' + (match[4] === '已上传' ? 'uploaded' : 'missing') + ' · Screen-off ' + (match[5] === '已上传' ? 'uploaded' : 'missing');
       match = value.match(/^扫码和质检工具结果已导入，仍有 (\d+) 项需要店员手动选择。$/);
       if (match) return 'Scan and inspection-tool results imported. ' + match[1] + ' items still require a staff selection.';
-      match = value.match(/^已选择 (\d+) 笔 · 仅可继续选择同一门店、同一回收商的待取货订单。$/);
-      if (match) return match[1] + ' selected · Only pending orders from the same store and recycler can be selected.';
+      match = value.match(/^已选择 (\d+) 笔 · 仅可继续选择同一门店的待取货订单。$/);
+      if (match) return match[1] + ' selected · Only pending orders from the same store can be selected.';
       match = value.match(/^已确认 (\d+) 笔订单取货，状态不可撤销。$/);
       if (match) return match[1] + ' order(s) confirmed as picked up. Pickup cannot be undone.';
       match = value.match(/^选择订单 (.+)$/);
@@ -1765,6 +1766,8 @@
       document.getElementById('supervisorDeliveredCount').textContent = supervisorOrders.filter((order) => order.pickupStatus === 'delivered').length;
     };
 
+    const sameSupervisorBatch = (a, b) => a.pickupStatus === b.pickupStatus && (a.pickupStatus === 'pending' ? a.store === b.store : a.recycler === b.recycler);
+
     function renderSupervisorOrders() {
       renderSupervisorStats();
       const selected = [...supervisorState.selectedIds];
@@ -1772,10 +1775,10 @@
       const orders = supervisorFilteredOrders();
       supervisorOrderList.innerHTML = orders.length ? '' : '<div class="empty-state">当前筛选下没有订单</div>';
       orders.forEach((order) => {
-        const incompatible = Boolean(anchor && (order.store !== anchor.store || order.recycler !== anchor.recycler));
+        const incompatible = Boolean(anchor && !sameSupervisorBatch(order, anchor));
         const statusCopy = { pending: '待取货', picked: '已取货', delivered: '已送达' };
         const card = document.createElement('article');
-        card.className = 'supervisor-order' + (incompatible ? ' disabled' : '');
+        card.className = 'supervisor-order' + (order.pickupStatus === 'delivered' ? ' delivered-card' : '') + (incompatible ? ' disabled' : '');
         card.dataset.supervisorOrder = order.id;
         card.innerHTML = '<input class="supervisor-check" type="checkbox" aria-label="选择订单 ' + order.id + '" ' +
           (supervisorState.selectedIds.has(order.id) ? 'checked ' : '') + (order.pickupStatus === 'delivered' || incompatible ? 'disabled' : '') + '>' +
@@ -1796,9 +1799,9 @@
       batchSelectionButton.disabled = finished || orders.length === 0;
       batchSelectionButton.textContent = count ? '取消勾选' : '批量勾选';
       document.getElementById('supervisorSelectionNote').textContent = count
-        ? '已选择 ' + count + ' 笔 · 仅可继续选择同一门店、同一回收商的待取货订单。'
-        : '选择订单后，仅可继续选择同一门店、同一回收商的待取货订单。';
-      if (deliveryMode) document.getElementById('supervisorSelectionNote').textContent = '选择同一门店、同一回收商的已取货订单，确认已送达。';
+        ? '已选择 ' + count + ' 笔 · 仅可继续选择同一门店的待取货订单。'
+        : '选择订单后，仅可继续选择同一门店的待取货订单。';
+      if (deliveryMode) document.getElementById('supervisorSelectionNote').textContent = '选择同一回收商的已取货订单，确认已送达。';
     }
 
     function toggleSupervisorSelection(orderId) {
@@ -1808,8 +1811,8 @@
         supervisorState.selectedIds.delete(orderId);
       } else {
         const anchor = supervisorOrders.find((item) => item.id === [...supervisorState.selectedIds][0]);
-        if (anchor && (anchor.store !== order.store || anchor.recycler !== order.recycler)) {
-          showToast('仅可同时选择同一门店、同一回收商、同一状态的订单。');
+        if (anchor && !sameSupervisorBatch(order, anchor)) {
+          showToast('确认取货须同一门店，确认送达须同一回收商。');
           return;
         }
         supervisorState.selectedIds.add(orderId);
@@ -1824,7 +1827,7 @@
         const visiblePendingOrders = supervisorFilteredOrders().filter((order) => order.pickupStatus !== 'delivered');
         const anchor = visiblePendingOrders[0];
         visiblePendingOrders
-          .filter((order) => anchor && order.store === anchor.store && order.recycler === anchor.recycler)
+          .filter((order) => anchor && sameSupervisorBatch(order, anchor))
           .forEach((order) => supervisorState.selectedIds.add(order.id));
       }
       renderSupervisorOrders();
@@ -1864,9 +1867,9 @@
     function confirmSupervisorPickup(orderIds) {
       const orders = supervisorOrders.filter((order) => orderIds.includes(order.id));
       const eligible = orders.length === orderIds.length && orders.length > 0 && orders.every((order) =>
-        order.pickupStatus === 'pending' && order.store === orders[0].store && order.recycler === orders[0].recycler
+        order.pickupStatus === 'pending' && order.store === orders[0].store
       );
-      if (!eligible) return { ok: false, reason: '仅可同时确认同一门店、同一回收商的待取货订单。' };
+      if (!eligible) return { ok: false, reason: '仅可同时确认同一门店的待取货订单。' };
       const pickedAt = '2026-08-31 10:30';
       orders.forEach((order) => Object.assign(order, { pickupStatus: 'picked', pickedAt, supervisor: 'OB-督导 李敏' }));
       return { ok: true, count: orders.length, pickedAt };
@@ -1960,9 +1963,9 @@
     document.getElementById('submitSupervisorPickup').addEventListener('click', () => {
       const deliveryMode = supervisorState.confirmStatus === 'picked';
       const orders = supervisorState.confirmIds.map(id => supervisorOrders.find(order => order.id === id));
-      const canDeliver = orders.length > 0 && orders.every(order => order && order.pickupStatus === 'picked' && order.store === orders[0].store && order.recycler === orders[0].recycler);
+      const canDeliver = orders.length > 0 && orders.every(order => order && order.pickupStatus === 'picked' && order.recycler === orders[0].recycler);
       const result = deliveryMode
-        ? (canDeliver ? (orders.forEach(order => confirmSupervisorDelivery(order.id)), { ok: true, count: orders.length }) : { ok: false, reason: '仅可同时确认同一门店、同一回收商的已取货订单。' })
+        ? (canDeliver ? (orders.forEach(order => confirmSupervisorDelivery(order.id)), { ok: true, count: orders.length }) : { ok: false, reason: '仅可同时确认同一回收商的已取货订单。' })
         : confirmSupervisorPickup(supervisorState.confirmIds);
       if (!result.ok) { showToast(result.reason); showSupervisorPage('supervisorPickup'); renderSupervisorOrders(); return; }
       supervisorState.selectedIds.clear();
