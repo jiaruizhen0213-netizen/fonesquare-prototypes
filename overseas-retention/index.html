@@ -673,6 +673,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             #stayDetails .rp-options input[type=checkbox],#stayInventory .rp-options input[type=checkbox]{width:15px;height:15px}
             #stayDetails .rp-actions,#stayInventory .rp-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
             #stayDetails td,#stayInventory td{white-space:nowrap}#stayDetails td.rp-reason,#stayInventory td.rp-reason{white-space:normal;min-width:200px}
+            #stayDetails .rp-cell-note{display:block;margin-top:4px;max-width:240px;white-space:normal;color:#667085;font-size:12px;line-height:1.5}#stayDetails .rp-kv dd{white-space:pre-line}
             #stayDetails .rp-pagination,#stayInventory .rp-pagination{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:16px}
             #stayDetails .rp-pagination select,#stayInventory .rp-pagination select{padding:6px;border:1px solid #d0d5dd;border-radius:5px;background:white}
             #stayDetails .rp-formula{padding:15px 18px;margin-bottom:16px;line-height:1.8;background:#eff4ff;border:1px solid #d1e0ff;border-radius:8px;color:#1849a9}
@@ -686,11 +687,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             #stayDetails .rp-message,#stayInventory .rp-message{color:#667085;font-size:12px}#stayDetails button:disabled,#stayInventory button:disabled{opacity:.45;cursor:not-allowed}
             @media(max-width:1100px){#stayDetails .rp-filters,#stayInventory .rp-filters{grid-template-columns:repeat(2,minmax(150px,1fr))}}
           </style>
-          <div class="heading"><div><h1>留货明细</h1><p>追溯每个物品在不同执行批次的计算与锁货结果。</p></div></div>
+          <div class="heading"><div><h1>留货明细</h1><p>查询商品信息、留货结果及预估利润。</p></div></div>
           <div class="page-note"><span class="info-dot">i</span>一条记录对应一次留货中一个物品的处理结果，包含指定策略留货和指定物品留货。以下为模拟数据。</div>
-          <div class="rp-formula"><b>预估利润计算</b><br>单台预估利润率 = （海外预估售价 − 海外结算价）÷ 海外预估售价。<br>平均结算价、平均预估利润率按所属单条策略的锁货成功明细分别取算术平均；缺少价格或币种不一致时不计算利润率，并展示原因。平均值按完整策略历史统计，不随列表筛选变化。</div>
+          <div class="rp-formula"><b>预估利润计算</b><br>单台预估利润率 = （预估售价 − 海外结算价）÷ 预估售价。<br>策略留货数量达标后，按该策略全部成功明细计算平均结算价和平均预估利润率；未达标时显示“策略留货未完成”。平均值不随列表筛选变化。缺少价格或币种不一致时，在对应数值下显示原因；指定物品留货不计算策略平均值。</div>
           <form id="rp-details-filter" class="panel rp-filters"></form>
-          <div class="panel"><div class="panel-head"><h2>留货处理明细 <small id="rp-details-count"></small></h2><small>点击执行批次查看固化快照及日累计</small></div><div class="table-wrap"><table id="rp-details-table"></table></div><div id="rp-details-pagination" class="rp-pagination"></div></div>
+          <div class="panel"><div class="panel-head"><h2>留货明细 <small id="rp-details-count"></small></h2><small>点击商品码查看详情</small></div><div class="table-wrap"><table id="rp-details-table"></table></div><div id="rp-details-pagination" class="rp-pagination"></div></div>
           <dialog class="rp-dialog" id="rp-details-dialog" aria-labelledby="rp-details-dialog-title"><header><h2 id="rp-details-dialog-title"></h2><button type="button" class="secondary" onclick="this.closest('dialog').close()">关闭</button></header><article></article></dialog>
         </section>
         <section class="view" id="stayInventory">
@@ -701,7 +702,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <dialog class="rp-dialog" id="rp-inventory-dialog" aria-labelledby="rp-inventory-dialog-title"><header><h2 id="rp-inventory-dialog-title"></h2><button type="button" class="secondary" onclick="this.closest('dialog').close()">关闭</button></header><article></article></dialog>
           <script>
           document.addEventListener('DOMContentLoaded', () => {
-            // All data and handlers below belong only to the two result pages. PRD revision 704.
+            // Local demo data. The detail view follows the live /details fields verified on 2026-09-21.
             const seed = {"stayDetails":[{"物品编号":"20260807135404011810","货源主体":"爱回收","型号名称":"苹果 iPhone 13","内存":"128G","颜色":"绿色","海外购买渠道":"CH","海外等级":"C","质检报告编号":"631095759041656830","商品码":"219120056161647686","看图成色":"85新","边框背板":"轻微划痕","屏幕外观":"细微划痕","屏幕显示":"显示完美","电池健康度":"80%–89%","结算价":"¥1,095","预估售价":"¥1,153","命中策略":"iPhone 13 128 C等级","留货结果":"成功","失败原因":"—"},{"物品编号":"20260807142610316847","货源主体":"常州悦亿","型号名称":"苹果 iPhone 15","内存":"128G","颜色":"黑色","海外购买渠道":"CH","海外等级":"B","质检报告编号":"1299445609757090863","商品码":"218933603453706240","看图成色":"9新","边框背板":"外壳轻微磕碰","屏幕外观":"外观完美","屏幕显示":"显示完美","电池健康度":"90%–99%","结算价":"¥2,980","预估售价":"¥3,180","命中策略":"iPhone 15 128 B等级","留货结果":"失败","失败原因":"商品已被其他流程占用"},{"物品编号":"20260807151830231203","货源主体":"爱回收","型号名称":"苹果 iPhone 15 Pro","内存":"256G","颜色":"蓝色","海外购买渠道":"LL","海外等级":"A","质检报告编号":"3485904156332265391","商品码":"218931489020347392","看图成色":"95新","边框背板":"外观完美","屏幕外观":"外观完美","屏幕显示":"显示完美","电池健康度":"90%–99%","结算价":"¥4,220","预估售价":"¥4,680","命中策略":"iPhone 15 Pro 256 A等级","留货结果":"处理中","失败原因":"等待银河返回"}],"stayInventory":[{"时间":"2026-08-07 05:00","物品编号":"20260704165420271129","二级SKU名称":"苹果 iPhone 13 大陆国行 256G","二级LEVEL":"D+","货源主体":"常州悦亿","型号名称":"苹果 iPhone 13","购买渠道":"大陆国行","内存":"256G","颜色":"蓝色","IMEI":"356789012345678","运营中心":"优检东莞检测中心","PJT等级":"D+","最新看图成色":"8新以下","海外购买渠道":"CH","海外等级":"E","PJT质检报告编号":"631095759041656830","商品码":"219120056161647686","边框背板":"轻微划痕","屏幕外观":"细微划痕","屏幕显示":"显示完美","机身弯曲情况":"无弯曲","受潮情况":"正常","电池健康度":"80%–89%","维修情况":"无维修","屏幕维修情况":"无维修","主板维修情况":"无维修","电池维修情况":"无维修","零件维修情况":"无维修","后壳维修情况":"无维修","前摄维修情况":"无维修","后摄维修情况":"无维修","前摄拍摄功能":"正常","后摄拍摄功能":"正常","光线距离感应正常":"正常","售后案例情况":"无","开机情况":"正常","通话功能":"正常","充电功能":"正常","无线功能":"正常","苹果保修期时长":"—","ICLOUD是否可注销":"可注销","指纹功能":"正常","指南针功能":"正常","触摸功能":"正常","面容识别功能":"正常","实体按键功能":"正常","振动功能":"正常","侧键":"正常","声音功能":"正常","数据连接功能":"正常","是否可恢复出厂设置":"可以","机身美容情况":"无","命中策略名称":"iPhone 13 256 E等级","比货留货时间":"2026-08-07 05:10","留货结果":"成功","渠道切换时间":"2026-08-07 05:06","海外结算价":"¥1,095","卖家参考价P1":"¥1,120","海外预估售价":"¥1,153"},{"时间":"2026-08-07 05:00","物品编号":"20260704203003425764","二级SKU名称":"苹果 iPhone 12 大陆国行 128G","二级LEVEL":"H2","货源主体":"常州悦亿","型号名称":"苹果 iPhone 12","购买渠道":"大陆国行","内存":"128G","颜色":"白色","IMEI":"356789012345679","运营中心":"优检东莞检测中心","PJT等级":"H2","最新看图成色":"8新","海外购买渠道":"OTH-Locked","海外等级":"E","PJT质检报告编号":"1299445609757090863","商品码":"218933603453706240","边框背板":"外壳轻微磕碰","屏幕外观":"外观完美","屏幕显示":"显示完美","机身弯曲情况":"无弯曲","受潮情况":"正常","电池健康度":"90%–99%","维修情况":"无维修","屏幕维修情况":"无维修","主板维修情况":"无维修","电池维修情况":"无维修","零件维修情况":"无维修","后壳维修情况":"无维修","前摄维修情况":"无维修","后摄维修情况":"无维修","前摄拍摄功能":"正常","后摄拍摄功能":"正常","光线距离感应正常":"正常","售后案例情况":"无","开机情况":"正常","通话功能":"正常","充电功能":"正常","无线功能":"正常","苹果保修期时长":"已过保","ICLOUD是否可注销":"不可注销","指纹功能":"正常","指南针功能":"正常","触摸功能":"正常","面容识别功能":"不支持","实体按键功能":"正常","振动功能":"正常","侧键":"正常","声音功能":"正常","数据连接功能":"正常","是否可恢复出厂设置":"不可以","机身美容情况":"无","命中策略名称":"iPhone 12 128 E等级","比货留货时间":"2026-08-07 05:12","留货结果":"失败","渠道切换时间":"2026-08-07 05:08","海外结算价":"¥1,430","卖家参考价P1":"¥1,450","海外预估售价":"¥1,477"},{"时间":"2026-08-07 05:00","物品编号":"20260704230032457108","二级SKU名称":"苹果 iPhone 13 mini 大陆国行 128G","二级LEVEL":"B","货源主体":"常州悦亿","型号名称":"苹果 iPhone 13 mini","购买渠道":"大陆国行","内存":"128G","颜色":"绿色","IMEI":"356789012345680","运营中心":"优检武汉检测中心","PJT等级":"B","最新看图成色":"85新","海外购买渠道":"CH","海外等级":"C","PJT质检报告编号":"3485904156332265391","商品码":"218931489020347392","边框背板":"外观完美","屏幕外观":"外观完美","屏幕显示":"显示完美","机身弯曲情况":"无弯曲","受潮情况":"正常","电池健康度":"90%–99%","维修情况":"无维修","屏幕维修情况":"无维修","主板维修情况":"无维修","电池维修情况":"无维修","零件维修情况":"无维修","后壳维修情况":"无维修","前摄维修情况":"无维修","后摄维修情况":"无维修","前摄拍摄功能":"正常","后摄拍摄功能":"正常","光线距离感应正常":"正常","售后案例情况":"无","开机情况":"正常","通话功能":"正常","充电功能":"正常","无线功能":"正常","苹果保修期时长":"—","ICLOUD是否可注销":"可注销","指纹功能":"正常","指南针功能":"正常","触摸功能":"正常","面容识别功能":"正常","实体按键功能":"正常","振动功能":"正常","侧键":"正常","声音功能":"正常","数据连接功能":"正常","是否可恢复出厂设置":"可以","机身美容情况":"无","命中策略名称":"iPhone 13 mini 128 C等级","比货留货时间":"2026-08-07 05:15","留货结果":"处理中","渠道切换时间":"2026-08-07 05:11","海外结算价":"¥1,680","卖家参考价P1":"¥1,700","海外预估售价":"¥1,780"}]};
             const esc = value => String(value ?? '—').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
             const amount = value => value == null || value === '—' ? null : Number(String(value).replace(/[¥,]/g,''));
@@ -711,22 +712,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const latest = today + ' 00:00:00';
             const stampAt = index => stamp(new Date(new Date(today+'T00:00:00').getTime() + Math.max(0,now-new Date(today+'T00:00:00')) * (.12+index*.1)));
             const strategies = [
-              {id:'ST-DEMO-13',name:'iPhone 13 128 C等级',region:'香港',range:'iPhone 13 · 128G',target:100,base:1100,ceiling:1200,template:'C级 · V3',mode:'完整质量规则',sample:320,tolerance:'85新：目标 100%，容差 10%',filter:'看图成色：85新；电池健康度：80%–89%'},
-              {id:'ST-DEMO-15',name:'iPhone 15 128 B等级',region:'香港',range:'iPhone 15 · 128G',target:80,base:3000,ceiling:3200,template:'B级 · V1',mode:'等级兜底',sample:0,tolerance:'不适用（等级兜底）',filter:'屏幕显示：显示完美'},
+              {id:'ST-DEMO-13',name:'iPhone 13 128 C等级',region:'香港',range:'iPhone 13 · 128G',target:3,base:1100,ceiling:1200,template:'C级 · V3',mode:'完整质量规则',sample:320,tolerance:'85新：目标 100%，容差 10%',filter:'看图成色：85新；电池健康度：80%–89%'},
+              {id:'ST-DEMO-15',name:'iPhone 15 128 B等级',region:'香港',range:'iPhone 15 · 128G',target:1,base:3000,ceiling:3200,template:'B级 · V1',mode:'等级兜底',sample:0,tolerance:'不适用（等级兜底）',filter:'屏幕显示：显示完美'},
               {id:'ST-DEMO-15P',name:'iPhone 15 Pro 256 A等级',region:'迪拜',range:'iPhone 15 Pro · 256G',target:50,base:4300,ceiling:4600,template:'A级 · V1',mode:'等级兜底',sample:0,tolerance:'不适用（等级兜底）',filter:'未添加（不限）'}
             ];
-            const rows = seed.stayDetails.map((r,i) => ({...r,'海外结算价':amount(r['结算价']),'海外预估售价':amount(r['预估售价']),'结算价币种':'CNY','预估售价币种':'CNY','价格版本':'PRICE-DEMO-V1','运营中心':'优检东莞检测中心',strategy:strategies[i],'留货时间':stampAt(i),'锁货处理时间':i<2?stampAt(i):'—'}));
+            const rows = seed.stayDetails.map((r,i) => ({...r,'海外结算价':amount(r['结算价']),'海外预估售价':amount(r['预估售价']),'结算价币种':'CNY','预估售价币种':'CNY','价格版本':'PRICE-DEMO-V1','运营中心':'优检东莞检测中心','PJT等级':['B','A','A1'][i],strategy:strategies[i],'留货时间':stampAt(i),'锁货处理时间':i<2?stampAt(i):'—'}));
             rows.forEach(r=>{delete r['结算价'];delete r['预估售价'];});
             rows.push({...rows[0],'物品编号':'20260807135404011811','商品码':'219120056161647687','海外结算价':1050,'海外预估售价':1200,'留货时间':stampAt(3),'锁货处理时间':stampAt(3)});
             rows.push({...rows[0],'物品编号':'20260807135404011812','商品码':'219120056161647688','海外预估售价':null,'留货时间':stampAt(4),'锁货处理时间':stampAt(4)});
             rows.push({...rows[2],'物品编号':'20260807151830231204','商品码':'218931489020347393','预估售价币种':'AED','留货结果':'未返回','失败原因':'银河响应超时，等待查询对账；暂计日占用，不重复锁货','留货时间':stampAt(5),'锁货处理时间':'—'});
-            function profit(r) {return r['海外结算价']==null||r['海外预估售价']==null||r['海外预估售价']<=0||r['结算价币种']!==r['预估售价币种']?null:(r['海外预估售价']-r['海外结算价'])/r['海外预估售价'];}
+            rows.push({...rows[1],'物品编号':'20260807142610316848','商品码':'218933603453706241','留货结果':'成功','失败原因':'—','留货时间':stampAt(6),'锁货处理时间':stampAt(6)});
+            rows.push({...rows[2],'物品编号':'20260807151830231205','商品码':'218931489020347394','留货结果':'成功','失败原因':'—','留货时间':stampAt(7),'锁货处理时间':stampAt(7)});
+            function profitReason(r){if(!Number.isFinite(r['海外预估售价']))return '缺少海外预估售价';if(!Number.isFinite(r['海外结算价']))return '缺少海外结算价';if(r['海外预估售价']<=0)return '预估售价须大于0';if(!r['结算价币种']||!r['预估售价币种'])return '缺少价格币种';if(r['结算价币种']!==r['预估售价币种'])return '预估售价与海外结算价币种不一致';return '';}
+            function profit(r) {return profitReason(r)?null:(r['海外预估售价']-r['海外结算价'])/r['海外预估售价'];}
             const average = values => values.length ? values.reduce((a,b)=>a+b,0)/values.length : null;
+            function strategyAverages(strategy){
+              const successes=rows.filter(r=>r.strategy?.id===strategy.id&&r['留货结果']==='成功');
+              if(successes.length<strategy.target)return {price:null,currency:'—',profit:null,priceReason:'策略留货未完成',profitReason:'策略留货未完成'};
+              // Do not silently average a subset: demo values require all successful records to be valid.
+              const missingPrices=successes.filter(r=>!Number.isFinite(r['海外结算价'])).length;
+              const currencies=new Set(successes.map(r=>r['结算价币种']));
+              const priceReason=missingPrices?`${missingPrices} 条成功明细缺少海外结算价`:currencies.has(null)||currencies.has(undefined)||currencies.has('')?'成功明细缺少结算价币种':currencies.size!==1?'成功明细的结算价币种不一致':'';
+              const invalidProfits=successes.filter(r=>profit(r)==null);
+              const profitReasonText=invalidProfits.length?`${invalidProfits.length} 条成功明细不可计算：${[...new Set(invalidProfits.map(profitReason))].join('；')}`:'';
+              return {price:priceReason?null:average(successes.map(r=>r['海外结算价'])),currency:priceReason?'—':successes[0]['结算价币种'],profit:profitReasonText?null:average(successes.map(profit)),priceReason,profitReason:profitReasonText};
+            }
             rows.forEach((r,i) => {
-              const s=r.strategy, successes=rows.filter(x=>x.strategy.id===s.id&&x['留货结果']==='成功');
-              const prices=successes.filter(x=>x['结算价币种']===r['结算价币种']).map(x=>x['海外结算价']).filter(x=>x!=null);
-              const profits=successes.map(profit).filter(x=>x!=null), p=profit(r);
-              Object.assign(r,{'执行批次':'B-DEMO-'+String(i+1).padStart(3,'0'),'计算结果关联键':'CALC-DEMO-'+(i+1),'策略ID':s.id,'配置修订号':'R2','目标地区':s.region,'海外结算价':r['海外结算价'],'单台预估利润率':p==null?'—':(p*100).toFixed(2)+'%','平均结算价':average(prices),'平均结算价币种':prices.length?r['结算价币种']:'—','平均预估利润率':profits.length?(average(profits)*100).toFixed(2)+'%':'—','利润率计算原因':p!=null?'—':r['海外预估售价']==null?'缺少海外预估售价':r['海外结算价']==null?'缺少海外结算价':'海外预估售价与海外结算价币种不一致','平均结算价计算原因':prices.length?'—':'该策略暂无有效结算价的锁货成功明细','平均预估利润率计算原因':profits.length?'—':'该策略暂无满足计算条件的锁货成功明细','货品范围配置':s.range,'策略级质检附加筛选':s.filter,'目标数量':s.target,'基准价':s.base,'最高价':s.ceiling,'质量模板版本':s.template,'分层占比容差':s.tolerance,'匹配模式':s.mode,'有效样本量':s.sample,'计算结果':'入选待锁清单','未入选原因':'—','本批拟锁数量':1,'执行前日累计数量':[0,1,1,1,2,3][i],'执行后日累计数量':[1,1,1,2,3,4][i]});
+              const s=r.strategy, averages=strategyAverages(s), p=profit(r), before=rows.slice(0,i).filter(x=>x.strategy.id===s.id&&x['留货结果']==='成功').length;
+              Object.assign(r,{'执行批次':'B-DEMO-'+String(i+1).padStart(3,'0'),'策略执行':'EXEC-DEMO-'+String(i+1).padStart(3,'0'),'计算结果关联键':'CALC-DEMO-'+(i+1),'策略ID':s.id,'配置修订号':'R2','目标地区':s.region,'海外结算价':r['海外结算价'],'单台预估利润率':p==null?'—':(p*100).toFixed(2)+'%','平均结算价':averages.price,'平均结算价币种':averages.currency,'平均预估利润率':averages.profit==null?'—':(averages.profit*100).toFixed(2)+'%','利润率计算原因':profitReason(r)||'—','平均结算价计算原因':averages.priceReason||'—','平均预估利润率计算原因':averages.profitReason||'—','货品范围配置':s.range,'策略级质检附加筛选':s.filter,'目标数量':s.target,'基准价':s.base,'最高价':s.ceiling,'质量模板版本':s.template,'分层占比容差':s.tolerance,'匹配模式':s.mode,'有效样本量':s.sample,'计算结果':'入选待锁清单','未入选原因':'—','本批拟锁数量':1,'执行前日累计数量':before,'执行后日累计数量':before+(r['留货结果']==='成功'?1:0)});
             });
             const inventory = seed.stayInventory.map((r,i) => {
               const result={...r,'快照时间':latest,'质检报告编号':r['PJT质检报告编号'],'库存状态':['可售','已锁定','不可售'][i],'不可售原因':['—','已被其他订单锁定','库存服务返回质检复核中'][i],'海外结算价':amount(r['海外结算价']),'比货留货时间':today+' 00:00:00','渠道切换时间':today+' 00:00:00'};
@@ -736,20 +749,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             rows.forEach(r=>{r['留货来源']='指定策略留货';r['国家/地区']=r['目标地区'];r['承运商获取状态']=r['留货结果']==='成功'?'已获取':null;if(['处理中','未返回'].includes(r['留货结果']))r['留货结果']='待锁';});
             const history=inventory.map(r=>({...r,'快照时间':yesterday+' 00:00:00','比货留货时间':r['比货留货时间']==='—'?'—':yesterday+' 00:00:00','渠道切换时间':r['渠道切换时间']==='—'?'—':yesterday+' 00:00:00'}));
-            const detailCols=['物品编号','留货来源','命中策略','国家/地区','执行批次','锁货处理时间','留货结果','失败原因','海外结算价','结算价币种','海外预估售价','预估售价币种','价格版本','单台预估利润率','平均结算价','平均结算价币种','平均预估利润率','利润率计算原因','平均结算价计算原因','平均预估利润率计算原因','货源主体','型号名称','内存','颜色','海外购买渠道','海外等级','质检报告编号','商品码','看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','运营中心','快照时间','商品信息来源','操作人','承运商获取状态','计算结果关联键','配置修订号','货品范围配置','策略级质检附加筛选','目标数量','基准价','最高价','质量模板版本','分层占比容差','匹配模式','有效样本量','计算结果','未入选原因','本批拟锁数量','执行前日累计数量','执行后日累计数量'];
+            const detailCols=['商品码','物品编码','货源主体','运营中心','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','命中策略','比货留货时间','留货结果','失败原因'];
+            const detailDialogCols=['商品码','物品编码','运行批次','策略执行','命中策略','货源主体','运营中心','型号','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','比货留货时间','留货结果','失败原因'];
+            // Keep the source model used by specified-item imports and inventory intact.
+            const detailAliases={'物品编码':'物品编号','型号':'型号名称','最新看图成色':'看图成色','预估售价':'海外预估售价','比货留货时间':'留货时间'};
+            function detailValue(r,key){if(key==='运行批次')return r['留货来源']==='指定物品留货'?null:r['执行批次'];return r[detailAliases[key]||key];}
+            function detailFormat(r,key){
+              const raw=detailValue(r,key),value=raw==null||raw===''?'—':raw;
+              const prices={'海外结算价':'结算价币种','预估售价':'预估售价币种','平均结算价':'平均结算价币种'};
+              let reason='';
+              if(key==='单台预估利润率')reason=r['利润率计算原因']||profitReason(r);
+              if(key==='平均结算价')reason=r['平均结算价计算原因'];
+              if(key==='平均预估利润率')reason=r['平均预估利润率计算原因'];
+              if(['平均结算价','平均预估利润率'].includes(key)&&!r.strategy)reason='指定物品留货，不归属策略';
+              if(prices[key]){
+                const currency=r[prices[key]],number=amount(raw);
+                if(number==null||!Number.isFinite(number))return {value:'—',reason:reason&&reason!=='—'?reason:'缺少'+key};
+                if(!currency||currency==='—')return {value:'—',reason:'缺少'+key+'币种'};
+                return {value:currency+' '+number.toFixed(2),reason:reason&&reason!=='—'?reason:''};
+              }
+              return {value,reason:reason&&reason!=='—'?reason:''};
+            }
+            function detailText(r,key){const result=detailFormat(r,key);return String(result.value)+(result.reason?'\n'+result.reason:'');}
             const inventoryCols=['物品编号','库存状态','二级SKU名称','二级LEVEL','货源主体','型号名称','购买渠道','内存','颜色','运营中心','海外购买渠道','海外等级','最新看图成色','质检报告编号','海外结算价','卖家参考价P1','海外预估售价','命中策略名称','比货留货时间','留货结果','快照时间','渠道切换时间'];
             const configs={details:{root:'stayDetails',rows,cols:detailCols},inventory:{root:'stayInventory',rows:[...inventory,...history],cols:inventoryCols}};
-            const state={details:{page:1,size:50,sort:null,dir:1,filters:{}},inventory:{page:1,size:50,sort:null,dir:1,filters:{}}};
+            const state={details:{page:1,size:20,sort:null,dir:1,filters:{}},inventory:{page:1,size:50,sort:null,dir:1,filters:{}}};
             const form = type => document.getElementById('rp-'+type+'-filter');
-            function multi(type,key,options,advanced=false){return `<div class="rp-field" ${advanced?'data-advanced hidden':''}><label>${esc(key)}</label><details class="rp-multi" data-key="${esc(key)}"><summary>不限</summary><div class="rp-options"><input type="search" placeholder="搜索选项" aria-label="搜索${esc(key)}">${options.map(v=>`<label><input type="checkbox" value="${esc(v)}">${esc(v)}</label>`).join('')}</div></details></div>`;}
+            function multi(type,key,options,advanced=false){const label=type==='details'&&key==='型号名称'?'型号':key;return `<div class="rp-field" ${advanced?'data-advanced hidden':''}><label>${esc(label)}</label><details class="rp-multi" data-key="${esc(key)}"><summary>不限</summary><div class="rp-options"><input type="search" placeholder="搜索选项" aria-label="搜索${esc(label)}">${options.map(v=>`<label><input type="checkbox" value="${esc(v)}">${esc(v)}</label>`).join('')}</div></details></div>`;}
             function range(key,label,type='datetime-local',advanced=false){return `<label class="rp-field rp-range" ${advanced?'data-advanced hidden':''}>${label}<div><input data-key="${key}从" type="${type}" step="${type==='number'?'0.01':'1'}" ${type==='number'?'min="0"':''} aria-label="${label}开始"><span>至</span><input data-key="${key}至" type="${type}" step="${type==='number'?'0.01':'1'}" ${type==='number'?'min="0"':''} aria-label="${label}结束"></div></label>`;}
-            function values(type,key){return [...new Set(configs[type].rows.map(r=>r[key]).filter(v=>v&&v!=='—'))];}
+            function values(type,key){return [...new Set(configs[type].rows.map(r=>type==='details'?detailValue(r,key):r[key]).filter(v=>v&&v!=='—'))];}
             for(const type of ['details','inventory']){
               const isInv=type==='inventory';
               let html=range(isInv?'快照时间':'留货时间',isInv?'快照时间（留空取最新成功快照）':'留货时间');
-              const first=isInv?['型号名称','内存','颜色','运营中心','库存状态','海外等级']:['型号名称','内存','颜色','海外购买渠道','海外等级','运营中心','物品编号','留货来源','国家/地区','命中策略','留货结果'];
+              const first=isInv?['型号名称','内存','颜色','运营中心','库存状态','海外等级']:['型号名称','内存','颜色','海外购买渠道','海外等级','运营中心'];
               first.forEach(k=>html+=multi(type,k,k==='留货结果'?(isInv?['成功','失败','处理中','未返回']:['待锁','成功','失败']):values(type,k)));
-              if(!isInv)html+=`<label class="rp-field">执行批次<input data-key="执行批次" placeholder="精确输入执行批次" aria-label="执行批次"></label>`;
+              if(!isInv){html+=`<label class="rp-field">商品码<input data-key="商品码" placeholder="请输入商品码" aria-label="商品码"></label>`;html+=multi(type,'命中策略',values(type,'命中策略'))+multi(type,'留货结果',['待锁','成功','失败']);}
               if(isInv){
                 ['二级LEVEL','购买渠道','海外购买渠道','货源主体','最新看图成色','命中策略名称','留货结果'].forEach(k=>html+=multi(type,k,k==='留货结果'?(isInv?['成功','失败','处理中','未返回']:['待锁','成功','失败']):values(type,k),true));
                 ['物品编号','质检报告编号','商品码'].forEach(k=>html+=`<label class="rp-field" data-advanced hidden>${k}<input data-key="${k}" placeholder="精确输入${k}" aria-label="${k}"></label>`);
@@ -774,25 +808,34 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             function readFilters(type){const out={};form(type).querySelectorAll('details[data-key]').forEach(d=>out[d.dataset.key]=[...d.querySelectorAll(':checked')].map(c=>c.value));form(type).querySelectorAll('input[data-key]').forEach(el=>out[el.dataset.key]=el.value);return out;}
             function valid(type){for(const input of form(type).querySelectorAll('input[data-key$="从"]')){const end=form(type).querySelector(`[data-key="${input.dataset.key.slice(0,-1)}至"]`);if(input.value&&end.value&&(input.type==='number'?Number(input.value)>Number(end.value):input.value>end.value)){say(type,'开始值不能大于结束值');return false;}}return form(type).reportValidity();}
             function say(type,text){form(type).querySelector('[role=status]').textContent=text;}
-            function filtered(type){const f=state[type].filters;let data=configs[type].rows.filter(r=>Object.entries(f).every(([k,v])=>{if(!v||Array.isArray(v)&&!v.length)return true;if(Array.isArray(v))return v.includes(r[k]);if(k.endsWith('从')||k.endsWith('至')){const base=k.slice(0,-1),raw=r[base];if(raw==null||raw==='—')return false;const a=base==='海外结算价'?Number(raw):String(raw).replace('T',' '),b=base==='海外结算价'?Number(v):v.replace('T',' ');return k.endsWith('从')?a>=b:a<=b;}return String(r[k])===v.trim();}));if(type==='inventory'&&!f['快照时间从']&&!f['快照时间至'])data=data.filter(r=>r['快照时间']===latest);const s=state[type];if(s.sort)data.sort((a,b)=>{const x=a[s.sort],y=b[s.sort];return (typeof x==='number'&&typeof y==='number'?x-y:String(x??'').localeCompare(String(y??''),'zh-CN',{numeric:true}))*s.dir;});return data;}
+            function filtered(type){const f=state[type].filters,read=(r,key)=>type==='details'?detailValue(r,key):r[key];let data=configs[type].rows.filter(r=>Object.entries(f).every(([k,v])=>{if(!v||Array.isArray(v)&&!v.length)return true;if(Array.isArray(v))return v.includes(read(r,k));if(k.endsWith('从')||k.endsWith('至')){const base=k.slice(0,-1),raw=read(r,base);if(raw==null||raw==='—')return false;const a=base==='海外结算价'?Number(raw):String(raw).replace('T',' '),b=base==='海外结算价'?Number(v):v.replace('T',' ');return k.endsWith('从')?a>=b:a<=b;}return String(read(r,k))===v.trim();}));if(type==='inventory'&&!f['快照时间从']&&!f['快照时间至'])data=data.filter(r=>r['快照时间']===latest);const s=state[type];if(s.sort)data.sort((a,b)=>{const x=read(a,s.sort),y=read(b,s.sort);return (typeof x==='number'&&typeof y==='number'?x-y:String(x??'').localeCompare(String(y??''),'zh-CN',{numeric:true}))*s.dir;});return data;}
             function display(key,value){return ['海外结算价','海外预估售价','平均结算价','基准价','最高价'].includes(key)?money(value):value??'—';}
             function badge(value){const classes={成功:'sale',可售:'sale',失败:'off',不可售:'off',已锁定:'locked',待锁:'locked',处理中:'locked',未返回:'off'};return `<span class="state ${classes[value]||''}">${esc(value)}</span>`;}
             function render(type){const cfg=configs[type],s=state[type],all=filtered(type),pages=Math.max(1,Math.ceil(all.length/s.size));s.page=Math.min(s.page,pages);const selected=all.slice((s.page-1)*s.size,s.page*s.size),table=document.getElementById('rp-'+type+'-table');
-              table.innerHTML='<thead><tr>'+cfg.cols.map(k=>`<th><button type="button" class="rp-sort" data-sort="${esc(k)}">${esc(k)} ${s.sort===k?(s.dir===1?'↑':'↓'):'↕'}</button></th>`).join('')+'</tr></thead><tbody>'+ (selected.length?selected.map(r=>'<tr>'+cfg.cols.map(k=>{const value=display(k,r[k]);let content=esc(value);if(k==='库存状态'||k==='留货结果')content=badge(value);if((type==='inventory'&&k==='物品编号')||(type==='details'&&k==='执行批次'))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;if((k==='命中策略'||k==='命中策略名称')&&value!=='—')content=`<button class="text-btn" type="button" data-strategy="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;return `<td class="${k.includes('原因')?'rp-reason':''}">${content}</td>`;}).join('')+'</tr>').join(''):`<tr><td colspan="${cfg.cols.length}" class="empty">暂无符合条件的记录</td></tr>` )+'</tbody>';
+              table.innerHTML='<thead><tr>'+cfg.cols.map(k=>`<th><button type="button" class="rp-sort" data-sort="${esc(k)}">${esc(k)} ${s.sort===k?(s.dir===1?'↑':'↓'):'↕'}</button></th>`).join('')+'</tr></thead><tbody>'+ (selected.length?selected.map(r=>'<tr>'+cfg.cols.map(k=>{
+                const field=type==='details'?detailFormat(r,k):{value:display(k,r[k]),reason:''},value=field.value;
+                let content=esc(value);
+                if(k==='库存状态'||k==='留货结果')content=badge(value);
+                const hasProductCode=Boolean(r['商品码']&&r['商品码']!=='—');
+                if((type==='inventory'&&k==='物品编号')||(type==='details'&&((k==='商品码'&&hasProductCode)||(k==='物品编码'&&!hasProductCode))))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
+                if((k==='命中策略'||k==='命中策略名称')&&value!=='—'&&(type!=='details'||r.strategy))content=`<button class="text-btn" type="button" data-strategy="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
+                if(field.reason)content+=`<small class="rp-cell-note">${esc(field.reason)}</small>`;
+                return `<td class="${k.includes('原因')?'rp-reason':''}">${content}</td>`;
+              }).join('')+'</tr>').join(''):`<tr><td colspan="${cfg.cols.length}" class="empty">暂无符合条件的记录</td></tr>` )+'</tbody>';
               document.getElementById('rp-'+type+'-count').textContent=`共 ${all.length} 条模拟记录`;
-              const pager=document.getElementById('rp-'+type+'-pagination');pager.innerHTML=`<span>第 ${s.page} / ${pages} 页</span><select aria-label="每页条数">${[10,50,100,200].map(n=>`<option value="${n}" ${n===s.size?'selected':''}>${n} 条/页</option>`).join('')}</select><button class="secondary" ${s.page===1?'disabled':''} data-step="-1">上一页</button><button class="secondary" ${s.page===pages?'disabled':''} data-step="1">下一页</button>`;pager.querySelector('select').onchange=e=>{s.size=Number(e.target.value);s.page=1;render(type);};pager.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.page+=Number(b.dataset.step);render(type);});
+              const pager=document.getElementById('rp-'+type+'-pagination');pager.innerHTML=`<span>第 ${s.page} / ${pages} 页</span><select aria-label="每页条数">${(type==='details'?[20,50,100,200]:[10,50,100,200]).map(n=>`<option value="${n}" ${n===s.size?'selected':''}>${n} 条/页</option>`).join('')}</select><button class="secondary" ${s.page===1?'disabled':''} data-step="-1">上一页</button><button class="secondary" ${s.page===pages?'disabled':''} data-step="1">下一页</button>`;pager.querySelector('select').onchange=e=>{s.size=Number(e.target.value);s.page=1;render(type);};pager.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.page+=Number(b.dataset.step);render(type);});
               table.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.sort){s.dir=s.sort===b.dataset.sort?-s.dir:1;s.sort=b.dataset.sort;render(type);}else if(b.dataset.open!=null){openRecord(type,cfg.rows[Number(b.dataset.open)]);}else if(b.dataset.strategy!=null){openStrategy(type,cfg.rows[Number(b.dataset.strategy)]);}};
               if(type==='inventory')document.getElementById('rp-inventory-note').textContent=(s.filters['快照时间从']||s.filters['快照时间至']?'按指定范围展示历史快照。':'最新成功快照：'+latest+'。')+' 同一物品在同一快照仅一条；无留货记录的库存也展示。以下为模拟数据。';
             }
-            function showDialog(type,title,entries){const d=document.getElementById('rp-'+type+'-dialog');d.querySelector('h2').textContent=title;d.querySelector('article').innerHTML='<dl class="rp-kv">'+entries.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(display(k,v))}</dd>`).join('')+'</dl>';d.showModal();}
-            function openRecord(type,r){if(type==='details'&&r['留货来源']==='指定物品留货'){showDialog(type,'指定物品留货 · '+r['执行批次'],Object.entries(r).filter(([k])=>!['strategy','提交顺序','记录标识'].includes(k)));return;}if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
-              const index=rows.indexOf(r),snapshot=Object.entries(r).filter(([k])=>k!=='strategy');
-              showDialog(type,'执行批次 · '+r['执行批次'],[...snapshot,['开始时间',r['留货时间']],['结束时间',r['留货时间']],['确认清单',r['物品编号']],['幂等标识','IDEM-DEMO-'+(index+1)],['日初成功数量',0],['执行后当日成功数量',[1,1,1,2,3,3][index]],['未返回保守占用',r['留货结果']==='未返回'?1:0],['本批待锁/成功/失败',['待锁','成功','失败'].map(s=>s+'：'+(r['留货结果']===s?1:0)).join('；')],['地区冻结',r['留货结果']==='成功'?'已冻结：'+r['目标地区']:'尚未冻结'],['订单/承运商传递状态',r['留货结果']==='成功'?'已传递 / 已传递（模拟）':'待锁货成功'],['批次说明','保存创建时的策略、质检及价格快照；后续修改不回写本批次。']]);
+            function showDialog(type,title,entries,formatted=false){const d=document.getElementById('rp-'+type+'-dialog');d.querySelector('h2').textContent=title;d.querySelector('article').innerHTML='<dl class="rp-kv">'+entries.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(formatted?v:display(k,v))}</dd>`).join('')+'</dl>';d.showModal();}
+            function openRecord(type,r){
+              if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
+              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),detailDialogCols.map(k=>[k,detailText(r,k)]),true);
             }
             function openStrategy(type,r){if(type==='details'){const s=r.strategy;showDialog(type,'策略详情 · '+s.name,[['策略ID',s.id],['策略名称',s.name],['目标地区',s.region],['配置修订号',r['配置修订号']],['货品范围配置',s.range],['目标数量',s.target],['基准价',s.base],['最高价',s.ceiling],['质量模板版本',s.template],['匹配模式',s.mode],['策略级质检附加筛选',s.filter],['分层占比容差',s.tolerance],['有效样本量',s.sample]]);}else{showDialog(type,'策略详情 · '+r['命中策略名称'],[['策略名称',r['命中策略名称']],['货品范围配置',r['型号名称']+' · '+r['内存']],['海外等级',r['海外等级']],['目标地区','香港'],['目标数量',100],['基准价',r['海外结算价']],['最高价',r['海外结算价']+100],['质量模板版本',r['海外等级']+'级 · V1'],['匹配模式','等级兜底'],['有效样本量',0],['配置修订号','R1'],['执行频次','每日一次'],['说明','模拟策略详情，只读展示关联策略。']]);}}
-            function exportFields(type){return type==='details'?[...detailCols,'留货时间','策略ID']:[...new Set([...inventoryCols,...Object.keys(inventory[0])])];}
+            function exportFields(type){return type==='details'?[...detailCols]:[...new Set([...inventoryCols,...Object.keys(inventory[0])])];}
             function csvCell(v){let text=String(v??'—');if(/^[=+\-@\t\r]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
-            function download(type){const cols=exportFields(type),data=filtered(type),csv='\ufeff'+[cols,...data.map(r=>cols.map(k=>r['商品信息来源']==='PMS'&&['快照时间','货源主体','运营中心'].includes(k)?'':display(k,r[k])))].map(r=>r.map(csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=(type==='details'?'留货明细':'留货库存')+'-模拟数据.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);say(type,`已导出当前筛选全部 ${data.length} 条模拟记录`);}
+            function download(type){const cols=exportFields(type),data=filtered(type),csv='\ufeff'+[cols,...data.map(r=>cols.map(k=>type==='details'?detailText(r,k):r['商品信息来源']==='PMS'&&['快照时间','货源主体','运营中心'].includes(k)?'':display(k,r[k])))].map(r=>r.map(csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=(type==='details'?'留货明细':'留货库存')+'-模拟数据.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);say(type,`已导出当前筛选全部 ${data.length} 条模拟记录`);}
             try{const saved=JSON.parse(localStorage.getItem('stay-inventory-preferences-v704')||'null');if(saved&&typeof saved==='object'){form('inventory').querySelectorAll('details[data-key]').forEach(d=>{d.querySelectorAll('[type=checkbox]').forEach(c=>c.checked=Array.isArray(saved[d.dataset.key])&&saved[d.dataset.key].includes(c.value));refreshSummary(d);});form('inventory').querySelectorAll('input[data-key]').forEach(el=>el.value=typeof saved[el.dataset.key]==='string'?saved[el.dataset.key]:'');state.inventory.filters=readFilters('inventory');say('inventory','已恢复本机保存的筛选偏好');if(Object.values(saved).some(v=>Array.isArray(v)?v.length:v))form('inventory').querySelector('[data-action=expand]').click();}}catch{}
             render('details');render('inventory');
 // Static prototype only: local fixtures simulate PMS details and Galaxy locks.
@@ -815,7 +858,7 @@ function fillManualInfo(r){
   const info=inv||pmsFixture[r['物品编号']];
   if(!info)return false;
   // Only copy product attributes; never copy strategy, old status or old timestamps.
-  ['型号名称','内存','颜色','海外购买渠道','海外等级','质检报告编号','商品码','边框背板','屏幕外观','屏幕显示','电池健康度','IMEI'].forEach(k=>r[k]=info[k]??null);
+  ['型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','商品码','边框背板','屏幕外观','屏幕显示','电池健康度','IMEI'].forEach(k=>r[k]=info[k]??null);
   r['看图成色']=info['最新看图成色']||info['看图成色']||null;
   r['海外结算价']=amount(info['海外结算价']);r['结算价币种']='CNY';
   r['商品信息来源']=inv?'留货库存':'PMS';
