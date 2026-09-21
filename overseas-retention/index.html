@@ -646,16 +646,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         <section class="view" id="specifiedItems">
   <div class="heading"><div><h1>指定物品留货</h1><p>按 Excel 中的物品编号和国家/地区直接发起留货，成功后同步至留货明细。</p></div><div class="buttons"><button class="secondary" id="mi-template">下载导入模板</button><button class="primary" id="mi-upload">+ 导入并留货</button></div></div>
   <div class="page-note"><span class="info-dot">i</span><span>交互原型 · 以下为模拟数据，上传不会实际锁货。</span></div>
-  <form class="panel filter" id="mi-filter"><input name="query" aria-label="批次或文件名称" placeholder="搜索批次编号 / 文件名称"><button class="primary" type="submit">查询</button><button class="secondary" type="reset">重置</button><span class="grow"></span><span class="hint" id="mi-message" role="status" aria-live="polite"></span></form>
-  <div class="panel"><div class="panel-head"><h2>导入记录 <small id="mi-count"></small></h2><small>点击批次查看逐物品结果</small></div><div class="table-wrap"><table id="mi-batches"><thead><tr><th>导入批次</th><th>文件名称</th><th>导入数量</th><th>待锁</th><th>成功</th><th>失败</th><th>操作人</th><th>导入时间</th><th>操作</th></tr></thead><tbody></tbody></table></div></div>
+  <form class="panel filter" id="mi-filter"><input name="query" aria-label="物品编号" placeholder="输入物品编号"><select name="region" aria-label="国家/地区"><option value="">全部国家/地区</option><option>香港</option><option>迪拜</option></select><select name="status" aria-label="留货结果"><option value="">全部结果</option><option>待锁</option><option>成功</option><option>失败</option></select><button class="primary" type="submit">查询</button><button class="secondary" type="reset">重置</button><span class="grow"></span><button class="secondary" type="button" id="mi-export">导出明细</button><span class="hint" id="mi-message" role="status" aria-live="polite"></span></form>
+  <div class="panel"><div class="panel-head"><h2>指定物品留货明细 <small id="mi-count"></small></h2><small>点击物品编号查看详情</small></div><div class="table-wrap"><table id="mi-result-table"></table></div></div>
   <dialog class="mi-dialog" id="mi-import" aria-labelledby="mi-import-title"><header><div><h2 id="mi-import-title">导入并留货</h2><p>上传后直接执行留货，无需预览或二次确认。</p></div><button class="close" type="button" aria-label="关闭导入" onclick="this.closest('dialog').close()">×</button></header><article>
     <div class="upload-step"><div><b>1. 填写 Excel 模板</b><p>必填：物品编号、国家/地区（香港或迪拜）。物品编号请使用文本格式。</p></div><button class="secondary" id="mi-template-modal">下载模板</button></div>
     <div class="upload-zone" id="mi-zone"><div class="upload-icon">↑</div><b>2. 选择填写后的 Excel 文件</b><p>支持 .xlsx、.xls，每行填写一件物品及其国家/地区。</p><button class="secondary" id="mi-choose" style="margin-top:12px">选择文件</button><input id="mi-file" type="file" accept=".xlsx,.xls" hidden><div id="mi-file-chip" class="file-chip"><span id="mi-filename"></span><button class="text-btn" id="mi-remove">移除</button></div></div>
     <label class="field" style="margin-top:16px">留货原因（选填）<input id="mi-reason" maxlength="200" placeholder="例如：客户指定采购"></label>
     <p class="hint" style="margin:16px 0 0">原型体验：<button class="text-btn" id="mi-example">下载示例文件</button>，包含库存命中、PMS 补充及锁货失败示例。</p><p id="mi-upload-error" role="alert" style="color:var(--red)"></p>
   </article><footer><button class="secondary" onclick="this.closest('dialog').close()">取消</button><button class="primary" id="mi-submit" disabled>上传并留货</button></footer></dialog>
-  <dialog class="mi-dialog mi-wide" id="mi-results" aria-labelledby="mi-results-title"><header><div><h2 id="mi-results-title">留货结果</h2><p id="mi-results-meta"></p></div><button class="close" aria-label="关闭留货结果" onclick="this.closest('dialog').close()">×</button></header><article><div class="mi-totals" id="mi-totals" aria-live="polite"></div><div class="mi-result-actions"><select id="mi-status" aria-label="筛选留货结果"><option value="">全部结果</option><option>待锁</option><option>成功</option><option>失败</option></select><span class="grow"></span><button class="secondary" id="mi-export">导出结果</button><button class="primary" id="mi-to-details">查看留货明细</button></div><div class="table-wrap"><table id="mi-result-table"></table></div></article><footer><span class="hint">结果将自动更新。待锁期间请勿重复提交。</span><button class="secondary" onclick="this.closest('dialog').close()">关闭</button></footer></dialog>
-<dialog class="mi-dialog" id="mi-product" aria-labelledby="mi-product-title"><header><h2 id="mi-product-title">物品详情</h2><button class="close" aria-label="关闭物品详情" onclick="this.closest('dialog').close()">×</button></header><article></article></dialog>
+  <dialog class="mi-dialog" id="mi-results" aria-labelledby="mi-results-title"><header><div><h2 id="mi-results-title">本次留货结果</h2><p id="mi-results-meta"></p></div><button class="close" aria-label="关闭留货结果" onclick="this.closest('dialog').close()">×</button></header><article><div class="mi-totals" id="mi-totals" aria-live="polite"></div><p class="hint" id="mi-result-hint"></p></article><footer><button class="primary" onclick="this.closest('dialog').close()">知道了</button></footer></dialog>
+  <dialog class="mi-dialog" id="mi-product" aria-labelledby="mi-product-title"><header><h2 id="mi-product-title">物品详情</h2><button class="close" aria-label="关闭物品详情" onclick="this.closest('dialog').close()">×</button></header><article></article></dialog>
 </section>
 
 <section class="view" id="stayDetails">
@@ -806,7 +806,7 @@ const pmsFixture={
   '20260921000000000012':{'型号名称':'苹果 iPhone 14','内存':'128G','颜色':'蓝色','海外等级':'B','海外购买渠道':'CH','海外结算价':2380,'质检报告编号':'PMS-DEMO-012','商品码':'PMS-SKU-012','看图成色':'9新','边框背板':'轻微划痕','屏幕外观':'外观完美','屏幕显示':'显示完美','电池健康度':'90%–99%'}
 };
 let lastDetailEnd=stamp(now).replace(' ','T');
-let batches=[],activeBatch=null,chosenFile=null,importing=false,batchQuery='';
+let batches=[],activeBatch=null,chosenFile=null,importing=false,detailFilters={query:'',region:'',status:''};
 function makeManualRecord(no,region,batch,index,error=''){
   return {'物品编号':no,'国家/地区':region,'目标地区':region,'留货来源':'指定物品留货','命中策略':'—',strategy:null,'策略ID':null,'执行批次':batch.id,'导入批次':batch.id,'操作人':batch.operator,'留货原因':batch.reason,'留货时间':batch.time,'原始行号':index+2,'留货结果':error?'失败':'待锁','失败原因':error||null,'锁货处理时间':null,'快照时间':null,'货源主体':null,'运营中心':null,'记录标识':batch.id+'-'+index,'提交顺序':Date.now()+index,'承运商获取状态':null};
 }
@@ -840,21 +840,23 @@ function syncManualRows(){
 }
 function saveManual(){try{localStorage.setItem(manualKey,JSON.stringify(batches));}catch{byId('mi-message').textContent='当前浏览器无法保存记录，刷新后将恢复示例数据。';}}
 function manualStats(b){return ['待锁','成功','失败'].map(s=>b.records.filter(r=>r['留货结果']===s).length);}
-function drawBatches(){
-  const list=batches.filter(b=>(b.id+' '+b.file).toLowerCase().includes(batchQuery.toLowerCase()));
-  byId('mi-count').textContent='共 '+list.length+' 个批次';
-  byId('mi-batches').querySelector('tbody').innerHTML=list.length?list.map(b=>{const [waiting,success,failed]=manualStats(b);return `<tr><td><button class="text-btn" data-batch="${esc(b.id)}">${esc(b.id)}</button></td><td class="mi-file-name" title="${esc(b.file)}">${esc(b.file)}</td><td>${b.records.length}</td><td>${waiting}</td><td style="color:var(--green)">${success}</td><td style="color:var(--red)">${failed}</td><td>${esc(b.operator)}</td><td>${esc(b.time)}</td><td><button class="text-btn" data-batch="${esc(b.id)}">查看结果</button></td></tr>`;}).join(''):'<tr><td colspan="9" class="empty">暂无导入记录</td></tr>';
+function filteredManualRows(){
+  return batches.flatMap(b=>b.records).filter(r=>(!detailFilters.query||r['物品编号'].includes(detailFilters.query))&&(!detailFilters.region||r['国家/地区']===detailFilters.region)&&(!detailFilters.status||r['留货结果']===detailFilters.status));
+}
+function drawManualList(){
+  const shown=filteredManualRows();
+  byId('mi-count').textContent='共 '+shown.length+' 件';
+  const cols=manualCols.filter(k=>!['留货来源','命中策略'].includes(k));
+  byId('mi-result-table').innerHTML='<thead><tr>'+cols.map(k=>'<th>'+esc(k)+'</th>').join('')+'</tr></thead><tbody>'+(shown.length?shown.map(r=>'<tr>'+cols.map(k=>'<td class="'+(k==='失败原因'?'mi-reason':'')+'">'+(k==='留货结果'?badge(r[k]):k==='物品编号'?`<button class="text-btn" data-record="${esc(r['记录标识'])}">${esc(r[k])}</button>`:esc(display(k,r[k])))+'</td>').join('')+'</tr>').join(''):`<tr><td colspan="${cols.length}" class="empty">暂无符合条件的留货明细</td></tr>` )+'</tbody>';
 }
 function drawManualResults(){
-  if(!activeBatch)return;const b=activeBatch,[waiting,success,failed]=manualStats(b),status=byId('mi-status').value;
-  byId('mi-results-title').textContent='留货结果 · '+b.id;
-  byId('mi-results-meta').textContent=b.file+' · '+b.operator+' · '+b.time;
+  if(!activeBatch)return;const b=activeBatch,[waiting,success,failed]=manualStats(b);
+  byId('mi-results-title').textContent=waiting?'本次留货处理中':'本次留货结果';
+  byId('mi-results-meta').textContent=b.file;
   byId('mi-totals').innerHTML=`<span>共 <b>${b.records.length}</b> 件</span><span>待锁 <b>${waiting}</b></span><span style="color:var(--green)">成功 <b>${success}</b></span><span style="color:var(--red)">失败 <b>${failed}</b></span>`;
-  const shown=b.records.filter(r=>!status||r['留货结果']===status);
-  const cols=['原始行号',...manualCols.slice(0,14)];
-  byId('mi-result-table').innerHTML='<thead><tr>'+cols.map(k=>'<th>'+esc(k)+'</th>').join('')+'</tr></thead><tbody>'+(shown.length?shown.map(r=>'<tr>'+cols.map(k=>'<td class="'+(k==='失败原因'?'mi-reason':'')+'">'+(k==='留货结果'?badge(r[k]):k==='物品编号'?`<button class="text-btn" data-record="${esc(r['记录标识'])}">${esc(r[k])}</button>`:esc(display(k,r[k])))+'</td>').join('')+'</tr>').join(''):`<tr><td colspan="${cols.length}" class="empty">暂无该状态的记录</td></tr>` )+'</tbody>';
+  byId('mi-result-hint').textContent=waiting?'正在处理，结果将自动更新。关闭弹窗后可在明细列表查看。':'本次留货已处理完成，逐件结果和失败原因请在明细列表查看。';
 }
-function openBatch(b){activeBatch=b;byId('mi-status').value='';drawManualResults();byId('mi-results').showModal();}
+function openBatch(b){activeBatch=b;drawManualResults();byId('mi-results').showModal();}
 function processManualBatch(b){
   b.records.filter(r=>r['留货结果']==='待锁').forEach((r,i)=>setTimeout(()=>{
     let error='';
@@ -866,7 +868,7 @@ function processManualBatch(b){
     r['留货结果']=error?'失败':'成功';r['失败原因']=error||null;
     r['锁货处理时间']=stamp(new Date());r['承运商获取状态']=error?null:'待获取';
     if(!error)r['银河锁货流水号']='YH-DEMO-'+r['记录标识'];
-    saveManual();syncManualRows();drawBatches();drawManualResults();
+    saveManual();syncManualRows();drawManualList();drawManualResults();
   },1600+i*200));
 }
 function workbookDownload(headers,data,name){
@@ -905,7 +907,7 @@ async function submitManual(){
       if(no)seen.add(no);
       b.records.push(makeManualRecord(no,region,b,i,error));
     });
-    batches.unshift(b);saveManual();syncManualRows();drawBatches();byId('mi-import').close();clearManualFile();batchQuery='';byId('mi-filter').reset();drawBatches();openBatch(b);processManualBatch(b);
+    batches.unshift(b);saveManual();syncManualRows();drawManualList();byId('mi-import').close();clearManualFile();detailFilters={query:'',region:'',status:''};byId('mi-filter').reset();drawManualList();openBatch(b);processManualBatch(b);
   }catch(e){byId('mi-upload-error').textContent=e.message||'文件读取失败，请使用模板重新上传。';}
   finally{importing=false;byId('mi-submit').disabled=!chosenFile;byId('mi-submit').textContent='上传并留货';}
 }
@@ -917,7 +919,7 @@ if(!batches.length){
     const r=makeManualRecord(no,index===1?'迪拜':'香港',b,index);fillManualInfo(r);r['留货时间']=b.time;r['锁货处理时间']=b.time;r['留货结果']=index<2?'成功':'失败';r['失败原因']=index<2?null:'商品已被其他订单锁定';r['承运商获取状态']=index<2?'待获取':null;b.records.push(r);
   }batches=[b];saveManual();
 }
-syncManualRows();drawBatches();batches.forEach(b=>{if(b.records.some(r=>r['留货结果']==='待锁'))processManualBatch(b);});
+syncManualRows();drawManualList();batches.forEach(b=>{if(b.records.some(r=>r['留货结果']==='待锁'))processManualBatch(b);});
 byId('mi-template').onclick=byId('mi-template-modal').onclick=downloadManualTemplate;
 byId('mi-upload').onclick=()=>{byId('mi-upload-error').textContent='';byId('mi-import').showModal();};
 byId('mi-choose').onclick=()=>byId('mi-file').click();byId('mi-file').onchange=e=>selectManualFile(e.target.files[0]);
@@ -926,13 +928,10 @@ byId('mi-zone').ondragover=e=>{e.preventDefault();e.currentTarget.classList.add(
 byId('mi-zone').ondragleave=e=>e.currentTarget.classList.remove('drag');
 byId('mi-zone').ondrop=e=>{e.preventDefault();e.currentTarget.classList.remove('drag');selectManualFile(e.dataTransfer.files[0]);};
 byId('mi-example').onclick=()=>workbookDownload(['物品编号','国家/地区'],[['20260704165420271129','香港'],['20260921000000000011','迪拜'],['20260704203003425764','香港'],['20260921000000000099','迪拜']],'指定物品留货示例.xlsx');
-byId('mi-filter').onsubmit=e=>{e.preventDefault();batchQuery=e.target.elements.query.value.trim();drawBatches();};
-byId('mi-filter').onreset=()=>{batchQuery='';drawBatches();};
-byId('mi-batches').onclick=e=>{const button=e.target.closest('[data-batch]');if(button)openBatch(batches.find(b=>b.id===button.dataset.batch));};
-byId('mi-status').onchange=drawManualResults;
-byId('mi-result-table').onclick=e=>{const button=e.target.closest('[data-record]');if(!button)return;const r=activeBatch.records.find(r=>r['记录标识']===button.dataset.record);const dialog=byId('mi-product');byId('mi-product-title').textContent='物品详情 · '+r['物品编号'];dialog.querySelector('article').innerHTML='<dl>'+manualCols.map(k=>'<dt>'+esc(k)+'</dt><dd>'+esc(display(k,r[k]))+'</dd>').join('')+'</dl>';dialog.showModal();};
-byId('mi-export').onclick=()=>{if(!activeBatch)return;const cols=['原始行号',...manualCols];workbookDownload(cols,activeBatch.records.map(r=>cols.map(k=>r[k]==null||r[k]==='—'?'':r[k])),'指定物品留货结果-'+activeBatch.id+'.xlsx');};
-byId('mi-to-details').onclick=()=>{byId('mi-results').close();showView('stayDetails');form('details').reset();form('details').querySelectorAll('details').forEach(d=>refreshSummary(d));const field=form('details').querySelector('[data-key="执行批次"]');field.value=activeBatch.id;state.details.filters=readFilters('details');state.details.page=1;render('details');};
+byId('mi-filter').onsubmit=e=>{e.preventDefault();detailFilters={query:e.target.elements.query.value.trim(),region:e.target.elements.region.value,status:e.target.elements.status.value};drawManualList();};
+byId('mi-filter').onreset=()=>{detailFilters={query:'',region:'',status:''};drawManualList();};
+byId('mi-result-table').onclick=e=>{const button=e.target.closest('[data-record]');if(!button)return;const r=batches.flatMap(b=>b.records).find(r=>r['记录标识']===button.dataset.record);const dialog=byId('mi-product');byId('mi-product-title').textContent='物品详情 · '+r['物品编号'];dialog.querySelector('article').innerHTML='<dl>'+manualCols.map(k=>'<dt>'+esc(k)+'</dt><dd>'+esc(display(k,r[k]))+'</dd>').join('')+'</dl>';dialog.showModal();};
+byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workbookDownload(cols,filteredManualRows().map(r=>cols.map(k=>r[k]==null||r[k]==='—'?'':r[k])),'指定物品留货明细.xlsx');};
 
           });
           </script>
