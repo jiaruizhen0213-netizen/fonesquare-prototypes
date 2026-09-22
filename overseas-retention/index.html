@@ -783,7 +783,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               let html=range(isInv?'快照时间':'留货时间',isInv?'快照时间（留空取最新成功快照）':'留货时间');
               const first=isInv?['型号名称','内存','颜色','运营中心','库存状态','海外等级']:['型号名称','内存','颜色','海外购买渠道','海外等级','运营中心'];
               first.forEach(k=>html+=multi(type,k,k==='留货结果'?(isInv?['成功','失败','处理中','未返回']:['待锁','成功','失败']):values(type,k)));
-              if(!isInv){html+=`<label class="rp-field">商品码<input data-key="商品码" placeholder="请输入商品码" aria-label="商品码"></label>`;html+=multi(type,'命中策略',values(type,'命中策略'))+multi(type,'留货结果',['待锁','成功','失败']);}
+              if(!isInv){html+=`<label class="rp-field">物品编号<input data-key="物品编号" placeholder="请输入物品编号" aria-label="物品编号"></label>`;html+=multi(type,'命中策略',values(type,'命中策略'))+multi(type,'留货结果',['待锁','成功','失败']);}
               if(isInv){
                 ['二级LEVEL','购买渠道','海外购买渠道','货源主体','最新看图成色','命中策略名称','留货结果'].forEach(k=>html+=multi(type,k,k==='留货结果'?(isInv?['成功','失败','处理中','未返回']:['待锁','成功','失败']):values(type,k),true));
                 ['物品编号','质检报告编号','商品码'].forEach(k=>html+=`<label class="rp-field" data-advanced hidden>${k}<input data-key="${k}" placeholder="精确输入${k}" aria-label="${k}"></label>`);
