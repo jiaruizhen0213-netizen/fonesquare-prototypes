@@ -43,9 +43,9 @@ function renderDetail(){const t=current();if(!t){selected=null;render();return;}
  <div class="stack"><section class="panel"><div class="panel-title"><div><div class="step">02 / 调整质检属性</div><h2>一级属性对照</h2></div>${pill('草稿 v'+t.revision,'blue')}</div><div class="panel-body" style="padding:12px 18px"><span class="sub">标准：${t.standard} · 仅展示当前型号有效选项</span></div>
  <div class="attribute-head"><span>属性项</span><span>报告2结果</span><span>报告3草稿</span></div>
  ${C.activeFields(t).map(f=>{const modified=t.report2[f.key]!==t.draft[f.key];return `<div class="attribute-row ${modified?'modified':''}"><div class="attr-name">${f.name}<span class="required">*</span><div class="sub">${f.group}</div></div><div class="old-value">${esc(t.report2[f.key]||'不适用')}</div><div><details class="attribute-options"><summary aria-label="${f.name}：展开全部属性值"><span class="attribute-value ${modified&&t.draft[f.key]?'changed':t.draft[f.key]?'original':''}">${esc(t.draft[f.key]||'请选择')}</span><span class="attribute-chevron" aria-hidden="true">⌄</span></summary><div class="attribute-values" role="group" aria-label="${f.name}">${C.options(f,t).map(v=>`<label class="attribute-option ${t.report2[f.key]===v?'original':''} ${modified&&t.draft[f.key]===v?'changed':''}"><input type="radio" name="attribute-${f.key}" data-field="${f.key}" value="${esc(v)}" ${t.draft[f.key]===v?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div></details>${modified?'<div class="sub" style="color:#d78153;font-size:10px;margin-top:5px">'+(t.draft[f.key]?'已调整':'新增必填项')+'</div>':''}</div></div>`;}).join('')}
- <div class="attribute-foot">${C.validation(t).length?`<div class="callout warn">${C.validation(t).map(esc).join('；')}</div>`:''}<label>属性调整依据 ${C.changed(t)?'<span class="required">*</span>':'<span class="sub">有调整时填写</span>'}<textarea id="reason" placeholder="例如：根据屏幕照片确认已更换非原装屏">${esc(t.reason)}</textarea></label><div class="action-row"><span class="sub">${t.confirmedRevision===t.revision?'✓ 当前属性已确认':'确认后生成报告3，不会自动出价'}</span><button data-action="confirm-report" ${C.validation(t).length||t.confirmedRevision===t.revision?'disabled':''}>确认询价</button></div></div></section>
+ <div class="attribute-foot">${C.validation(t).length?`<div class="callout warn">${C.validation(t).map(esc).join('；')}</div>`:''}<div class="action-row"><span class="sub">${t.confirmedRevision===t.revision?'✓ 当前属性已确认':'确认后生成报告3，不会自动出价'}</span><button data-action="confirm-report" ${C.validation(t).length||t.confirmedRevision===t.revision?'disabled':''}>确认询价</button></div></div></section>
  <div class="callout">橙色行表示与报告2不同的属性。调整只作用于报告3草稿，报告1、报告2与历史报价保留原结果。</div>
- ${history(t)}</div><aside class="pricing" id="pricing">${pricing(t)}</aside></div>${demoTools()}`;
+ </div><aside class="pricing" id="pricing">${pricing(t)}</aside></div>${demoTools()}`;
 }
 function kv(label,val){return `<div class="kv"><span>${label}</span><strong>${val}</strong></div>`;}
 function pricing(t){const p=t.priceState==='ready'&&t.price?.revision===t.revision?t.price:null;
@@ -60,7 +60,6 @@ function pricing(t){const p=t.priceState==='ready'&&t.price?.revision===t.revisi
  <button class="primary" data-action="bid" ${!t.auctionActive?'disabled':''}>${t.auctionActive?'确认出价':'竞拍已结束'}</button><p class="sub" style="font-size:10px;margin-bottom:0">人民币金额仅供参考。${!p?'取价暂不可用，仍可手动输入马币出价。':'出价前可再次调整马币金额。'}</p></div></div></section>`;
 }
 function bidConversion(t){return !(t.fx>0)?'人民币参考金额：待换算':t.bid!==''&&Number.isFinite(+t.bid)?'≈ CNY '+money(Number(t.bid)/t.fx)+' · 汇率 '+t.fx:'人民币参考金额：—';}
-function history(t){return `<section class="panel history"><div class="panel-title"><h3>本单操作记录</h3><span class="sub">仅演示</span></div>${!t.bids.length&&!t.reports.length?'<div class="empty" style="padding:25px">暂无报告确认或出价记录</div>':`<div class="table-scroll"><table><thead><tr><th>操作</th><th>内容</th><th>时间</th></tr></thead><tbody>${[...t.reports.map(r=>({type:'确认报告3',content:r.id+(r.price?' · MYR '+money(r.price.myr):' · 未附参考价'),at:r.at})),...t.bids.map(b=>({type:'自营出价',content:'MYR '+money(b.myr)+' / '+(b.cny!==null?'CNY '+money(b.cny):'待换算'),at:b.at}))].sort((a,b)=>b.at.localeCompare(a.at)).map(r=>`<tr><td>${r.type}</td><td>${r.content}</td><td>${r.at.slice(11,19)}</td></tr>`).join('')}</tbody></table></div>`}</section>`;}
 function openModal(title,content,actions=''){const d=$('#modal');$('#modal-body').innerHTML=`<div class="modal-head"><h2 id="modal-title">${title}</h2><button class="quiet" data-action="close" aria-label="关闭弹窗">✕</button></div><div class="modal-content">${content}</div>${actions?`<div class="modal-actions"><button data-action="close">取消</button>${actions}</div>`:''}`;if(!d.open)d.showModal();}
 function closeModal(){$('#modal').close();}
 function report(type){const t=current();if(!t)return;const types={max:'MAX 原始报告',secondary:'二级质检报告',r1:'拍机堂质检报告1',r2:'拍机堂质检报告2',r3:'拍机堂质检报告3'};
@@ -92,8 +91,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
  }
  if(a==='use-price'&&t.auctionActive&&t.priceState==='ready'){t.bid=t.price.myr.toFixed(2);t.bidManual=false;save();$('#pricing').innerHTML=pricing(t);}
  if(a==='confirm-report'){
-   if(C.changed(t)&&!t.reason.trim())return toast('请先填写属性调整依据');
-   openModal('确认生成拍机堂质检报告3',`<p>将使用当前草稿 v${t.revision} 的完整一级属性生成报告3。</p><div class="callout ${t.priceState==='ready'?'':'warn'}">${t.priceState==='ready'?'关联本次参考价：MYR '+money(t.price.myr):'本次取价尚未成功，报告3将保留价格状态，不附带旧参考价。'}</div><p class="sub">${C.changed(t)?'调整依据：'+esc(t.reason):'属性与报告2一致，仍将生成已确认的报告3。'}<br>确认报告不会自动出价。</p>`,'<button class="primary" data-action="save-report">确认生成</button>');
+   openModal('确认生成拍机堂质检报告3',`<p>将使用当前草稿 v${t.revision} 的完整一级属性生成报告3。</p><div class="callout ${t.priceState==='ready'?'':'warn'}">${t.priceState==='ready'?'关联本次参考价：MYR '+money(t.price.myr):'本次取价尚未成功，报告3将保留价格状态，不附带旧参考价。'}</div><p class="sub">${C.changed(t)?'':'属性与报告2一致，仍将生成已确认的报告3。<br>'}确认报告不会自动出价。</p>`,'<button class="primary" data-action="save-report">确认生成</button>');
  }
  if(a==='save-report'){try{C.confirmReport(t);save();closeModal();render();toast('报告3已生成，尚未提交出价');}catch(e){toast(e.message);}}
  if(a==='bid'){
@@ -109,7 +107,6 @@ document.addEventListener('change',e=>{
  if(e.target.dataset.field){try{C.change(t,e.target.dataset.field,e.target.value);t.handler='陈嘉明';save();if(C.validation(t).length)render();else recalculate(t);}catch(err){toast(err.message);render();}}
 });
 document.addEventListener('input',e=>{if(!C.canAccess(merchant))return;const t=current();if(!t)return;
- if(e.target.id==='reason'){t.reason=e.target.value;save();}
  if(e.target.id==='bid'&&t.auctionActive){t.bid=e.target.value;t.bidManual=true;save();$('#bid-convert').textContent=bidConversion(t);$('#bid-source').textContent='已手动调整';}
 });
 document.addEventListener('submit',e=>{if(e.target.id==='filters'){e.preventDefault();if(!C.canAccess(merchant))return;filters=Object.fromEntries(new FormData(e.target));renderList();}});

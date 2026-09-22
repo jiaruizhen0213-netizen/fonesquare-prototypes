@@ -58,7 +58,6 @@
   }
   function confirmReport(t) {
     const errors=validation(t);
-    if(changed(t)&&!t.reason.trim())errors.push('请填写属性调整依据');
     if(errors.length)throw Error(errors.join('；'));
     const snapshot={id:`PJT3-${t.id.slice(-4)}-v${t.reports.length+1}`,revision:t.revision,attrs:clone(t.draft),reason:t.reason,
       price:t.priceState==='ready'&&t.price?.revision===t.revision?clone(t.price):null,priceState:t.priceState,at:new Date().toISOString()};
