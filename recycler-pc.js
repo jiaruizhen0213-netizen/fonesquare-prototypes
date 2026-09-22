@@ -90,10 +90,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');
    if(t.failure==='本机 P1 查询失败，请重试')t.failure='';recalculate(t);
  }
  if(a==='use-price'&&t.auctionActive&&t.priceState==='ready'){t.bid=t.price.myr.toFixed(2);t.bidManual=false;save();$('#pricing').innerHTML=pricing(t);}
- if(a==='confirm-report'){
-   openModal('确认生成拍机堂质检报告3',`<p>将使用当前草稿 v${t.revision} 的完整一级属性生成报告3。</p><div class="callout ${t.priceState==='ready'?'':'warn'}">${t.priceState==='ready'?'关联本次参考价：MYR '+money(t.price.myr):'本次取价尚未成功，报告3将保留价格状态，不附带旧参考价。'}</div><p class="sub">${C.changed(t)?'':'属性与报告2一致，仍将生成已确认的报告3。<br>'}确认报告不会自动出价。</p>`,'<button class="primary" data-action="save-report">确认生成</button>');
- }
- if(a==='save-report'){try{C.confirmReport(t);save();closeModal();render();toast('报告3已生成，尚未提交出价');}catch(e){toast(e.message);}}
+ if(a==='confirm-report'){try{C.confirmReport(t);save();render();toast('报告3已生成，尚未提交出价');}catch(e){toast(e.message);}}
  if(a==='bid'){
    pendingBid={id:t.id,revision:t.revision,bid:t.bid,fx:t.fx};
    try{const copy=C.clone(t);C.makeBid(copy);}catch(e){return toast(e.message);}
