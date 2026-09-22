@@ -934,7 +934,7 @@ async function submitManual(){
     const book=XLSX.read(await chosenFile.arrayBuffer(),{type:'array'}),sheet=book.Sheets[book.SheetNames[0]];
     const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,raw:true,defval:'',blankrows:true});
     const headers=(matrix[0]||[]).map(v=>String(v).trim()),noIndex=headers.indexOf('物品编号'),regionIndex=headers.indexOf('国家/地区');
-    if(noIndex<0||regionIndex<0||headers.filter(v=>v==='物品编号').length!==1||headers.filter(v=>v==='国家/地区').length!==1)throw Error('模板表头必须包含且不能重复：物品编号、国家/地区。');
+    if(noIndex<0||regionIndex<0)throw Error('模板表头必须包含：物品编号、国家/地区。');
     const imported=matrix.slice(1).map((a,i)=>({a,i})).filter(({a})=>a.some(v=>String(v).trim()));
     if(!imported.length)throw Error('文件中没有物品编号，请填写模板后重新上传。');
     const b={id:'MI'+Date.now()+'-'+Math.random().toString(36).slice(2,5).toUpperCase(),file:chosenFile.name,time:stamp(new Date()),operator:'王小明',reason:byId('mi-reason').value.trim(),records:[]},seen=new Set();
