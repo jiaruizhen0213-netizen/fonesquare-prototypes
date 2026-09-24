@@ -5,3 +5,5 @@
 .merchant-address-field{grid-column:1/-1;width:100%;margin-top:4px}.merchant-address-field>input[hidden]{display:none}.merchant-address-field .shop-address label{margin-bottom:6px}.merchant-address-field .shop-address input{margin-top:0}
 
 .merchant-back{margin-bottom:18px}.merchant-create .merchant-form{margin:0;padding:0;border:0;background:white}.merchant-create .merchant-fields{max-width:960px}.merchant-create .merchant-form-actions{border-top:1px solid var(--line);padding-top:20px}
+
+.range-help{font-size:12px;color:#929ba5;line-height:1.6;margin:0 0 16px}.config-table{min-width:960px}
