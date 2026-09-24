@@ -5,15 +5,16 @@ const clone=x=>JSON.parse(JSON.stringify(x));
 const initialRows=()=>[
  {startRemainingPercent:100,endRemainingPercent:90,firstBidPercent:85,bidCount:5},
  {startRemainingPercent:90,endRemainingPercent:80,firstBidPercent:90,bidCount:3},
- {startRemainingPercent:80,endRemainingPercent:0,firstBidPercent:95,bidCount:2}
+ {startRemainingPercent:80,endRemainingPercent:null,firstBidPercent:95,bidCount:2}
 ];
 function validate(rows){
  if(!Array.isArray(rows)||!rows.length)return '至少配置一行报价规则。';
  for(let i=0;i<rows.length;i++){
   const r=rows[i];
   if(!Number.isFinite(r.startRemainingPercent)||r.startRemainingPercent<=0||r.startRemainingPercent>100)return `第${i+1}行：开始时间比例须大于0且不超过100%。`;
-  if(!Number.isFinite(r.endRemainingPercent)||r.endRemainingPercent<0||r.endRemainingPercent>100)return `第${i+1}行：结束时间比例须在0%至100%之间。`;
-  if(r.startRemainingPercent<=r.endRemainingPercent)return `第${i+1}行：开始时间比例须大于结束时间比例。`;
+  const openEnd=i===rows.length-1&&r.endRemainingPercent===null;
+  if(!openEnd&&(!Number.isFinite(r.endRemainingPercent)||r.endRemainingPercent<0||r.endRemainingPercent>100))return `第${i+1}行：结束时间比例须在0%至100%之间。`;
+  if(!openEnd&&r.startRemainingPercent<=r.endRemainingPercent)return `第${i+1}行：开始时间比例须大于结束时间比例。`;
   if(i&&r.startRemainingPercent>rows[i-1].endRemainingPercent)return `第${i+1}行：区间须从大到小排列，且不能重叠。`;
   if(!Number.isFinite(r.firstBidPercent)||r.firstBidPercent<=0||r.firstBidPercent>100)return `第${i+1}行：首次出价比例须大于0且不超过100%。`;
   if(!Number.isSafeInteger(r.bidCount)||r.bidCount<1)return `第${i+1}行：出价次数须为正整数，包含首次出价。`;
@@ -32,6 +33,7 @@ function migrate(state){
   next.current.rows=next.current.rows.map(({remainingPercent,...r})=>({...r,startRemainingPercent:remainingPercent,endRemainingPercent:null}));
   next.schema=3;
  }
+ if(next.current.rows.at(-1)?.endRemainingPercent===0)next.current.rows.at(-1).endRemainingPercent=null;
  return next;
 }
 function save(state,draft,at){
