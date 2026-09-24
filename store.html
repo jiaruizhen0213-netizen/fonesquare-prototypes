@@ -1593,6 +1593,7 @@
         });
         options.appendChild(option);
       });
+      InspectionHelp.decorateChoices(button.dataset.itemName);
       inspectionChoiceDialog.showModal();
     }));
     document.getElementById('cancelInspectionChoice').addEventListener('click', () => inspectionChoiceDialog.close());
@@ -2183,6 +2184,7 @@
     applyLanguage(currentLanguage);
     window.prototypeState=Object.assign(window.prototypeState||{},{storeProfiles,employeeBankProfile,selectedStoreProfile,activeBankProfile,renderProfileScope});
   </script>
+  <script src="inspection-help.js?v=20260924-1"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="store-merchant-banks.js?v=20260910-1"></script>
