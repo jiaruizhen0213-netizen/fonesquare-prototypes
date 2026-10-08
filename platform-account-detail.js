@@ -40,7 +40,9 @@
     const login=['首次登录门店端',a.firstStoreLoginAt];
     if(a.role==='商家'){
       const m=a.store;
-      return card('门店端商家信息',fields([['门店端身份','商家'],['门店端商家 ID',m.merchantId],['商家名称',m.name],['资料完善情况',m.profileStatus||'已完善'],login,['门店端业务开通时间',m.time]])+
+      const account=users.filter(u=>u.id===a.id).sort((x,y)=>String(x.createdAt||x.time).localeCompare(String(y.createdAt||y.time)))[0]||m;
+      const phone=account.rawPhone||(account.rawAccount&&!account.rawAccount.includes('@')?account.rawAccount:''),email=account.rawEmail||(account.rawAccount?.includes('@')?account.rawAccount:'');
+      return card('门店端商家信息',fields([['门店端身份','商家'],['门店端商家 ID',m.merchantId],['商家名称',m.name],['账号状态',statusTag(a.status),true],['手机',phone?maskPhone(phone):'—'],['邮箱',email?maskEmail(email):'—'],['所在地区',account.registrationRegion||account.region],['资料完善情况',m.profileStatus||'已完善'],login,['门店端业务开通时间',m.time]])+
         '<div class="account-related"><span>业务关联</span><button class="btn link" data-merchant-stores="'+m.merchantId+'">查看店铺（'+merchantStoreCount(m)+'）</button><button class="btn link" data-merchant-staff="'+m.merchantId+'">查看店员（'+merchantStaffCount(m)+'）</button></div>',
         '<button class="btn link" data-merchant-profile-edit="'+m.merchantId+'">编辑门店端资料</button>');
     }
