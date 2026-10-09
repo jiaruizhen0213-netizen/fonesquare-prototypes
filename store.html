@@ -590,7 +590,10 @@
         <div class="summary-row"><span>IMEI（扫码自动带入）</span><strong id="detectedImei">—</strong></div>
       </section>
       <section class="section" id="foldablePhotoSection" hidden>
-        <p class="section-kicker">折叠屏必填照片</p>
+        <div class="foldable-photo-heading">
+          <p class="section-kicker">折叠屏必填照片</p>
+          <button id="foldablePhotoHelp" type="button" aria-haspopup="dialog" aria-controls="foldablePhotoGuideDialog">如何拍照？</button>
+        </div>
         <p class="permission-note">已识别为折叠屏，请分别上传亮屏和暗屏照片。</p>
         <button class="photo-upload" id="screenOnPhoto" type="button">
           <span class="photo-icon">＋</span>
@@ -1192,6 +1195,7 @@
       '南区门店': 'South District Store',
       '当前 OB 账号已停用或锁定，请联系管理员。': 'This OB account is disabled or locked. Contact an administrator.',
       '已退出督导账号': 'Supervisor signed out',
+      '如何拍照？': 'How to take photos?',
       '当前店铺': 'Current Store',
       '选择要维护资料的店铺': 'Select a store to maintain',
       '每个店铺独立维护一个地址和一张银行卡，切换店铺不会同步修改资料。': 'Each store independently owns one address and one bank account. Switching stores does not synchronize profile changes.',
@@ -2184,7 +2188,7 @@
     applyLanguage(currentLanguage);
     window.prototypeState=Object.assign(window.prototypeState||{},{storeProfiles,employeeBankProfile,selectedStoreProfile,activeBankProfile,renderProfileScope});
   </script>
-  <script src="inspection-help.js?v=20260924-1"></script>
+  <script src="inspection-help.js?v=20261009-1"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="store-merchant-banks.js?v=20260910-1"></script>

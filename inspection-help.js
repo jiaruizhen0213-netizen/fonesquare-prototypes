@@ -43,6 +43,20 @@
     .inspection-help-content{padding:18px 18px 28px;line-height:1.8;font-size:14px}.inspection-help-content h3{margin:0 0 10px;font-size:16px}
     .inspection-help-content p{margin:0 0 16px}.inspection-help-content img{display:block;width:100%;max-height:380px;object-fit:contain;background:#f5f6f8;border-radius:12px}
     .inspection-help-caption{display:block;color:#999;text-align:center;font-size:11px;margin-top:10px}
+    .foldable-photo-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .foldable-photo-heading .section-kicker{margin:0;min-width:0}
+    #foldablePhotoHelp{flex:none;min-height:44px;padding:6px 0 6px 8px;border:0;background:none;color:var(--orange);font:inherit;font-size:12px;cursor:pointer}
+    #foldablePhotoHelp:focus-visible,.photo-guide-image:focus-visible{outline:2px solid var(--orange);outline-offset:2px;border-radius:4px}
+    .photo-guide-dialog{overflow:hidden;overscroll-behavior:contain}
+    .photo-guide-dialog .inspection-help-header h2{padding:0 52px;font-size:17px;text-align:center}
+    .photo-guide-dialog .inspection-help-content{padding:16px 16px calc(16px + env(safe-area-inset-bottom))}
+    .photo-guide-viewport{overflow:auto;max-height:calc(85dvh - 150px - env(safe-area-inset-bottom));overscroll-behavior:contain;border-radius:12px;background:#f5f6f8}
+    .photo-guide-image{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+    .photo-guide-image[hidden]{display:none}
+    .photo-guide-image[aria-pressed="true"]{width:200%;cursor:zoom-out}
+    .photo-guide-image img{width:100%;height:auto;max-height:none;border-radius:0}
+    .photo-guide-dialog .inspection-help-caption{color:#666;font-size:12px}
+    .photo-guide-error{margin:0;padding:20px;text-align:center;color:#666}
   `;
   document.head.append(style);
   const dialog = document.createElement('dialog');
@@ -51,6 +65,60 @@
   dialog.innerHTML = '<header class="inspection-help-header"><h2 id="inspectionHelpTitle"></h2><button type="button" class="inspection-help-close">×</button></header><div class="inspection-help-content"></div>';
   document.body.append(dialog);
   dialog.querySelector('button').onclick = () => dialog.close();
+  const photoHelpButton = document.getElementById('foldablePhotoHelp');
+  if (photoHelpButton) {
+    const photoDialog = document.createElement('dialog');
+    photoDialog.id = 'foldablePhotoGuideDialog';
+    photoDialog.className = 'inspection-help-dialog photo-guide-dialog';
+    photoDialog.setAttribute('aria-labelledby', 'foldablePhotoGuideTitle');
+    photoDialog.setAttribute('data-no-i18n', '');
+    photoDialog.innerHTML = '<header class="inspection-help-header"><h2 id="foldablePhotoGuideTitle"></h2><button type="button" class="inspection-help-close">×</button></header><div class="inspection-help-content"><div class="photo-guide-viewport"><button type="button" class="photo-guide-image" aria-pressed="false"><img draggable="false"></button><p class="photo-guide-error" role="status" hidden></p></div><small class="inspection-help-caption"></small></div>';
+    document.body.append(photoDialog);
+    const close = photoDialog.querySelector('.inspection-help-close');
+    const viewport = photoDialog.querySelector('.photo-guide-viewport');
+    const imageButton = photoDialog.querySelector('.photo-guide-image');
+    const img = imageButton.querySelector('img');
+    const caption = photoDialog.querySelector('.inspection-help-caption');
+    const error = photoDialog.querySelector('.photo-guide-error');
+    let returnState = null;
+    const setZoom = (zoomed) => {
+      imageButton.setAttribute('aria-pressed', String(zoomed));
+      imageButton.setAttribute('aria-label', zoomed ? t('缩小拍照指引图片', 'Zoom out of photo guide') : t('放大拍照指引图片', 'Zoom into photo guide'));
+      caption.textContent = zoomed ? t('滑动查看细节，点击图片缩小', 'Scroll to see details. Tap image to zoom out.') : t('点击图片放大查看', 'Tap image to zoom in');
+      viewport.scrollTo(0, 0);
+    };
+    imageButton.onclick = () => setZoom(imageButton.getAttribute('aria-pressed') !== 'true');
+    img.onerror = () => {
+      imageButton.hidden = true;
+      error.hidden = false;
+      error.textContent = t('图片暂时无法加载，请关闭后重试。', 'Image could not load. Close and try again.');
+      caption.textContent = '';
+    };
+    close.onclick = () => photoDialog.close();
+    photoDialog.addEventListener('close', () => {
+      if (!returnState) return;
+      document.documentElement.style.overflow = returnState.htmlOverflow;
+      document.body.style.overflow = returnState.bodyOverflow;
+      photoHelpButton.focus({ preventScroll: true });
+      window.scrollTo({ left: returnState.x, top: returnState.y, behavior: 'instant' });
+      returnState = null;
+    });
+    photoHelpButton.onclick = () => {
+      if (photoDialog.open) return;
+      photoDialog.querySelector('h2').textContent = t('折叠屏拍照指引', 'Foldable photo guide');
+      close.setAttribute('aria-label', t('关闭拍照指引', 'Close photo guide'));
+      imageButton.hidden = false;
+      error.hidden = true;
+      setZoom(false);
+      img.alt = t('亮屏照片与暗屏照片的拍摄示意图', 'Illustrated guide to screen-on and screen-off photos');
+      img.src = 'assets/foldable-photo-guide-' + (en() ? 'en' : 'zh') + '.svg';
+      returnState = { x: window.scrollX, y: window.scrollY, htmlOverflow: document.documentElement.style.overflow, bodyOverflow: document.body.style.overflow };
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      photoDialog.showModal();
+      close.focus({ preventScroll: true });
+    };
+  }
   function illustration(title, value) {
     // Code-native schematic, explicitly labelled rather than implying a real device photo.
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="350" viewBox="0 0 320 350"><rect width="320" height="350" fill="#f3f4f6"/><rect x="60" y="15" width="200" height="312" rx="26" fill="#282a2f"/><rect x="67" y="23" width="186" height="296" rx="20" fill="#fff"/><rect x="126" y="28" width="68" height="14" rx="7" fill="#282a2f"/><text x="160" y="84" text-anchor="middle" font-family="Arial" font-size="17" font-weight="bold">${title}</text><path d="M80 108h160M80 148h160M80 230h160" stroke="#eee"/><text x="86" y="134" font-family="Arial" font-size="11" fill="#888">Settings / Device information</text><rect x="77" y="161" width="166" height="52" rx="6" fill="#fff3ed" stroke="#ff6635"/><text x="160" y="192" text-anchor="middle" font-family="Arial" font-size="16" fill="#e75022">${value}</text><text x="160" y="280" text-anchor="middle" font-family="Arial" font-size="11" fill="#999">Illustrative example</text></svg>`;

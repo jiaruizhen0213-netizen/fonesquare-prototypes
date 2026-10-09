@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1080" viewBox="0 0 720 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Illustrative foldable photo guide</title>
+  <desc id="desc">Upload a screen-on photo and a screen-off photo. Show the screen switched on in the first photo and switched off in the second. These are illustrations; follow the official guide for requirements.</desc>
+  <defs>
+    <linearGradient id="lit" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffccad"/>
+      <stop offset="0.52" stop-color="#ff875d"/>
+      <stop offset="1" stop-color="#ba78ac"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34383e"/>
+      <stop offset="1" stop-color="#15181c"/>
+    </linearGradient>
+    <clipPath id="lit-screen"><rect x="212" y="283" width="296" height="210" rx="13"/></clipPath>
+  </defs>
+  <rect width="720" height="1080" fill="#f4f5f7"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <rect x="32" y="40" width="6" height="40" rx="3" fill="#ff5722"/>
+    <text x="56" y="73" fill="#202329" font-size="40" font-weight="700">Foldable photo guide</text>
+    <text x="32" y="119" fill="#6d727b" font-size="28">Take a screen-on and a screen-off photo</text>
+
+    <rect x="32" y="150" width="656" height="380" rx="28" fill="#ffffff"/>
+    <circle cx="76" cy="197" r="22" fill="#fff0e9"/>
+    <text x="76" y="207" text-anchor="middle" fill="#ff5722" font-size="28" font-weight="700">1</text>
+    <text x="114" y="209" fill="#202329" font-size="34" font-weight="700">Screen-on photo</text>
+    <text x="56" y="252" fill="#6d727b" font-size="28">Show the screen switched on</text>
+    <ellipse cx="360" cy="503" rx="172" ry="8" fill="#eceef1"/>
+    <rect x="200" y="271" width="320" height="234" rx="25" fill="#33373d"/>
+    <rect x="204" y="275" width="312" height="226" rx="21" fill="#14171b" stroke="#7b8087" stroke-width="2"/>
+    <rect x="212" y="283" width="296" height="210" rx="13" fill="url(#lit)"/>
+    <g clip-path="url(#lit-screen)">
+      <path d="M180 494 C224 414 303 348 390 353 C449 356 490 395 541 407 L541 524 L180 524Z" fill="#ffd8c6" opacity="0.68"/>
+      <path d="M210 513 C287 434 363 407 407 419 C459 434 480 485 525 499 L525 526 L210 526Z" fill="#ffeae0" opacity="0.78"/>
+      <rect x="357" y="283" width="6" height="210" fill="#393238" opacity="0.16"/>
+      <path d="M364 285V491" stroke="#ffffff" opacity="0.26" stroke-width="2"/>
+    </g>
+    <circle cx="484" cy="298" r="4" fill="#393238"/>
+
+    <rect x="32" y="550" width="656" height="380" rx="28" fill="#ffffff"/>
+    <circle cx="76" cy="597" r="22" fill="#fff0e9"/>
+    <text x="76" y="607" text-anchor="middle" fill="#ff5722" font-size="28" font-weight="700">2</text>
+    <text x="114" y="609" fill="#202329" font-size="34" font-weight="700">Screen-off photo</text>
+    <text x="56" y="652" fill="#6d727b" font-size="28">Show the screen switched off</text>
+    <ellipse cx="360" cy="903" rx="172" ry="8" fill="#eceef1"/>
+    <rect x="200" y="671" width="320" height="234" rx="25" fill="#33373d"/>
+    <rect x="204" y="675" width="312" height="226" rx="21" fill="#14171b" stroke="#7b8087" stroke-width="2"/>
+    <rect x="212" y="683" width="296" height="210" rx="13" fill="url(#dark)"/>
+    <path d="M224 707V869" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.07"/>
+    <rect x="357" y="683" width="6" height="210" fill="#080a0d" opacity="0.65"/>
+    <path d="M364 685V891" stroke="#ffffff" opacity="0.08" stroke-width="2"/>
+    <circle cx="484" cy="698" r="4" fill="#101216"/>
+
+    <rect x="202" y="958" width="316" height="40" rx="20" fill="#e9ebef"/>
+    <text x="360" y="986" text-anchor="middle" fill="#6d727b" font-size="26" font-weight="600">Illustration only</text>
+    <text x="360" y="1040" text-anchor="middle" fill="#6d727b" font-size="28">Follow the official guide for requirements</text>
+  </g>
+</svg>
