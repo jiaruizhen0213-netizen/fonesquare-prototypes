@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="900" viewBox="0 0 720 900" role="img" aria-labelledby="title desc">
+  <title id="title">折叠屏设备展开内屏</title>
+  <desc id="desc">手机完全展开的内屏正面，中间折痕和两侧屏幕清晰可见。用于原型的设备示意图。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4f5f6"/><stop offset="1" stop-color="#e4e8e7"/></linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#848b8f"/><stop offset="0.08" stop-color="#d1d5d5"/><stop offset="0.48" stop-color="#626b70"/><stop offset="0.91" stop-color="#d8dddd"/><stop offset="1" stop-color="#6c757b"/></linearGradient>
+    <linearGradient id="back" x1="0" y1="0" x2="0.8" y2="1"><stop stop-color="#bdc8c7"/><stop offset="0.54" stop-color="#929fa1"/><stop offset="1" stop-color="#73878b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#334b4c"/><stop offset="0.55" stop-color="#5b8c87"/><stop offset="1" stop-color="#d2c3af"/></linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffdab9"/><stop offset="0.55" stop-color="#ecab88"/><stop offset="1" stop-color="#b37871"/></linearGradient>
+    <radialGradient id="lens"><stop stop-color="#426777"/><stop offset="0.33" stop-color="#172938"/><stop offset="0.6" stop-color="#102029"/><stop offset="0.82" stop-color="#050b12"/><stop offset="1" stop-color="#26333c"/></radialGradient>
+    <filter id="shadow" x="-40%" y="-25%" width="180%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#374b4b" flood-opacity="0.16"/></filter>
+    <clipPath id="display"><rect x="108" y="209" width="504" height="456" rx="15"/></clipPath>
+  </defs>
+  <rect width="720" height="900" fill="url(#bg)"/>
+  <ellipse cx="359" cy="736" rx="214" ry="20" fill="#b9c2c0" opacity="0.2"/>
+  <g filter="url(#shadow)">
+    <rect x="93" y="194" width="534" height="486" rx="26" fill="url(#frame)"/>
+    <rect x="98" y="199" width="524" height="476" rx="22" fill="#172024"/>
+    <rect x="108" y="209" width="504" height="456" rx="15" fill="url(#screen)"/>
+    <g clip-path="url(#display)">
+      <path d="M88 677C169 484 287 336 634 252V697H88Z" fill="url(#warm)"/>
+      <path d="M87 693C225 499 396 479 640 403V701H87Z" fill="#efd7bd" opacity="0.8"/>
+      <path d="M113 703C293 594 403 586 634 507V698H113Z" fill="#faf0df" opacity="0.6"/>
+      <rect x="353" y="209" width="12" height="456" fill="#243b3b" opacity="0.13"/>
+      <path d="M361 210V664" stroke="#f5f1de" stroke-width="2" opacity="0.22"/>
+    </g>
+    <circle cx="582" cy="228" r="5" fill="#172324"/>
+    <rect x="627" y="295" width="4" height="47" rx="2" fill="#788388"/>
+    <rect x="627" y="366" width="4" height="28" rx="2" fill="#788388"/>
+    <path d="M360 194V204M360 670V680" stroke="#69767a" stroke-width="4"/>
+  </g>
+  <text x="360" y="834" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif" font-size="20" fill="#75817f">设备示意图 · Illustration</text>
+</svg>

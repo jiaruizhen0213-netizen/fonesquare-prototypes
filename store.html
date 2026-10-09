@@ -579,7 +579,10 @@
       <header class="topbar"><button class="icon-button" type="button" data-back="scan" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="重新扫描设备">⌗</button></header>
       <div class="progress-rail" aria-label="创建标单进度"><div class="step active">1 · 质检</div><div class="step">2 · 确认发布</div></div>
       <section class="section device-summary">
-        <div class="device-thumb"><div class="mini-phone"></div></div>
+        <div id="inspectionDeviceGallery" class="device-gallery" data-no-i18n>
+          <button class="device-gallery-open" type="button" aria-haspopup="dialog" aria-controls="devicePhotoDialog" disabled><img alt=""></button>
+          <div class="device-gallery-controls"><button class="device-gallery-prev" type="button" disabled>‹</button><span class="device-gallery-count" aria-live="polite">0 / 0</span><button class="device-gallery-next" type="button" disabled>›</button></div>
+        </div>
         <div><h2 class="product-name" id="currentInspectionModel">等待扫码识别</h2><p class="specs">扫码后自动识别设备并加载质检模板</p></div>
       </section>
       <div class="inspection-progress" id="inspectionProgress">请先扫描设备</div>
@@ -1556,6 +1559,7 @@
       resetInspection();
       document.getElementById('foldablePhotoSection').hidden = !profile.foldable;
       updateDeviceCopies(profile);
+      window.StoreDeviceGallery?.setDevice(profileKey);
       importMaxResults();
       showPage('inspection');
     }
@@ -2189,6 +2193,7 @@
     window.prototypeState=Object.assign(window.prototypeState||{},{storeProfiles,employeeBankProfile,selectedStoreProfile,activeBankProfile,renderProfileScope});
   </script>
   <script src="inspection-help.js?v=20261009-1"></script>
+  <script src="store-device-gallery.js?v=20261009-1"></script>
   <script src="shop-address.js?v=20260910-4"></script>
   <script src="merchant-bank-data.js?v=20260908-1"></script>
   <script src="store-merchant-banks.js?v=20260910-1"></script>
