@@ -1,0 +1,23 @@
+#strategy .sr-entry{white-space:nowrap;margin-left:12px;font-size:13px}
+#strategyResults .sr-back{margin-bottom:14px}
+#strategyResults .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+#strategyResults .sr-batch{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+#strategyResults .sr-batch select{height:36px;padding:0 12px;background:#fff;border:1px solid #d0d5dd;border-radius:6px;color:#344054;min-width:235px}
+#strategyResults .sr-sample{font-size:12px;color:var(--muted)}
+#strategyResults .sr-filter{border:0;margin-bottom:0;padding:20px}
+#strategyResults .tabs{gap:30px;padding:0 20px}
+#strategyResults .tab{padding:16px 0;font-size:14px}
+#strategyResults table{min-width:840px;font-size:14px}
+#strategyResults th{padding:17px 20px;font-weight:600;color:#778399}
+#strategyResults td{padding:21px 20px}
+#strategyResults tbody tr:hover{background:#fafcff}
+#strategyResults .sr-price-reason{color:#b56716}
+#strategyResults .sr-status{display:inline-block;border-radius:5px;padding:4px 9px;font-size:13px;background:#f2f4f7;color:#667085}
+#strategyResults .sr-status.success{background:#edf9ef;color:#218c46;border:1px solid #ccebd0}
+#strategyResults .sr-status.pending{background:#eaf3ff;color:#1677ff}
+#strategyResults .sr-pager{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:12px}
+#strategyResults .sr-pager-controls{display:flex;gap:8px;align-items:center}
+#strategyResults .sr-page-number{padding:4px 9px;border-radius:5px;background:var(--brand);color:white}
+#strategyResults .sr-note{font-size:12px;color:var(--muted);margin-top:14px}
+#strategyResults button:focus-visible,#strategyResults input:focus-visible,#strategyResults select:focus-visible,.sr-entry:focus-visible{outline:3px solid #98bcff;outline-offset:2px}
+@media(max-width:620px){#strategyResults .cards{gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}#strategyResults .card{padding:13px}#strategyResults .metric{font-size:23px}#strategyResults .tabs{gap:18px}#strategyResults .tab{font-size:12px}#strategyResults .sr-filter{gap:9px}#strategyResults .sr-filter input{width:100%}}
