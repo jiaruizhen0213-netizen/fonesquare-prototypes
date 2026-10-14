@@ -18,14 +18,21 @@
     r['SKU名称'] = [model,r['内存'],r['颜色'],r['购买渠道']].join(' ');
     return r;
   });
+  // Prices are separate from inventory attributes. A BI sync never writes price fields.
+  const prices = new Map(sample.filter(r=>r['结算价']!=='').map(r=>[r['物品编码'],{amount:r['结算价'],updated:'2026-10-14 08:00:00'}]));
+  const yanxuan = sample.slice(0,8).map((r,i)=>({...r,'物品编码':'DEMO-YX-'+String(i+1).padStart(5,'0'),'商品码':'DEMO-YP-'+String(i+1).padStart(5,'0'),'质检报告编号':'DEMO-YR-'+String(i+1).padStart(5,'0'),'IMEI':'DEMO-YIMEI-'+String(i+1).padStart(4,'0'),'关联策略':'','比货留货时间':'','留货结果':'','海外等级':i===0?'':r['海外等级'],'边框背板':i===0?'':r['边框背板'],'屏幕外观':i===0?'':r['屏幕外观'],'屏幕显示':i===0?'':r['屏幕显示'],'电池健康度':i===0?'':r['电池健康度'],'最新看图成色':i===0?'':r['最新看图成色'],'质检信息状态':i===0?'待获取':'已获取'}));
+  yanxuan.filter(r=>r['结算价']!=='').forEach(r=>prices.set(r['物品编码'],{amount:r['结算价'],updated:'2026-10-14 08:00:00'}));
+  const retentionColumns = new Set(['关联策略','比货留货时间','留货结果']);
+  let source = 'BI 库存';
+  const tabState = {};
   const visibleColumns = ['快照时间','商品码','IMEI','SKU名称',...baseColumns.filter(k=>!['快照时间','商品码','IMEI','SKU名称'].includes(k))];
   let filters = {}, page = 1, size = 10, sort = '', direction = 1;
   const app = () => document.getElementById('inventory-app');
   const money = v => v === '' || v == null ? '—' : '¥'+Number(v).toLocaleString('zh-CN',{maximumFractionDigits:2});
   const display = (r,k) => ['结算价','预估售价'].includes(k) ? money(r[k]) : r[k] === '' || r[k] == null ? '—' : String(r[k]);
-  const getRows = () => sample;
-  const columns = () => visibleColumns;
-  const exportColumns = () => baseColumns;
+  const getRows = () => (source==='BI 库存'?sample:yanxuan).map(r=>({...r,'数据来源':source,'结算价':prices.get(r['物品编码'])?.amount??'','价格更新时间':prices.get(r['物品编码'])?.updated??''}));
+  const columns = () => visibleColumns.filter(k=>source==='BI 库存'||!retentionColumns.has(k)).flatMap(k=>k==='结算价'?[k,'价格更新时间']:[k]);
+  const exportColumns = () => [...baseColumns.filter(k=>source==='BI 库存'||!retentionColumns.has(k)),'数据来源','价格更新时间'];
   function matches() {
     let rows = getRows().filter(r=>Object.entries(filters).every(([k,v])=>!v || String(r[k]??'') === v));
     if(sort) rows=rows.slice().sort((a,b)=> (typeof a[sort]==='number'&&typeof b[sort]==='number' ? a[sort]-b[sort] : String(a[sort]??'').localeCompare(String(b[sort]??''),'zh-CN',{numeric:true}))*direction);
@@ -37,15 +44,16 @@
   }
   function readFilters() { return Object.fromEntries(new FormData(app().querySelector('form')).entries()); }
   function build() {
-    app().innerHTML = `<div class="heading"><div><h1>留货库存</h1><p>当前快照：${stamp}，数据截止 ${stamp}</p></div></div><form class="panel inv-filters">${controls()}</form><div class="panel"><div class="panel-head"><h2>留货库存物品 <small id="inv-count"></small></h2><small>页面只读，不提供锁货操作 · 演示数据</small></div><div class="table-wrap"><table id="inv-table"></table></div><div id="inv-pager" class="inv-pager"></div></div><p class="inv-message" role="status"></p><dialog id="inv-detail" class="inv-dialog"><header><h2>库存详情</h2><button type="button" class="secondary" data-action="close">关闭</button></header><dl></dl></dialog>`;
+    app().innerHTML = `<div class="heading"><div><h1>留货库存</h1><p>当前快照：${stamp}，数据截止 ${stamp}</p></div></div><div class="inv-tabs" role="tablist" aria-label="库存数据来源">${['BI 库存','严选库存'].map(name=>`<button type="button" role="tab" aria-selected="${name===source}" data-source="${name}" class="${name===source?'active':''}">${name}</button>`).join('')}</div><p class="inv-source-note">${source==='BI 库存'?'现有 BI 库存，沿用原有留货流程。':'B2C 货盘，仅供查询，不参与留货。'}</p><p class="inv-price-note">${source==='BI 库存'?'海外结算价每日 8:00 更新，执行留货时重新获取最新价格。':'海外结算价每日 8:00 更新；海外质检信息包含海外等级。'} 未获取价格显示“—”。</p><form class="panel inv-filters">${controls()}</form><div class="panel"><div class="panel-head"><h2>留货库存物品 <small id="inv-count"></small></h2><small>页面只读，不提供锁货操作 · 演示数据</small></div><div class="table-wrap"><table id="inv-table"></table></div><div id="inv-pager" class="inv-pager"></div></div><p class="inv-message" role="status"></p><dialog id="inv-detail" class="inv-dialog"><header><h2>库存详情</h2><button type="button" class="secondary" data-action="close">关闭</button></header><dl></dl></dialog>`;
     app().querySelector('form').onsubmit = event => {event.preventDefault();filters=readFilters();page=1;render();};
     app().onclick = event => {
       const b=event.target.closest('button');if(!b)return;
+      if(b.dataset.source){tabState[source]={filters:readFilters(),page,size,sort,direction};source=b.dataset.source;({filters={},page=1,size=10,sort='',direction=1}=tabState[source]||{});build();return;}
       if(b.dataset.action==='reset'){filters={};page=1;build();}
       if(b.dataset.action==='export'){filters=readFilters();page=1;render();download();}
       if(b.dataset.action==='close')app().querySelector('dialog').close();
       if(b.dataset.sort){direction=sort===b.dataset.sort?-direction:1;sort=b.dataset.sort;render();}
-      if(b.dataset.open){const r=getRows().find(r=>r['物品编码']===b.dataset.open);const d=app().querySelector('dialog');d.querySelector('dl').innerHTML=exportColumns().map(k=>`<dt>${e(k)}</dt><dd>${e(display(r,k))}</dd>`).join('');d.showModal();}
+      if(b.dataset.open){const r=getRows().find(r=>r['物品编码']===b.dataset.open);const d=app().querySelector('dialog');d.querySelector('dl').innerHTML=[...exportColumns(),...(source==='严选库存'?['质检信息状态']:[])].map(k=>`<dt>${e(k)}</dt><dd>${e(display(r,k))}</dd>`).join('');d.showModal();}
       if(b.dataset.step){page+=Number(b.dataset.step);render();}
     };
     render();
@@ -62,7 +70,7 @@
     const ws=XLSX.utils.aoa_to_sheet(matrix);
     // Identifiers remain strings, preserving long numbers and leading zeroes.
     ws['!cols']=cols.map(k=>({wch:k==='SKU名称'?58:20}));
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'库存明细');XLSX.writeFile(wb,'可留货库存明细-演示数据.xlsx',{compression:true});
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'库存明细');XLSX.writeFile(wb,source.replace(' ','')+'明细-演示数据.xlsx',{compression:true});
     app().querySelector('.inv-message').textContent='已导出当前筛选的全部 '+rows.length+' 条记录';
   }
   document.addEventListener('DOMContentLoaded',build);
