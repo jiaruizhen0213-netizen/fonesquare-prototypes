@@ -14,11 +14,11 @@
   });
   const batchTimes = ['2026-10-13 18:00', '2026-10-13 05:00'];
   const sample = [
-    ['001', '粉色', -20, 'success'], ['002', '白色', 80, 'price'],
-    ['004', '白色', 120, 'price'], ['005', '粉色', -70, 'failed'],
-    ['006', '白色', -40, 'pending'], ['009', '白色', 180, 'price'],
-    ['010', '粉色', -30, 'success'], ['011', '白色', 90, 'price'],
-    ['012', '粉色', -80, 'failed']
+    ['20260807135404011810', '粉色', -20, 'success'], ['20260807135404011811', '白色', 80, 'price'],
+    ['20260807135404011812', '白色', 120, 'price'], ['20260807135404011813', '粉色', -70, 'failed'],
+    ['20260807135404011814', '白色', -40, 'pending'], ['20260807135404011815', '白色', 180, 'price'],
+    ['20260807135404011816', '粉色', -30, 'success'], ['20260807135404011817', '白色', 90, 'price'],
+    ['20260807135404011818', '粉色', -80, 'failed']
   ];
   let selected = strategies[0], batch = 0, tab = 'all', query = '', cause = '';
   const $ = id => document.getElementById(id);
@@ -28,11 +28,11 @@
   function records() {
     if (selected.draft) return [];
     return sample.map(([id, color, offset, outcome]) => {
-      if (batch === 1 && id === '002') { offset = -10; outcome = 'success'; }
+      if (batch === 1 && id === '20260807135404011811') { offset = -10; outcome = 'success'; }
       const availableColors = selected.model.includes('Galaxy') ? ['黑色','灰色'] : selected.model.includes('15 Pro') ? ['原色钛金属','白色钛金属'] : ['红色','白色'];
       return {id, goods: `${selected.model} / ${selected.memory} / ${color === '粉色' ? availableColors[0] : availableColors[1]}`,
         price: offset == null ? null : selected.acceptable + offset, acceptable: selected.acceptable, outcome,
-        reason: outcome === 'price' ? '超出可接受价格' : outcome === 'failed' ? (id === '012' ? '拍机堂下架失败，物品取消交易失败' : '不存在已分银河库存') : ''};
+        reason: outcome === 'price' ? '超出可接受价格' : outcome === 'failed' ? (id === '20260807135404011818' ? '拍机堂下架失败，物品取消交易失败' : '不存在已分银河库存') : ''};
     });
   }
   function render() {

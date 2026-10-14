@@ -1,4 +1,20 @@
-#strategy .sr-entry{white-space:nowrap;margin-left:12px;font-size:13px}
+#strategy .strategy-list{overflow:hidden}
+#strategy .strategy-list-table{min-width:1330px;table-layout:fixed}
+#strategy .strategy-list-table th,#strategy .strategy-list-table td{padding:16px 18px}
+#strategy .strategy-list-table th:nth-child(1){width:230px}
+#strategy .strategy-list-table th:nth-child(2){width:90px}
+#strategy .strategy-list-table th:nth-child(3){width:205px}
+#strategy .strategy-list-table th:nth-child(4){width:180px}
+#strategy .strategy-list-table th:nth-child(5){width:155px}
+#strategy .strategy-list-table th:nth-child(6){width:110px}
+#strategy .strategy-list-table th:nth-child(7){width:92px}
+#strategy .strategy-list-table th:nth-child(8){width:268px}
+#strategy .strategy-list-table td{white-space:nowrap;line-height:1.65}
+#strategy .strategy-list-table .sub{margin-top:3px;line-height:1.5}
+#strategy .strategy-progress{display:flex;align-items:center;gap:10px}
+#strategy .strategy-progress .progress{flex:0 0 76px;width:76px;margin:0}
+#strategy .strategy-row-actions{display:flex;align-items:center;gap:14px;white-space:nowrap}
+#strategy .sr-entry{white-space:nowrap;margin:0;padding:4px 0;font-size:13px}
 #strategyResults .sr-back{margin-bottom:14px}
 #strategyResults .cards{grid-template-columns:repeat(3,minmax(0,1fr))}
 #strategyResults .sr-batch{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
@@ -7,7 +23,8 @@
 #strategyResults .sr-filter{border:0;margin-bottom:0;padding:20px}
 #strategyResults .tabs{gap:30px;padding:0 20px}
 #strategyResults .tab{padding:16px 0;font-size:14px}
-#strategyResults table{min-width:840px;font-size:14px}
+#strategyResults table{min-width:1140px;font-size:14px}
+#strategyResults th:first-child,#strategyResults td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
 #strategyResults th{padding:17px 20px;font-weight:600;color:#778399}
 #strategyResults td{padding:21px 20px}
 #strategyResults tbody tr:hover{background:#fafcff}
