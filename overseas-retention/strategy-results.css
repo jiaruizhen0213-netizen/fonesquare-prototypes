@@ -26,7 +26,7 @@
 #strategyResults .sr-filter{border:0;margin-bottom:0;padding:20px}
 #strategyResults .tabs{gap:30px;padding:0 20px}
 #strategyResults .tab{padding:16px 0;font-size:14px}
-#strategyResults table{min-width:1140px;font-size:14px}
+#strategyResults table{min-width:1540px;font-size:14px}
 #strategyResults th:first-child,#strategyResults td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
 #strategyResults th{padding:17px 20px;font-weight:600;color:#778399}
 #strategyResults td{padding:21px 20px}
@@ -41,3 +41,11 @@
 #strategyResults .sr-note{font-size:12px;color:var(--muted);margin-top:14px}
 #strategyResults button:focus-visible,#strategyResults input:focus-visible,#strategyResults select:focus-visible,.sr-entry:focus-visible{outline:3px solid #98bcff;outline-offset:2px}
 @media(max-width:620px){#strategyResults .cards{gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}#strategyResults .card{padding:13px}#strategyResults .metric{font-size:23px}#strategyResults .tabs{gap:18px}#strategyResults .tab{font-size:12px}#strategyResults .sr-filter{gap:9px}#strategyResults .sr-filter input{width:100%}}
+
+#strategyResults .sr-cause{position:relative;min-width:210px;color:#344054}
+#strategyResults .sr-cause summary{cursor:pointer;border:1px solid #d0d5dd;border-radius:6px;padding:9px 12px;background:white}
+#strategyResults .sr-cause-options{position:absolute;top:calc(100% + 6px);left:0;z-index:5;min-width:320px;max-width:calc(100vw - 48px);padding:8px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px #10182820}
+#strategyResults .sr-cause-options label{display:flex;align-items:center;gap:8px;padding:9px;cursor:pointer}
+#strategyResults .sr-cause-options input{width:16px;height:16px;min-width:16px;margin:0;padding:0;accent-color:var(--brand)}
+#strategyResults .sr-cause summary:focus-visible{outline:3px solid #98bcff;outline-offset:2px}
+#strategyResults #sr-table td:nth-child(n+7){white-space:nowrap}

@@ -327,9 +327,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="card"><div class="label">已提交锁货</div><div class="metric" id="sr-submitted" style="color:var(--green)">0</div></div>
   </div>
   <div class="panel">
-    <form class="filter sr-filter" id="sr-filter"><input id="sr-query" aria-label="搜索物品编码或型号" placeholder="搜索物品编码 / 型号"><select id="sr-cause" aria-label="原因"><option value="">全部原因</option><option value="price">超出可接受价格</option></select><button class="primary" type="submit">查询</button><button class="secondary" type="button" id="sr-reset">重置</button></form>
+    <form class="filter sr-filter" id="sr-filter"><input id="sr-query" aria-label="搜索物品编码或型号" placeholder="搜索物品编码 / 型号"><details id="sr-cause" class="sr-cause"><summary id="sr-cause-label">全部原因</summary><div class="sr-cause-options"><label><input type="checkbox" value="acceptable">超出策略可接受价格</label><label><input type="checkbox" value="ceiling">超出策略最高价</label><label><input type="checkbox" value="inventory">不存在已分银河库存</label><label><input type="checkbox" value="cancel">拍机堂下架失败，物品取消交易失败</label></div></details><button class="primary" type="submit">查询</button><button class="secondary" type="button" id="sr-reset">重置</button></form>
     <div class="tabs"><button type="button" class="tab active" data-sr-tab="all" id="sr-all-tab">全部处理记录</button><button type="button" class="tab" data-sr-tab="price" id="sr-price-tab">价格未通过</button><button type="button" class="tab" data-sr-tab="submitted" id="sr-submitted-tab">已提交锁货</button></div>
-    <div class="table-wrap"><table id="sr-table"><thead><tr><th>物品编码</th><th>货品信息</th><th>海外结算价</th><th>策略可接受价格</th><th>留货状态</th><th>原因</th></tr></thead><tbody id="sr-rows"></tbody></table></div>
+    <div class="table-wrap"><table id="sr-table"><thead><tr><th>物品编码</th><th>货品信息</th><th>海外结算价</th><th>策略可接受价格</th><th>留货状态</th><th>原因</th><th>基准价</th><th>最高价</th><th>预估售价</th></tr></thead><tbody id="sr-rows"></tbody></table></div>
     <div class="sr-pager"><span id="sr-count"></span><div class="sr-pager-controls"><span class="sr-page-number">1</span><span>50 条/页</span></div></div>
   </div>
   <div class="sr-note">展示本策略筛选命中后的比货及锁货处理记录；未被选中的商品状态留空，已提交锁货包含待锁、成功和失败。</div>
