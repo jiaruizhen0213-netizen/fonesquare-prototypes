@@ -1,0 +1,11 @@
+#inventory-app .inv-filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;padding:24px;margin-bottom:20px}
+#inventory-app .inv-field{min-width:0}#inventory-app .inv-field input,#inventory-app .inv-field select{width:100%;height:36px;border:1px solid #d0d5dd;border-radius:6px;padding:0 10px;background:#fff;color:#344054}
+#inventory-app .inv-actions{grid-column:1/-1;display:flex;justify-content:flex-end;align-items:center;gap:12px}#inventory-app .inv-actions .inv-field{width:210px}
+#inventory-app .inv-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#inventory-app th,#inventory-app td{white-space:nowrap;padding:16px}#inventory-app th button{border:0;background:none;font:inherit;color:inherit;cursor:pointer;padding:0}#inventory-app .text-btn{white-space:nowrap}
+#inventory-app .inv-pager{display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:16px}#inventory-app .inv-message{font-size:12px;color:#667085}
+#inventory-app .inv-dialog{width:min(1000px,92vw);max-height:85vh;border:1px solid #d0d5dd;border-radius:10px;padding:0;color:var(--text)}#inventory-app .inv-dialog::backdrop{background:#10182870}
+#inventory-app .inv-dialog header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;position:sticky;top:0;background:white}#inventory-app .inv-dialog h2{font-size:18px;margin:0}
+#inventory-app .inv-dialog dl{display:grid;grid-template-columns:180px 1fr;margin:0;padding:20px}#inventory-app dt,#inventory-app dd{margin:0;padding:10px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}#inventory-app dt{background:#f9fafb}
+#inventory-app :is(button,input,select):focus-visible{outline:3px solid #98bcff;outline-offset:2px}
+@media(max-width:1100px){#inventory-app .inv-filters{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){#inventory-app .inv-filters{grid-template-columns:repeat(2,minmax(0,1fr));padding:16px}#inventory-app .inv-actions{flex-wrap:wrap}#inventory-app .inv-dialog dl{grid-template-columns:120px 1fr}}
