@@ -16,7 +16,7 @@
   const sample = [
     ['001', '粉色', -20, 'success'], ['002', '白色', 80, 'price'],
     ['004', '白色', 120, 'price'], ['005', '粉色', -70, 'failed'],
-    ['006', '白色', null, 'pending'], ['009', '白色', 180, 'price'],
+    ['006', '白色', -40, 'pending'], ['009', '白色', 180, 'price'],
     ['010', '粉色', -30, 'success'], ['011', '白色', 90, 'price'],
     ['012', '粉色', -80, 'failed']
   ];
@@ -24,6 +24,7 @@
   const $ = id => document.getElementById(id);
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = value => value == null ? '—' : '¥' + value.toLocaleString('zh-CN');
+  const isSubmitted = record => ['pending','success','failed'].includes(record.outcome);
   function records() {
     if (selected.draft) return [];
     return sample.map(([id, color, offset, outcome]) => {
@@ -31,12 +32,12 @@
       const availableColors = selected.model.includes('Galaxy') ? ['黑色','灰色'] : selected.model.includes('15 Pro') ? ['原色钛金属','白色钛金属'] : ['红色','白色'];
       return {id, goods: `${selected.model} / ${selected.memory} / ${color === '粉色' ? availableColors[0] : availableColors[1]}`,
         price: offset == null ? null : selected.acceptable + offset, acceptable: selected.acceptable, outcome,
-        reason: outcome === 'price' ? '超出可接受价格' : outcome === 'failed' ? (id === '012' ? '拍机堂下架失败，物品取消交易失败' : '不存在已分银河库存') : '—'};
+        reason: outcome === 'price' ? '超出可接受价格' : outcome === 'failed' ? (id === '012' ? '拍机堂下架失败，物品取消交易失败' : '不存在已分银河库存') : ''};
     });
   }
   function render() {
     const all = records(), rejected = all.filter(r => r.outcome === 'price').length;
-    const submitted = all.filter(r => ['success','failed'].includes(r.outcome)).length;
+    const submitted = all.filter(isSubmitted).length;
     $('sr-strategy-name').textContent = selected.name;
     $('sr-total').textContent = all.length;
     $('sr-rejected').textContent = rejected;
@@ -45,11 +46,12 @@
     $('sr-price-tab').textContent = '价格未通过 ' + rejected;
     $('sr-submitted-tab').textContent = '已提交锁货 ' + submitted;
     root.querySelectorAll('[data-sr-tab]').forEach(button => button.classList.toggle('active', button.dataset.srTab === tab));
-    const visible = all.filter(r => (tab === 'all' || (tab === 'price' ? r.outcome === 'price' : ['success','failed'].includes(r.outcome)))
+    const visible = all.filter(r => (tab === 'all' || (tab === 'price' ? r.outcome === 'price' : isSubmitted(r)))
       && (!query || (r.id + ' ' + r.goods).toLowerCase().includes(query.toLowerCase())) && (!cause || r.outcome === cause));
     $('sr-rows').innerHTML = visible.length ? visible.map(r => {
-      const pending = ['price','pending'].includes(r.outcome), status = pending ? '待锁' : r.outcome === 'success' ? '成功' : '失败';
-      return `<tr><td>${escape(r.id)}</td><td>${escape(r.goods)}</td><td>${money(r.price)}</td><td>${money(r.acceptable)}</td><td><span class="sr-status ${pending ? 'pending' : r.outcome}">${status}</span></td><td class="${r.outcome === 'price' ? 'sr-price-reason' : ''}">${escape(r.reason)}</td></tr>`;
+      const status = {pending:'待锁',success:'成功',failed:'失败'}[r.outcome] || '';
+      const statusCell = status ? `<span class="sr-status ${r.outcome}">${status}</span>` : '';
+      return `<tr><td>${escape(r.id)}</td><td>${escape(r.goods)}</td><td>${money(r.price)}</td><td>${money(r.acceptable)}</td><td>${statusCell}</td><td class="${r.outcome === 'price' ? 'sr-price-reason' : ''}">${escape(r.reason)}</td></tr>`;
     }).join('') : `<tr><td colspan="6" class="empty">${selected.draft ? '该策略尚未启用，暂无留货结果' : '暂无符合条件的处理记录'}</td></tr>`;
     $('sr-count').textContent = '共 ' + visible.length + ' 条演示记录';
     $('sr-batch').disabled = selected.draft;
