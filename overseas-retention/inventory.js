@@ -25,13 +25,13 @@
   const retentionColumns = new Set(['关联策略','比货留货时间','留货结果']);
   let source = 'BI 库存';
   const tabState = {};
-  const visibleColumns = ['快照时间','商品码','IMEI','SKU名称',...baseColumns.filter(k=>!['快照时间','商品码','IMEI','SKU名称'].includes(k))];
+  const visibleColumns = ["快照时间", "商品码", "IMEI", "SKU名称", "型号名称", "内存", "颜色", "货源主体", "运营中心", "购买渠道", "海外购买渠道", "海外等级", "PJT等级", "质检报告编号", "物品编码", "最新看图成色", "边框背板", "屏幕外观", "屏幕显示", "机身弯曲情况", "受潮情况", "电池健康度", "维修情况", "屏幕维修情况", "主板维修情况", "电池维修情况", "零件维修情况", "后壳维修情况", "前摄维修情况", "后摄维修情况", "前摄拍摄功能", "后摄拍摄功能", "光线距离感应正常", "售后案例情况", "开机情况", "通话功能", "充电功能", "无线功能", "苹果保修期时长", "ICLOUD是否可注销", "指纹功能", "指南针功能", "触摸功能", "面容识别功能", "实体按键功能", "振动功能", "侧键", "声音功能", "数据连接功能", "是否可恢复出厂设置", "机身美容情况", "结算价", "预估售价", "关联策略", "比货留货时间", "留货结果"];
   let filters = {}, page = 1, size = 10, sort = '', direction = 1;
   const app = () => document.getElementById('inventory-app');
   const money = v => v === '' || v == null ? '—' : '¥'+Number(v).toLocaleString('zh-CN',{maximumFractionDigits:2});
   const display = (r,k) => ['结算价','预估售价'].includes(k) ? money(r[k]) : r[k] === '' || r[k] == null ? '—' : String(r[k]);
   const getRows = () => (source==='BI 库存'?sample:yanxuan).map(r=>({...r,'数据来源':source,'结算价':prices.get(r['物品编码'])?.amount??'','价格更新时间':prices.get(r['物品编码'])?.updated??''}));
-  const columns = () => visibleColumns.filter(k=>source==='BI 库存'||!retentionColumns.has(k)).flatMap(k=>k==='结算价'?[k,'价格更新时间']:[k]);
+  const columns = () => [...visibleColumns.filter(k=>source==='BI 库存'||!retentionColumns.has(k)),'价格更新时间'];
   const exportColumns = () => [...baseColumns.filter(k=>source==='BI 库存'||!retentionColumns.has(k)),'数据来源','价格更新时间'];
   function matches() {
     let rows = getRows().filter(r=>Object.entries(filters).every(([k,v])=>!v || String(r[k]??'') === v));
