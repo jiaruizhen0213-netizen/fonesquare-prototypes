@@ -1,0 +1,28 @@
+/* Strategy creation and editing share a modal; other pages retain their layout. */
+#strategy-editor-modal{width:min(1080px,calc(100vw - 40px));max-width:none;max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:12px;color:var(--text);background:#fff;box-shadow:0 24px 64px #10182838;overflow:hidden}
+#strategy-editor-modal::backdrop{background:#10182870}
+#strategy-editor-modal[open]{display:flex;flex-direction:column}
+#strategy-editor-modal .se-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 24px;border-bottom:1px solid var(--line);flex:none}
+#strategy-editor-modal .se-header h2{margin:0 0 5px;font-size:19px}
+#strategy-editor-modal .se-header p{margin:0;font-size:12px;color:var(--muted)}
+#strategy-editor-modal .se-body{padding:20px 24px;overflow-y:auto;min-height:0;overscroll-behavior:contain}
+#strategy-editor-modal #create{display:block;max-width:none}
+#strategy-editor-modal .panel.section{border:0;border-radius:0;padding:0 0 22px;margin:0 0 22px;border-bottom:1px solid var(--line);overflow:visible}
+#strategy-editor-modal .panel.section:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+#strategy-editor-modal .se-target-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+#strategy-editor-modal .se-footer{display:flex;justify-content:flex-end;gap:9px;padding:14px 24px;border-top:1px solid var(--line);flex:none;background:#fff}
+#strategy-editor-modal .se-footer .bottom-actions{margin:0}
+#strategy-editor-modal .se-error{color:var(--red);margin:0 24px 10px}
+#strategy-editor-modal .se-error:empty{display:none}
+#strategy-editor-modal .se-scope{font-size:12px;color:var(--muted);margin:12px 0 0;line-height:1.7}
+#strategy-editor-modal .field input:disabled,#strategy-editor-modal .field select:disabled{background:#f9fafb;color:#667085;cursor:not-allowed}
+#strategy-editor-modal .se-currency{display:flex;align-items:center;border:1px solid #d0d5dd;border-radius:6px;overflow:hidden;height:34px}
+#strategy-editor-modal .se-currency span{padding:6px 10px;background:#f9fafb;border-right:1px solid var(--line);font-size:12px;flex:none}
+#strategy-editor-modal .se-currency input{border:0;border-radius:0;min-width:0;height:32px}
+#strategy-editor-modal .se-updated{animation:se-price-highlight 1.3s ease-out}
+.strategy-row-actions .se-edit,.strategy-row-actions .se-trial{font-size:13px;font-weight:600;padding:0}
+#strategy .se-save-note{color:var(--green);margin:-10px 0 16px;font-size:13px}
+#strategy .se-save-note:empty{display:none}
+@keyframes se-price-highlight{from{background:#eaf2ff}to{background:#fff}}
+@media(prefers-reduced-motion:reduce){#strategy-editor-modal .se-updated{animation:none}}
+@media(max-width:680px){#strategy-editor-modal{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}#strategy-editor-modal .se-header{padding:16px}#strategy-editor-modal .se-body{padding:16px}#strategy-editor-modal .se-footer{padding:12px 16px;flex-wrap:wrap}#strategy-editor-modal .grid,#strategy-editor-modal .se-target-grid{grid-template-columns:1fr}#strategy-editor-modal .quality{overflow-x:auto}#strategy-editor-modal .se-error{margin-left:16px;margin-right:16px}}
