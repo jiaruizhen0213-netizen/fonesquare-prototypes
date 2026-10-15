@@ -61,7 +61,7 @@
   ['base','ceiling'].forEach(key => {
     const input=fields[key]; input.type='number';input.min='0.01';input.step='0.01';input.required=true;
     const wrapper=document.createElement('div');wrapper.className='se-currency';
-    const unit=document.createElement('span');unit.textContent='CNY';input.before(wrapper);wrapper.append(unit,input);
+    const unit=document.createElement('span');unit.textContent='¥';input.before(wrapper);wrapper.append(unit,input);
   });
   fields.target.min='1';fields.target.step='1';fields.target.required=true;
   function setOptions(select,options){select.replaceChildren(...options.map(({value,label})=>new Option(label,value)));}
@@ -70,15 +70,28 @@
   const oldHeading=form.querySelector('.heading'), oldStepper=form.querySelector('.stepper');
   oldHeading.remove();oldStepper.remove();
   const sections=form.querySelectorAll('.panel.section'),targetSection=sections[1];
+  const basics=sections[0];basics.classList.add('se-basics');
+  basics.querySelector('h2').hidden=true;
+  const qualityDetails=document.createElement('details');qualityDetails.className='se-disclosure se-quality-details';
+  qualityDetails.innerHTML='<summary><span>质量分层与容差 <small>3 项</small></span><span class="se-disclosure-toggle"><span class="se-when-closed">展开</span><span class="se-when-open">收起</span> <span aria-hidden="true">⌄</span></span></summary>';
+  const qualityContent=document.createElement('div');qualityContent.className='se-disclosure-content';
+  qualityContent.append(basics.querySelector('p'),basics.querySelector('.quality'));
+  qualityDetails.append(qualityContent);basics.append(qualityDetails);
   const targetGrid=targetSection.querySelector('.grid');targetGrid.classList.add('se-target-grid');
   ['target','deadline','frequency','base','ceiling','note'].forEach(key=>targetGrid.append(fields[key].closest('.field')));
-  const scope=document.createElement('p');scope.className='se-scope';sections[0].append(scope);
+  fields.deadline.closest('.field').querySelector('.req')?.remove();
+  fields.note.placeholder='选填';
+  const targetUnit=document.createElement('span');targetUnit.className='se-unit';targetUnit.textContent='台';
+  const targetInput=document.createElement('div');targetInput.className='se-quantity';fields.target.before(targetInput);targetInput.append(fields.target,targetUnit);
+  const calculationDetails=document.createElement('details');calculationDetails.className='se-calculation-details';
+  calculationDetails.innerHTML='<summary>留货计算说明</summary>';
+  calculationDetails.append(targetSection.querySelector('p'),targetSection.querySelector('.summary'));targetSection.append(calculationDetails);
   const trialSection=document.createElement('section');trialSection.id='strategy-trial';trialSection.className='panel section';targetSection.before(trialSection);
   const footer=form.querySelector('.bottom-actions');footer.querySelectorAll('button').forEach(button=>button.removeAttribute('onclick'));
   const cancel=document.createElement('button');cancel.type='button';cancel.className='secondary';cancel.textContent='取消';cancel.id='se-cancel';footer.prepend(cancel);
   footer.querySelectorAll('button')[1].id='se-save-draft';footer.querySelectorAll('button')[2].id='se-save';
   const dialog=document.createElement('dialog');dialog.id='strategy-editor-modal';dialog.setAttribute('aria-labelledby','se-title');
-  dialog.innerHTML='<header class="se-header"><div><h2 id="se-title">新建留货策略</h2><p>选择货品范围与质量模板，试算库存价格后设置留货目标。</p></div><button class="close" id="se-close" type="button" aria-label="关闭策略弹窗">×</button></header><div class="se-body"></div><p class="se-error" id="se-error" role="alert"></p><footer class="se-footer"></footer>';
+  dialog.innerHTML='<header class="se-header"><div><h2 id="se-title">新建留货策略</h2><p>选择货品范围与质量模板，试算后设置留货目标。</p></div><button class="close" id="se-close" type="button" aria-label="关闭策略弹窗">×</button></header><div class="se-body"></div><p class="se-error" id="se-error" role="alert"></p><footer class="se-footer"></footer>';
   form.classList.remove('view','form-page','active');dialog.querySelector('.se-body').append(form);dialog.querySelector('.se-footer').append(footer);document.body.append(dialog);
   let editIndex=null, lastViewed=0, returnFocus=null, trial=null, opening=false;
   const error=dialog.querySelector('#se-error');
@@ -106,7 +119,7 @@
       initialPrice:fields.base.value===''?undefined:Number(fields.base.value),snapshotTime,priceTime};
   }
   function refreshTrial(){
-    const next=context();scope.textContent='货品范围：'+next.label;refreshQuality();error.textContent='';
+    const next=context();refreshQuality();error.textContent='';
     if(trial)trial.update(next);else trial=window.RetentionPriceTrial.mount(trialSection,next,applyPrice);
   }
   function refreshSummary(){
@@ -127,6 +140,7 @@
     originalShowView('strategy');
     const record=editIndex===null?{...defaults[0],name:'iPhone 15 Pro 香港留货',country:'香港',deadline:'',frequency:'3',note:'',status:'草稿',tolerances:['10','10','8']}:records[editIndex];
     opening=true;
+    qualityDetails.open=false;calculationDetails.open=false;
     Object.entries(fields).forEach(([key,field])=>{if(!['template','range'].includes(key))field.value=record[key]??'';});
     fields.range.value=record.range;refreshTemplates(record.template);
     fields.name.dataset.manual='true';

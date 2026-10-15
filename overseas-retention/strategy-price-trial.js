@@ -49,18 +49,27 @@
     root.innerHTML = `
       <div class="spt-heading"><h3 id="${id}-title">库存价格试算</h3><span class="spt-demo">原型演示数据</span></div>
       <p class="spt-scope" data-trial-role="scope"></p>
-      <p class="spt-description">使用符合当前策略条件的可留货库存已有结算价，无价格商品跳过。实际留货时会重新取价。</p>
-      <div class="spt-reference"><span>海外预估售价参考 <strong data-trial-role="reference"></strong></span><span class="spt-reference-help">仅作提示，可继续拖动到更高价格</span></div>
-      <p class="spt-channels" data-trial-role="channels"></p>
-      <div class="spt-result">结算价 ≤ <strong data-trial-role="selected"></strong><span>的库存共 <strong data-trial-role="count">0</strong> 台</span></div>
-      <p class="spt-totals">有价格 <span data-trial-role="priced">0</span> 台 · 无价格跳过 <span data-trial-role="missing">0</span> 台<span class="spt-times" data-trial-role="times"></span></p>
-      <div class="spt-chart-wrap"><svg class="spt-chart" data-trial-role="chart" role="img" aria-labelledby="${id}-chart-title ${id}-chart-description"></svg></div>
-      <div class="spt-controls">
-        <div class="spt-slider-field"><label for="${id}-slider">拖动试算价格</label><input data-trial-role="slider" id="${id}-slider" type="range" step="0.01"><div class="spt-range-labels"><span data-trial-role="minimum"></span><span data-trial-role="maximum"></span></div></div>
-        <div class="spt-number-field"><label for="${id}-price">试算价格（元）</label><input data-trial-role="price" id="${id}-price" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="${id}-hint"></div>
-        <button type="button" data-trial-role="apply" class="spt-apply">应用价格</button>
+      <details class="spt-details">
+        <summary>试算说明</summary>
+        <div class="spt-details-content">
+          <p class="spt-description">使用符合当前策略条件的可留货库存已有结算价，无价格商品跳过。实际留货时会重新取价。</p>
+          <p class="spt-channels" data-trial-role="channels"></p>
+          <p class="spt-times" data-trial-role="times"></p>
+        </div>
+      </details>
+      <div class="spt-workspace">
+        <div class="spt-visual">
+          <div class="spt-chart-wrap"><svg class="spt-chart" data-trial-role="chart" role="img" aria-labelledby="${id}-chart-title ${id}-chart-description"></svg></div>
+          <div class="spt-slider-field"><label class="spt-sr-only" for="${id}-slider">拖动试算价格</label><input data-trial-role="slider" id="${id}-slider" type="range" step="0.01"><div class="spt-range-labels"><span data-trial-role="minimum"></span><span class="spt-drag-help">拖动试算价格</span><span data-trial-role="maximum"></span></div></div>
+        </div>
+        <div class="spt-controls">
+          <div class="spt-number-field"><label for="${id}-price">试算价格（元）</label><input data-trial-role="price" id="${id}-price" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="${id}-hint"></div>
+          <div class="spt-result"><span class="spt-result-threshold">结算价 ≤ <strong data-trial-role="selected"></strong></span><span class="spt-result-count">符合价格的库存 <strong data-trial-role="count">0</strong> 台</span></div>
+          <button type="button" data-trial-role="apply" class="spt-apply">应用价格</button>
+          <p id="${id}-hint" class="spt-hint" data-trial-role="hint"></p>
+        </div>
       </div>
-      <p id="${id}-hint" class="spt-hint" data-trial-role="hint"></p>
+      <div class="spt-footer"><p class="spt-totals">有价格 <span data-trial-role="priced">0</span> 台 · 无价格跳过 <span data-trial-role="missing">0</span> 台</p><p class="spt-reference">海外预估售价 <strong data-trial-role="reference"></strong><span class="spt-reference-help">仅参考，可继续向上拖动</span></p></div>
       <p class="spt-message" data-trial-role="message" role="alert" hidden></p>
       <p class="spt-status" data-trial-role="status" role="status" aria-live="polite" hidden></p>`;
     container.replaceChildren(root);
@@ -150,12 +159,12 @@
     function drawChart() {
       if (destroyed) return;
       const measured = root.querySelector('.spt-chart-wrap').getBoundingClientRect().width || container.clientWidth || 720;
-      const width = Math.max(240, measured);
-      const height = width < 500 ? 230 : 250;
-      const left = 58;
-      const right = width - 22;
-      const top = 44;
-      const bottom = height - 45;
+      const width = Math.max(240, Math.round(measured));
+      const height = 170;
+      const left = 42;
+      const right = width - 12;
+      const top = 35;
+      const bottom = height - 35;
       const maxCount = Math.max(1, prices.length);
       const x = value => left + (value - lower) / (upper - lower) * (right - left);
       const y = value => bottom - value / maxCount * (bottom - top);
@@ -164,8 +173,8 @@
       chart.setAttribute('height', String(height));
       chart.replaceChildren(
         svgElement('title', {id:id + '-chart-title'}, '价格与累计库存数量'),
-        svgElement('desc', {id:id + '-chart-description'}, '横轴为结算价，纵轴为该价格以内的累计库存数量。可拖动图中价格线，或使用下方价格滑块与输入框。'),
-        svgElement('text', {x:left, y:17, class:'spt-axis-title', 'data-axis':'y'}, '累计库存（台）'),
+        svgElement('desc', {id:id + '-chart-description'}, '横轴为结算价，纵轴为该价格以内的累计库存数量。可拖动图中价格线，或使用价格滑块与输入框。'),
+        svgElement('text', {x:left, y:13, class:'spt-axis-title', 'data-axis':'y'}, '累计库存（台）'),
         svgElement('text', {x:right, y:height - 2, 'text-anchor':'end', class:'spt-axis-title', 'data-axis':'x'}, '结算价（元）')
       );
 
@@ -180,7 +189,7 @@
       for (let i = 0; i < tickCount; i++) {
         const value = lower + (upper - lower) * i / (tickCount - 1);
         chart.append(svgElement('text', {
-          x:x(value), y:bottom + 21, class:'spt-axis-tick',
+          x:x(value), y:bottom + 16, class:'spt-axis-tick',
           'text-anchor':i === 0 ? 'start' : i === tickCount - 1 ? 'end' : 'middle'
         }, (value / 100).toLocaleString('zh-CN', {maximumFractionDigits:2})));
       }
@@ -305,7 +314,7 @@
       element('channels').textContent = estimates.length ? estimates.map((estimate,index) => String(estimate.channel || '未命名渠道') + '：' + money(estimateValues[index] > 0 ? estimateValues[index] : null)).join('；') + (reference !== null && estimates.length > 1 ? '。多个渠道取最低值。' : '') : '请先配置对应型号、内存、海外购买渠道和海外等级的预估售价。';
       element('priced').textContent = String(prices.length);
       element('missing').textContent = String(items.length - prices.length);
-      element('times').textContent = [context.snapshotTime ? '库存快照 ' + context.snapshotTime : '', context.priceTime ? '价格更新 ' + context.priceTime : ''].filter(Boolean).map(value => ' · ' + value).join('');
+      element('times').textContent = [context.snapshotTime ? '库存快照 ' + context.snapshotTime : '', context.priceTime ? '价格更新 ' + context.priceTime : ''].filter(Boolean).join(' · ');
       slider.disabled = !enabled();
       priceInput.disabled = !enabled();
       calculateDomain();
@@ -322,7 +331,10 @@
     chart.addEventListener('pointercancel', onPointerEnd);
     window.addEventListener('resize', drawChart);
     if (typeof ResizeObserver === 'function') {
-      resizeObserver = new ResizeObserver(drawChart);
+      resizeObserver = new ResizeObserver(() => {
+        const width = Math.max(240, Math.round(root.querySelector('.spt-chart-wrap').getBoundingClientRect().width || container.clientWidth || 720));
+        if (!geometry || geometry.width !== width) drawChart();
+      });
       resizeObserver.observe(root.querySelector('.spt-chart-wrap'));
     }
     update(initialContext);
