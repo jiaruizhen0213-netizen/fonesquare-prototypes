@@ -70,7 +70,7 @@
     };
     app().onfocusout = event => {
       const details=event.target.closest('.inv-multi');
-      if(details && !details.contains(event.relatedTarget))details.open=false;
+      if(details && event.relatedTarget && !details.contains(event.relatedTarget))details.open=false;
     };
     app().onclick = event => {
       const summary=event.target.closest('.inv-multi > summary');

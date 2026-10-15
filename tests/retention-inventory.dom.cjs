@@ -46,7 +46,7 @@ click('#inventory-app [data-field="海外等级"] summary');click('#inventory-ap
 choose('颜色','黑色');const colorInput=multi('颜色').querySelector('input:checked');colorInput.focus();
 colorInput.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(multi('颜色').open,false);
 assert.equal(w.document.activeElement,multi('颜色').querySelector('summary'));assert.equal(colorInput.checked,true);
-click('#inventory-app [data-field="颜色"] summary');$('#inventory-app h1').click();assert.equal(multi('颜色').open,false);assert.equal(colorInput.checked,true);
+click('#inventory-app [data-field="颜色"] summary');colorInput.dispatchEvent(new w.FocusEvent('focusout',{bubbles:true,relatedTarget:null}));assert.equal(multi('颜色').open,true);$('#inventory-app h1').click();assert.equal(multi('颜色').open,false);assert.equal(colorInput.checked,true);
 click('#inventory-app [data-field="颜色"] summary');click('#inventory-app [data-clear="颜色"]');assert.equal(multi('颜色').querySelectorAll('input:checked').length,0);assert.equal(multi('颜色').querySelector('summary').textContent,'选择颜色');submit();assert.match($('#inv-count').textContent,/24 条/);
 choose('海外等级','B');submit();assert.match($('#inv-count').textContent,/12 条/); // Deselecting B leaves C.
 click('#inventory-app [data-action=reset]');
