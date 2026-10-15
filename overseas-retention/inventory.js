@@ -30,20 +30,53 @@
   const columns = () => [...visibleColumns,'价格更新时间'];
   const exportColumns = () => [...baseColumns,'数据来源','价格更新时间'];
   function matches() {
-    let rows = getRows().filter(r=>Object.entries(filters).every(([k,v])=>!v || String(r[k]??'') === v));
+    let rows = getRows().filter(r=>Object.entries(filters).every(([k,v])=>Array.isArray(v) ? !v.length || v.includes(String(r[k]??'')) : !v || String(r[k]??'') === v));
     if(sort) rows=rows.slice().sort((a,b)=> (typeof a[sort]==='number'&&typeof b[sort]==='number' ? a[sort]-b[sort] : String(a[sort]??'').localeCompare(String(b[sort]??''),'zh-CN',{numeric:true}))*direction);
     return rows;
   }
-  function controls() {
-    const field = k => `<label class="inv-field"><span class="inv-sr-only">${e(k)}</span>${textFields.has(k)?`<input name="${e(k)}" aria-label="${e(k)}" placeholder="${e(k)}" value="${e(filters[k]||'')}">`:`<select name="${e(k)}" aria-label="${e(k)}"><option value="">${e(placeholders[k]||k)}</option>${[...new Set(getRows().map(r=>r[k]).filter(Boolean))].map(v=>`<option value="${e(v)}" ${filters[k]===v?'selected':''}>${e(v)}</option>`).join('')}</select>`}</label>`;
-    return fields.slice(0,-1).map(field).join('')+`<div class="inv-actions"><button class="primary" type="submit">查询</button><button class="secondary" type="button" data-action="reset">重置</button><button class="secondary" type="button" data-action="export">导出</button>${field('海外购买渠道')}</div>`;
+  function selectionLabel(key, values) {
+    return !values.length ? placeholders[key]||key : key+'：'+(values.length===1?values[0]:'已选 '+values.length+' 项');
   }
-  function readFilters() { return Object.fromEntries(new FormData(app().querySelector('form')).entries()); }
+  function controls() {
+    const field = key => {
+      if(textFields.has(key)) return `<label class="inv-field"><span class="inv-sr-only">${e(key)}</span><input name="${e(key)}" aria-label="${e(key)}" placeholder="${e(key)}" value="${e(filters[key]||'')}"></label>`;
+      const selected=filters[key]||[], options=[...new Set(getRows().map(r=>r[key]).filter(Boolean))];
+      return `<details class="inv-field inv-multi" data-field="${e(key)}"><summary title="${e(selected.length?key+'：'+selected.join('、'):key)}"><span class="inv-selection ${selected.length?'has-selection':''}">${e(selectionLabel(key,selected))}</span></summary><div class="inv-options" role="group" aria-label="${e(key)}选项"><div class="inv-option-list">${options.map(value=>`<label class="inv-option"><input type="checkbox" name="${e(key)}" value="${e(value)}" ${selected.includes(value)?'checked':''}><span>${e(value)}</span></label>`).join('')}</div><button class="inv-clear" type="button" data-clear="${e(key)}">清空选择</button></div></details>`;
+    };
+    return fields.map(field).join('')+`<div class="inv-actions"><button class="primary" type="submit">查询</button><button class="secondary" type="button" data-action="reset">重置</button><button class="secondary" type="button" data-action="export">导出</button></div>`;
+  }
+  function readFilters() {
+    const data=new FormData(app().querySelector('form'));
+    return Object.fromEntries(fields.map(key=>[key,textFields.has(key)?String(data.get(key)||''):data.getAll(key).map(String)]));
+  }
+  function refreshSelection(details) {
+    const selected=[...details.querySelectorAll('input:checked')].map(input=>input.value),key=details.dataset.field;
+    const label=details.querySelector('.inv-selection');
+    label.textContent=selectionLabel(key,selected);label.classList.toggle('has-selection',!!selected.length);
+    details.querySelector('summary').title=selected.length?key+'：'+selected.join('、'):key;
+  }
+  function closeMultis(except) {
+    app().querySelectorAll('.inv-multi[open]').forEach(details=>{if(details!==except)details.open=false;});
+  }
   function build() {
     app().innerHTML = `<div class="heading"><div><h1>留货库存</h1><p>当前快照：${stamp}，数据截止 ${stamp}</p></div></div><p class="inv-price-note">海外结算价每日 8:00 更新，执行留货时重新获取最新价格。未获取价格显示“—”。</p><form class="panel inv-filters">${controls()}</form><div class="panel"><div class="panel-head"><h2>可留货库存物品 <small id="inv-count"></small></h2><small>页面只读，不提供锁货操作 · 演示数据</small></div><div class="table-wrap"><table id="inv-table"></table></div><div id="inv-pager" class="inv-pager"></div></div><p class="inv-message" role="status"></p><dialog id="inv-detail" class="inv-dialog"><header><h2>库存详情</h2><button type="button" class="secondary" data-action="close">关闭</button></header><dl></dl></dialog>`;
-    app().querySelector('form').onsubmit = event => {event.preventDefault();filters=readFilters();page=1;render();};
+    app().querySelector('form').onsubmit = event => {event.preventDefault();filters=readFilters();page=1;closeMultis();render();};
+    app().onchange = event => {if(event.target.type==='checkbox')refreshSelection(event.target.closest('.inv-multi'));};
+    app().onkeydown = event => {
+      if(event.key==='Escape'){
+        const details=event.target.closest('.inv-multi[open]');
+        if(details){details.open=false;details.querySelector('summary').focus();event.preventDefault();event.stopPropagation();}
+      }
+    };
+    app().onfocusout = event => {
+      const details=event.target.closest('.inv-multi');
+      if(details && !details.contains(event.relatedTarget))details.open=false;
+    };
     app().onclick = event => {
+      const summary=event.target.closest('.inv-multi > summary');
+      if(summary){closeMultis(summary.parentElement);return;}
       const b=event.target.closest('button');if(!b)return;
+      if(b.dataset.clear){const details=b.closest('.inv-multi');details.querySelectorAll('input:checked').forEach(input=>input.checked=false);refreshSelection(details);return;}
       if(b.dataset.action==='reset'){filters={};page=1;build();}
       if(b.dataset.action==='export'){filters=readFilters();page=1;render();download();}
       if(b.dataset.action==='close')app().querySelector('dialog').close();
@@ -68,5 +101,6 @@
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'库存明细');XLSX.writeFile(wb,source+'明细-演示数据.xlsx',{compression:true});
     app().querySelector('.inv-message').textContent='已导出当前筛选的全部 '+rows.length+' 条记录';
   }
+  document.addEventListener('click',event=>{if(!event.target.closest('#inventory-app .inv-multi'))closeMultis();});
   document.addEventListener('DOMContentLoaded',build);
 })();
