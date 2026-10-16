@@ -16,6 +16,8 @@
 #transferRules .tr-table th:nth-child(2){width:23%}
 #transferRules .tr-table th:nth-child(3){width:19%}
 #transferRules .tr-table th:nth-child(4){width:21%}
+#transferRules .tr-table th:nth-child(5),#transferRules .tr-table td:nth-child(5){min-width:76px;white-space:nowrap}
+#transferRules .tr-table .pill{white-space:nowrap}
 #transferRules .tr-goods{max-width:270px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.65}
 #transferRules .tr-centers{max-width:240px;line-height:1.65}
 #transferRules .tr-warehouse,#stayDetails .tr-warehouse{display:flex;flex-direction:column;gap:3px;white-space:nowrap}
@@ -31,7 +33,7 @@
 #transferRules .tr-picker[open] summary{border-color:#84adff;box-shadow:0 0 0 3px #eef4ff}
 #transferRules .tr-picker-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
 #transferRules .tr-placeholder{color:#667085}
-#transferRules .tr-chevron{color:#667085;font-size:15px}
+#transferRules .tr-chevron{font-size:0;width:7px;height:7px;flex:none;border-right:1px solid #667085;border-bottom:1px solid #667085;transform:rotate(45deg);margin:-4px 3px 0 0}
 #transferRules .tr-picker-menu{position:absolute;left:0;right:0;top:42px;z-index:20;background:#fff;border:1px solid #e4e7ec;border-radius:8px;box-shadow:0 8px 24px #10182822;padding:8px;min-width:min(270px,80vw)}
 #transferRules .tr-picker-search{height:34px;width:100%;border:1px solid #d0d5dd;border-radius:5px;padding:0 9px;margin-bottom:6px;color:#344054;outline:none;font-size:13px}
 #transferRules .tr-picker-search:focus{border-color:#84adff}
