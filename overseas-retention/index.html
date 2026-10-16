@@ -72,7 +72,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <link rel="stylesheet" href="strategy-price-trial.css?v=20261015-compact1">
 <link rel="stylesheet" href="strategy-editor.css?v=20261015-compact1">
 <link rel="stylesheet" href="transfer-rules.css?v=20261016-priority1">
-<script src="transfer-rules.js?v=20261016-priority1"></script>
+<script src="transfer-rules.js?v=20261016-priority-default1"></script>
 
 </head>
 <body>
@@ -788,6 +788,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             rows.forEach((r,i)=>{r['运营中心']=sourceCenters[i];const t=transferExamples[i];if(t)r.transfer={...t,warehouseName:transferWarehouses.find(w=>w.id===t.warehouseId)?.name||'',requestedAt:['已受理','发起失败'].includes(t.status)?r['锁货处理时间']:'—'};});
             // A WMS response is separate from Galaxy application acceptance; missing responses remain blank.
             rows[0].wmsTransferResult='已发货';
+            rows[0].wmsTransferReturnedAt=stampAt(1); // Independent WMS response event in the demo.
             const detailCols=['商品码','物品编码','留货来源','留货原因','货源主体','运营中心','调拨仓库','WMS调拨结果','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','命中策略','比货留货时间','留货结果','失败原因'];
             const detailDialogCols=['商品码','物品编码','运行批次','策略执行','命中策略','货源主体','运营中心','调拨仓库','WMS调拨结果','型号','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','比货留货时间','留货结果','失败原因'];
             // Keep the source model used by specified-item imports and inventory intact.
@@ -873,12 +874,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             function showDialog(type,title,entries,formatted=false){const d=document.getElementById('rp-'+type+'-dialog');d.querySelector('h2').textContent=title;d.querySelector('article').innerHTML='<dl class="rp-kv">'+entries.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(formatted?v:display(k,v))}</dd>`).join('')+'</dl>';d.showModal();}
             function openRecord(type,r){
               if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
-              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),[...detailDialogCols.map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
+              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),[...detailDialogCols.filter(k=>!r.transfer||k!=='WMS调拨结果').map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
             }
-            function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['调拨处理原因',t.reason||'—'],['调拨发起时间',t.requestedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
+            function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['WMS调拨结果',detailValue(r,'WMS调拨结果')||'—'],['WMS状态返回时间',r.wmsTransferReturnedAt||'—'],['调拨发起时间',t.requestedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
             function openTransfer(r){
               const t=r.transfer;if(!t)return;
-              showDialog('details','调拨信息 · '+r['物品编号'],[['物品编号',r['物品编号']],['运营中心',r['运营中心']],['调拨仓库',detailValue(r,'调拨仓库')||'—'],['WMS调拨结果',detailValue(r,'WMS调拨结果')||'—'],...transferEntries(r)],true);
+              showDialog('details','调拨信息 · '+r['物品编号'],[['物品编号',r['物品编号']],['运营中心',r['运营中心']],['调拨仓库',detailValue(r,'调拨仓库')||'—'],...transferEntries(r)],true);
               const article=document.querySelector('#rp-details-dialog article');
               const note=document.createElement('p');note.className='tr-detail-note';note.textContent='调拨仓库为本次判定的目标仓；已受理不代表已经到仓。WMS调拨结果以仓库返回为准，未返回显示“—”。以下为原型示例。';article.prepend(note);
               if(t.status==='发起失败'){

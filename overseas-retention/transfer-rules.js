@@ -10,8 +10,8 @@
   ];
   const defaults = [
     { id: 'TR-DEMO-001', name: 'iPhone 13 调拨东莞', priority: 1, models: ['iPhone 13'], memories: ['128G'], grades: ['C'], colors: [], centers: [warehouses[1].name, warehouses[2].name, warehouses[0].name], warehouseId: 'CB020304', enabled: true, updatedAt: '2026-10-16 09:00' },
-    { id: 'TR-DEMO-002', name: 'iPhone 15 Pro 调拨武汉', priority: 2, models: ['iPhone 15 Pro'], memories: ['256G'], grades: ['A'], colors: [], centers: [warehouses[0].name], warehouseId: 'CB000243', enabled: true, updatedAt: '2026-10-16 09:00' },
-    { id: 'TR-DEMO-003', name: 'iPhone 15 调拨天津', priority: 3, models: ['iPhone 15'], memories: [], grades: [], colors: [], centers: [], warehouseId: 'CB000240', enabled: false, updatedAt: '2026-10-16 09:00' }
+    { id: 'TR-DEMO-002', name: 'iPhone 15 Pro 调拨武汉', priority: 1, models: ['iPhone 15 Pro'], memories: ['256G'], grades: ['A'], colors: [], centers: [warehouses[0].name], warehouseId: 'CB000243', enabled: true, updatedAt: '2026-10-16 09:00' },
+    { id: 'TR-DEMO-003', name: 'iPhone 15 调拨天津', priority: 1, models: ['iPhone 15'], memories: [], grades: [], colors: [], centers: [], warehouseId: 'CB000240', enabled: false, updatedAt: '2026-10-16 09:00' }
   ];
   const clone = value => JSON.parse(JSON.stringify(value));
   const escape = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -25,6 +25,12 @@
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (Array.isArray(stored) && stored.every(r => r && typeof r.id === 'string' && typeof r.name === 'string' && typeof r.enabled === 'boolean' && dimensions.every(([key]) => Array.isArray(r[key]) && r[key].every(v => typeof v === 'string')))) rules = stored;
   } catch (_) { storageAvailable = false; }
+  // Update untouched examples cached by the previous prototype, preserving edited rules.
+  rules = rules.map(rule => {
+    const index = defaults.findIndex(sample => sample.id === rule.id);
+    const previous = index > 0 ? { ...defaults[index], priority: index + 1 } : null;
+    return previous && Object.keys(previous).every(key => JSON.stringify(rule[key]) === JSON.stringify(previous[key])) ? { ...rule, priority: 1 } : rule;
+  });
   // Legacy browser rules shared equal precedence; retain that when adding priority.
   rules = rules.map(rule => ({ ...rule, priority: Number.isSafeInteger(Number(rule.priority)) && Number(rule.priority) >= 1 ? Number(rule.priority) : 1 }));
   const normalize = (value, key) => {
@@ -78,7 +84,7 @@
       <div class="panel"><div class="tr-list-head"><h2>调拨规则 <span id="trRuleCount"></span></h2><span class="tr-muted">数字越小越优先 · 原型演示</span></div><div class="table-wrap"><table class="tr-table"><thead><tr><th>规则名称</th><th title="数字越小越优先，1 为最高">优先级 ↑</th><th>商品条件</th><th>运营中心</th><th>调拨仓库</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody id="trRuleRows"></tbody></table></div></div>
       <div class="tr-feedback" id="trFeedback" role="status" aria-live="polite"></div>
       <dialog class="tr-dialog" id="trRuleDialog" aria-labelledby="trDialogTitle"><form id="trRuleForm" novalidate><header><div><h2 id="trDialogTitle">新建调拨规则</h2><p>不同字段同时满足，同一字段满足任一选项。</p></div><button type="button" class="tr-close" data-tr-close aria-label="关闭">×</button></header><article>
-      <section class="tr-form-section"><h3>基本信息</h3><div class="tr-grid tr-basic-grid"><label class="tr-field">规则名称 <span class="tr-required">*</span><input id="trName" required maxlength="60" placeholder="例如：iPhone 13 调拨东莞"></label><label class="tr-field">优先级 <span class="tr-required">*</span><input id="trPriority" type="number" min="1" step="1" required aria-describedby="trPriorityHint"></label><div class="tr-field"><label>状态</label><div class="tr-radio"><label><input type="radio" name="trEnabled" value="true" checked> 启用</label><label><input type="radio" name="trEnabled" value="false"> 停用</label></div></div></div><p class="tr-priority-hint" id="trPriorityHint">数字越小越优先，1 为最高；同优先级命中不同目标仓时，标记为待处理。</p></section>
+      <section class="tr-form-section"><h3>基本信息</h3><div class="tr-grid tr-basic-grid"><label class="tr-field">规则名称 <span class="tr-required">*</span><input id="trName" required maxlength="60" placeholder="例如：iPhone 13 调拨东莞"></label><label class="tr-field">优先级 <span class="tr-required">*</span><input id="trPriority" type="number" min="1" step="1" required aria-describedby="trPriorityHint"></label><div class="tr-field"><label>状态</label><div class="tr-radio"><label><input type="radio" name="trEnabled" value="true" checked> 启用</label><label><input type="radio" name="trEnabled" value="false"> 停用</label></div></div></div><p class="tr-priority-hint" id="trPriorityHint">默认 1，可编辑；数字越小越优先。同优先级命中不同目标仓时，标记为待处理。</p></section>
       <section class="tr-form-section"><h3>商品匹配条件</h3><p class="tr-muted">未选择表示不限；运营中心为商品当前所在中心。</p><div class="tr-grid">${dimensions.map(([key,,label]) => `<div class="tr-field"><label>${label}</label><div id="trEdit-${key}"></div></div>`).join('')}</div></section>
       <section class="tr-form-section"><h3>调拨去向</h3><div class="tr-grid"><div class="tr-field"><label>调拨仓库 <span class="tr-required">*</span></label><div id="trEditTarget"></div></div><label class="tr-field">银河机构编号<input id="trInstitution" readonly placeholder="选择调拨仓库后自动带出"></label></div></section>
       <p class="tr-form-note">保存后用于后续新发起的调拨判断，历史留货明细保留当时的目标仓。</p><p id="trFormError" role="alert" class="tr-form-error" hidden></p></article><footer><button type="button" class="secondary" data-tr-close>取消</button><button type="submit" class="primary">保存</button></footer></form></dialog>`;
