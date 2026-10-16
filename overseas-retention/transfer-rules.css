@@ -1,0 +1,76 @@
+/* Scoped to automatic-transfer configuration and its retention-detail cells. */
+#transferRules .tr-muted{font-size:12px;color:var(--muted)}
+#transferRules .tr-filters{padding:18px;margin-bottom:18px;display:flex;gap:16px;align-items:flex-end}
+#transferRules .tr-filter-fields{flex:1;min-width:0;display:grid;grid-template-columns:1fr 1.2fr 1.5fr .75fr;gap:14px}
+#transferRules .tr-field{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:13px;color:#344054;position:relative}
+#transferRules .tr-field>input{width:100%;height:36px;border:1px solid #d0d5dd;border-radius:6px;padding:0 10px;background:white;color:#344054;outline:none}
+#transferRules .tr-field>input:focus{border-color:#84adff;box-shadow:0 0 0 3px #eef4ff}
+#transferRules .tr-field>input[readonly]{background:#f9fafb;color:var(--muted)}
+#transferRules .tr-actions{display:flex;gap:8px;flex-shrink:0;padding-bottom:1px}
+#transferRules .tr-list-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;gap:12px}
+#transferRules .tr-list-head h2{font-size:15px;margin:0}
+#transferRules .tr-list-head h2 span{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+#transferRules .tr-table{min-width:1070px}
+#transferRules .tr-table td{padding-top:18px;padding-bottom:18px}
+#transferRules .tr-table th:first-child{width:17%}
+#transferRules .tr-table th:nth-child(2){width:23%}
+#transferRules .tr-table th:nth-child(3){width:19%}
+#transferRules .tr-table th:nth-child(4){width:21%}
+#transferRules .tr-goods{max-width:270px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.65}
+#transferRules .tr-centers{max-width:240px;line-height:1.65}
+#transferRules .tr-warehouse,#stayDetails .tr-warehouse{display:flex;flex-direction:column;gap:3px;white-space:nowrap}
+#transferRules .tr-warehouse b,#stayDetails .tr-warehouse b{font-size:12px;color:#475467;font-weight:600;font-variant-numeric:tabular-nums}
+#transferRules .tr-warehouse span,#stayDetails .tr-warehouse span{font-size:13px}
+#transferRules .tr-time{font-size:12px;white-space:nowrap;color:var(--muted)}
+#transferRules .tr-row-actions{display:flex;gap:8px;white-space:nowrap}
+#transferRules .tr-feedback{min-height:25px;padding-top:10px;color:#475467;font-size:12px}
+#transferRules .tr-picker{position:relative;min-width:0}
+#transferRules .tr-picker summary{height:36px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 10px;border:1px solid #d0d5dd;border-radius:6px;background:white;cursor:pointer;list-style:none;color:#344054}
+#transferRules .tr-picker summary::-webkit-details-marker{display:none}
+#transferRules .tr-picker summary:focus-visible{outline:2px solid #84adff;outline-offset:2px}
+#transferRules .tr-picker[open] summary{border-color:#84adff;box-shadow:0 0 0 3px #eef4ff}
+#transferRules .tr-picker-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+#transferRules .tr-placeholder{color:#667085}
+#transferRules .tr-chevron{color:#667085;font-size:15px}
+#transferRules .tr-picker-menu{position:absolute;left:0;right:0;top:42px;z-index:20;background:#fff;border:1px solid #e4e7ec;border-radius:8px;box-shadow:0 8px 24px #10182822;padding:8px;min-width:min(270px,80vw)}
+#transferRules .tr-picker-search{height:34px;width:100%;border:1px solid #d0d5dd;border-radius:5px;padding:0 9px;margin-bottom:6px;color:#344054;outline:none;font-size:13px}
+#transferRules .tr-picker-search:focus{border-color:#84adff}
+#transferRules .tr-picker-options{max-height:184px;overflow-y:auto;overscroll-behavior:contain}
+#transferRules .tr-option{display:flex;align-items:center;gap:9px;padding:8px 6px;border-radius:4px;cursor:pointer;font-size:13px;line-height:1.45;color:#344054}
+#transferRules .tr-option:hover{background:#f2f4f7}
+#transferRules .tr-option input{width:15px;height:15px;flex-shrink:0;accent-color:var(--brand);margin:0}
+#transferRules .tr-picker-footer{border-top:1px solid #eaecf0;margin-top:5px;padding:7px 5px 0;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#667085}
+#transferRules .tr-clear{border:0;background:transparent;color:var(--brand);padding:0;font-size:12px}
+#transferRules .tr-no-options{padding:16px 6px;text-align:center;color:#98a2b3;font-size:12px}
+#transferRules .tr-dialog{width:min(800px,94vw);max-height:92vh;padding:0;border:1px solid var(--line);border-radius:12px;color:var(--text);box-shadow:0 24px 64px #10182838;overflow:auto}
+#transferRules .tr-dialog::backdrop{background:#10182870}
+#transferRules .tr-dialog header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:20px 24px;border-bottom:1px solid var(--line)}
+#transferRules .tr-dialog h2{font-size:18px;margin:0 0 4px}
+#transferRules .tr-dialog header p{margin:0;color:var(--muted);font-size:12px}
+#transferRules .tr-close{border:0;background:transparent;color:#667085;font-size:24px;line-height:1;padding:0 4px}
+#transferRules .tr-dialog article{padding:4px 24px 0}
+#transferRules .tr-form-section{padding:17px 0 19px;border-bottom:1px solid var(--line)}
+#transferRules .tr-form-section:last-of-type{border-bottom:0;padding-bottom:12px}
+#transferRules .tr-form-section h3{font-size:14px;margin:0 0 12px}
+#transferRules .tr-form-section>p{margin:-6px 0 13px}
+#transferRules .tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 20px}
+#transferRules .tr-required{color:#d92d20;display:inline}
+#transferRules label.tr-field>.tr-required{position:absolute;left:56px;top:0}
+#transferRules .tr-radio{height:36px;display:flex;align-items:center;gap:24px}
+#transferRules .tr-radio label{display:flex;align-items:center;gap:6px}
+#transferRules .tr-radio input{accent-color:var(--brand);margin:0;width:15px;height:15px}
+#transferRules .tr-form-note{background:#f8faff;border:1px solid #dbe4ff;padding:9px 11px;border-radius:6px;color:#475467;font-size:12px;margin:4px 0 18px}
+#transferRules .tr-form-error{color:#b42318;background:#fef3f2;padding:9px 11px;border-radius:6px;font-size:13px;margin:0 0 16px}
+#transferRules .tr-form-error[hidden]{display:none}
+#transferRules .tr-dialog footer{position:sticky;bottom:0;background:white;display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:16px 24px;border-top:1px solid var(--line);z-index:5}
+#transferRules .tr-form-section:last-of-type .tr-picker-menu{top:auto;bottom:42px}
+#stayDetails .tr-detail-cell{border:0;background:transparent;text-align:left;padding:0;cursor:pointer;color:var(--brand);font:inherit}
+#stayDetails .tr-detail-cell:hover{text-decoration:underline}
+#stayDetails .tr-status{font-size:12px;color:#667085;margin-top:4px;display:block;white-space:nowrap}
+#stayDetails .tr-status.tr-warning{color:#b54708}
+@media(max-width:1200px){#transferRules .tr-filters{flex-wrap:wrap}#transferRules .tr-filter-fields{flex-basis:100%}#transferRules .tr-actions{margin-left:auto}}
+@media(max-width:760px){#transferRules .tr-filter-fields{grid-template-columns:1fr 1fr}#transferRules .tr-grid{grid-template-columns:1fr}#transferRules .tr-list-head{align-items:flex-start;flex-direction:column}#transferRules .tr-dialog{width:96vw}#transferRules .tr-dialog article{padding-left:16px;padding-right:16px}#transferRules .tr-dialog header,#transferRules .tr-dialog footer{padding-left:16px;padding-right:16px}#transferRules .tr-picker-menu{min-width:0}}
+#stayDetails .tr-destination{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;padding:0;white-space:nowrap}
+#stayDetails .tr-destination>span{font-size:13px;font-weight:500}
+#stayDetails .tr-destination>small{font-size:12px;font-weight:400;color:#667085}
+#stayDetails .tr-detail-note{font-size:12px;color:#667085;background:#f8faff;border:1px solid #dbe4ff;border-radius:6px;padding:10px 12px;margin:0 0 16px}

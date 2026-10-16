@@ -71,6 +71,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <link rel="stylesheet" href="inventory.css?v=20261015-multi">
 <link rel="stylesheet" href="strategy-price-trial.css?v=20261015-compact1">
 <link rel="stylesheet" href="strategy-editor.css?v=20261015-compact1">
+<link rel="stylesheet" href="transfer-rules.css?v=20261016-transfer1">
+<script src="transfer-rules.js?v=20261016-transfer1"></script>
 
 </head>
 <body>
@@ -109,6 +111,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <span>¥</span>
 <em>海外预估售价</em>
 </button>
+      <button class="nav" data-view="transferRules"><span>⇄</span><em>自动调拨规则</em></button>
       <div class="user">
 <span class="avatar">王</span> 王小明<br>
 <span style="padding-left:39px">海外运营中心</span>
@@ -717,6 +720,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <div class="panel"><div class="panel-head"><h2>留货明细 <small id="rp-details-count"></small></h2><small>点击商品码查看详情</small></div><div class="table-wrap"><table id="rp-details-table"></table></div><div id="rp-details-pagination" class="rp-pagination"></div></div>
           <dialog class="rp-dialog" id="rp-details-dialog" aria-labelledby="rp-details-dialog-title"><header><h2 id="rp-details-dialog-title"></h2><button type="button" class="secondary" onclick="this.closest('dialog').close()">关闭</button></header><article></article></dialog>
         </section>
+        <section class="view" id="transferRules"></section>
         <section class="view" id="stayInventory">
           <div id="inventory-app"></div>
           <script>
@@ -768,11 +772,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             });
             rows.forEach(r=>{r['留货来源']='指定策略留货';r['国家/地区']=r['目标地区'];r['承运商获取状态']=r['留货结果']==='成功'?'已获取':null;if(['处理中','未返回'].includes(r['留货结果']))r['留货结果']='待锁';});
             const history=inventory.map(r=>({...r,'快照时间':yesterday+' 00:00:00','比货留货时间':r['比货留货时间']==='—'?'—':yesterday+' 00:00:00','渠道切换时间':r['渠道切换时间']==='—'?'—':yesterday+' 00:00:00'}));
-            const detailCols=['商品码','物品编码','留货来源','留货原因','货源主体','运营中心','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','命中策略','比货留货时间','留货结果','失败原因'];
-            const detailDialogCols=['商品码','物品编码','运行批次','策略执行','命中策略','货源主体','运营中心','型号','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','比货留货时间','留货结果','失败原因'];
+            // Transfer examples belong only to retention details. Inventory fixtures stay unchanged.
+            const transferWarehouses=window.RetentionTransfer?.warehouses||[];
+            const sourceCenters=['优检常州检测中心','优检天津检测中心','优检东莞检测中心（1仓）','优检天津检测中心','优检东莞检测中心（1仓）','优检武汉检测中心','优检武汉检测中心','优检东莞检测中心（1仓）'];
+            const transferExamples={
+              0:{warehouseId:'CB020304',ruleNames:['iPhone 13 调拨东莞'],status:'已受理',reason:'银河已受理调拨申请，不代表商品已经到仓',orderNo:'TRANSFER-DEMO-001'},
+              3:{warehouseId:'CB020304',ruleNames:['iPhone 13 调拨东莞'],status:'发起失败',reason:'示例：银河返回明确失败，可使用原参数重试'},
+              4:{warehouseId:'CB020304',ruleNames:['iPhone 13 调拨东莞'],status:'无需调拨',reason:'商品已在目标仓'},
+              6:{warehouseId:null,ruleNames:[],status:'无需调拨',reason:'未命中已启用的调拨规则'},
+              7:{warehouseId:'CB000243',ruleNames:['iPhone 15 Pro 调拨武汉'],status:'待发起',reason:'已确定目标仓，等待发起调拨'}
+            };
+            // Fixed historical decisions are independent of subsequent rule edits, including reloads.
+            rows.forEach((r,i)=>{r['运营中心']=sourceCenters[i];const t=transferExamples[i];if(t)r.transfer={...t,warehouseName:transferWarehouses.find(w=>w.id===t.warehouseId)?.name||'',requestedAt:['已受理','发起失败'].includes(t.status)?r['锁货处理时间']:'—'};});
+            const detailCols=['商品码','物品编码','留货来源','留货原因','货源主体','运营中心','调拨仓库','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','命中策略','比货留货时间','留货结果','失败原因'];
+            const detailDialogCols=['商品码','物品编码','运行批次','策略执行','命中策略','货源主体','运营中心','调拨仓库','型号','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度','海外结算价','预估售价','单台预估利润率','平均结算价','平均预估利润率','比货留货时间','留货结果','失败原因'];
             // Keep the source model used by specified-item imports and inventory intact.
             const detailAliases={'物品编码':'物品编号','型号':'型号名称','最新看图成色':'看图成色','预估售价':'海外预估售价','比货留货时间':'留货时间'};
-            function detailValue(r,key){if(key==='运行批次')return r['留货来源']==='指定物品留货'?null:r['执行批次'];return r[detailAliases[key]||key];}
+            function detailValue(r,key){if(key==='运营中心'&&r[key]==='优检东莞检测中心')return '优检东莞检测中心（1仓）';if(key==='调拨仓库')return r.transfer?.warehouseId?r.transfer.warehouseId+' · '+r.transfer.warehouseName:null;if(key==='运行批次')return r['留货来源']==='指定物品留货'?null:r['执行批次'];return r[detailAliases[key]||key];}
             function detailFormat(r,key){
               const raw=detailValue(r,key),value=raw==null||raw===''?'—':raw;
               const prices={'海外结算价':'结算价币种','预估售价':'预估售价币种','平均结算价':'平均结算价币种'};
@@ -796,11 +812,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             const form = type => document.getElementById('rp-'+type+'-filter');
             function multi(type,key,options,advanced=false){const label=type==='details'&&key==='型号名称'?'型号':key;return `<div class="rp-field" ${advanced?'data-advanced hidden':''}><label>${esc(label)}</label><details class="rp-multi" data-key="${esc(key)}"><summary>不限</summary><div class="rp-options"><input type="search" placeholder="搜索选项" aria-label="搜索${esc(label)}">${options.map(v=>`<label><input type="checkbox" value="${esc(v)}">${esc(v)}</label>`).join('')}</div></details></div>`;}
             function range(key,label,type='datetime-local',advanced=false){return `<label class="rp-field rp-range" ${advanced?'data-advanced hidden':''}>${label}<div><input data-key="${key}从" type="${type}" step="${type==='number'?'0.01':'1'}" ${type==='number'?'min="0"':''} aria-label="${label}开始"><span>至</span><input data-key="${key}至" type="${type}" step="${type==='number'?'0.01':'1'}" ${type==='number'?'min="0"':''} aria-label="${label}结束"></div></label>`;}
-            function values(type,key){return [...new Set(configs[type].rows.map(r=>type==='details'?detailValue(r,key):r[key]).filter(v=>v&&v!=='—'))];}
+            function values(type,key){if(type==='details'&&key==='调拨仓库')return transferWarehouses.map(w=>w.id+' · '+w.name);if(type==='details'&&key==='运营中心')return [...new Set([...transferWarehouses.map(w=>w.name),...configs.details.rows.map(r=>detailValue(r,key)).filter(Boolean)])];return [...new Set(configs[type].rows.map(r=>type==='details'?detailValue(r,key):r[key]).filter(v=>v&&v!=='—'))];}
             for(const type of ['details']){
               const isInv=type==='inventory';
               let html=range(isInv?'快照时间':'留货时间',isInv?'快照时间（留空取最新成功快照）':'留货时间');
-              const first=isInv?['型号名称','内存','颜色','运营中心','库存状态','海外等级']:['型号名称','内存','颜色','海外购买渠道','海外等级','运营中心'];
+              const first=isInv?['型号名称','内存','颜色','运营中心','库存状态','海外等级']:['型号名称','内存','颜色','海外购买渠道','海外等级','运营中心','调拨仓库'];
               first.forEach(k=>html+=multi(type,k,k==='留货结果'?(isInv?['成功','失败','处理中','未返回']:['待锁','成功','失败']):values(type,k)));
               if(!isInv){html+=`<label class="rp-field">物品编号<input data-key="物品编号" placeholder="请输入物品编号" aria-label="物品编号"></label>`;html+=multi(type,'留货来源',['指定策略留货','指定物品留货'])+multi(type,'命中策略',values(type,'命中策略'))+multi(type,'留货结果',['待锁','成功','失败']);}
               if(isInv){
@@ -834,6 +850,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               table.innerHTML='<thead><tr>'+cfg.cols.map(k=>`<th><button type="button" class="rp-sort" data-sort="${esc(k)}">${esc(k)} ${s.sort===k?(s.dir===1?'↑':'↓'):'↕'}</button></th>`).join('')+'</tr></thead><tbody>'+ (selected.length?selected.map(r=>'<tr>'+cfg.cols.map(k=>{
                 const field=type==='details'?detailFormat(r,k):{value:display(k,r[k]),reason:''},value=field.value;
                 let content=esc(value);
+                if(type==='details'&&k==='调拨仓库'){
+                  const t=r.transfer;
+                  content=t?`<button class="text-btn tr-destination" type="button" data-transfer="${cfg.rows.indexOf(r)}" title="查看本次调拨信息"><span>${esc(t.warehouseName||'—')}</span><small>${t.warehouseId?esc(t.warehouseId)+' · ':''}${esc(t.status)}</small></button>`:'—';
+                }
                 if(k==='库存状态'||k==='留货结果')content=badge(value);
                 const hasProductCode=Boolean(r['商品码']&&r['商品码']!=='—');
                 if((type==='inventory'&&k==='物品编号')||(type==='details'&&((k==='商品码'&&hasProductCode)||(k==='物品编码'&&!hasProductCode))))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
@@ -843,13 +863,24 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               }).join('')+'</tr>').join(''):`<tr><td colspan="${cfg.cols.length}" class="empty">暂无符合条件的记录</td></tr>` )+'</tbody>';
               document.getElementById('rp-'+type+'-count').textContent=`共 ${all.length} 条模拟记录`;
               const pager=document.getElementById('rp-'+type+'-pagination');pager.innerHTML=`<span>第 ${s.page} / ${pages} 页</span><select aria-label="每页条数">${(type==='details'?[20,50,100,200]:[10,50,100,200]).map(n=>`<option value="${n}" ${n===s.size?'selected':''}>${n} 条/页</option>`).join('')}</select><button class="secondary" ${s.page===1?'disabled':''} data-step="-1">上一页</button><button class="secondary" ${s.page===pages?'disabled':''} data-step="1">下一页</button>`;pager.querySelector('select').onchange=e=>{s.size=Number(e.target.value);s.page=1;render(type);};pager.querySelectorAll('button').forEach(b=>b.onclick=()=>{s.page+=Number(b.dataset.step);render(type);});
-              table.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.sort){s.dir=s.sort===b.dataset.sort?-s.dir:1;s.sort=b.dataset.sort;render(type);}else if(b.dataset.open!=null){openRecord(type,cfg.rows[Number(b.dataset.open)]);}else if(b.dataset.strategy!=null){openStrategy(type,cfg.rows[Number(b.dataset.strategy)]);}};
+              table.onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.sort){s.dir=s.sort===b.dataset.sort?-s.dir:1;s.sort=b.dataset.sort;render(type);}else if(b.dataset.transfer!=null){openTransfer(cfg.rows[Number(b.dataset.transfer)]);}else if(b.dataset.open!=null){openRecord(type,cfg.rows[Number(b.dataset.open)]);}else if(b.dataset.strategy!=null){openStrategy(type,cfg.rows[Number(b.dataset.strategy)]);}};
               if(type==='inventory')document.getElementById('rp-inventory-note').textContent=(s.filters['快照时间从']||s.filters['快照时间至']?'按指定范围展示历史快照。':'最新成功快照：'+latest+'。')+' 同一物品在同一快照仅一条；无留货记录的库存也展示。以下为模拟数据。';
             }
             function showDialog(type,title,entries,formatted=false){const d=document.getElementById('rp-'+type+'-dialog');d.querySelector('h2').textContent=title;d.querySelector('article').innerHTML='<dl class="rp-kv">'+entries.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(formatted?v:display(k,v))}</dd>`).join('')+'</dl>';d.showModal();}
             function openRecord(type,r){
               if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
-              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),detailDialogCols.map(k=>[k,detailText(r,k)]),true);
+              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),[...detailDialogCols.map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
+            }
+            function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['调拨处理原因',t.reason||'—'],['调拨发起时间',t.requestedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
+            function openTransfer(r){
+              const t=r.transfer;if(!t)return;
+              showDialog('details','调拨信息 · '+r['物品编号'],[['物品编号',r['物品编号']],['运营中心',r['运营中心']],['调拨仓库',detailValue(r,'调拨仓库')||'—'],...transferEntries(r)],true);
+              const article=document.querySelector('#rp-details-dialog article');
+              const note=document.createElement('p');note.className='tr-detail-note';note.textContent='调拨仓库为本次判定的目标仓；已受理不代表已经到仓。以下为原型示例。';article.prepend(note);
+              if(t.status==='发起失败'){
+                const retry=document.createElement('button');retry.type='button';retry.className='primary tr-retry';retry.textContent='重试调拨（演示）';article.append(retry);
+                retry.onclick=()=>{retry.disabled=true;t.status='待发起';t.reason='已按原目标仓及机构编号重新排队（演示），尚未收到受理结果';t.requestedAt='—';render('details');openTransfer(r);};
+              }
             }
             function openStrategy(type,r){if(type==='details'){const s=r.strategy;showDialog(type,'策略详情 · '+s.name,[['策略ID',s.id],['策略名称',s.name],['目标地区',s.region],['配置修订号',r['配置修订号']],['货品范围配置',s.range],['目标数量',s.target],['基准价',s.base],['最高价',s.ceiling],['质量模板版本',s.template],['匹配模式',s.mode],['策略级质检附加筛选',s.filter],['分层占比容差',s.tolerance],['有效样本量',s.sample]]);}else{showDialog(type,'策略详情 · '+r['命中策略名称'],[['策略名称',r['命中策略名称']],['货品范围配置',r['型号名称']+' · '+r['内存']],['海外等级',r['海外等级']],['目标地区','香港'],['目标数量',100],['基准价',r['海外结算价']],['最高价',r['海外结算价']+100],['质量模板版本',r['海外等级']+'级 · V1'],['匹配模式','等级兜底'],['有效样本量',0],['配置修订号','R1'],['执行频次','每日一次'],['说明','模拟策略详情，只读展示关联策略。']]);}}
             function exportFields(type){return type==='details'?[...detailCols]:[...new Set([...inventoryCols,...Object.keys(inventory[0])])];}
@@ -1455,7 +1486,7 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
     </div>
   </div>
   <script>
-    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价'};
+    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价',transferRules:'自动调拨规则'};
     function showView(id){if(id==='mapping')id='qualityTemplates';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));document.getElementById('crumb').textContent=names[id];window.scrollTo({top:0,behavior:'smooth'});}
     function showCreate(){showView('create')}
     document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>showView(n.dataset.view)));
