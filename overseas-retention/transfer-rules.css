@@ -10,13 +10,15 @@
 #transferRules .tr-list-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;gap:12px}
 #transferRules .tr-list-head h2{font-size:15px;margin:0}
 #transferRules .tr-list-head h2 span{font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
-#transferRules .tr-table{min-width:1070px}
+#transferRules .tr-table{min-width:1140px}
 #transferRules .tr-table td{padding-top:18px;padding-bottom:18px}
 #transferRules .tr-table th:first-child{width:17%}
-#transferRules .tr-table th:nth-child(2){width:23%}
-#transferRules .tr-table th:nth-child(3){width:19%}
-#transferRules .tr-table th:nth-child(4){width:21%}
-#transferRules .tr-table th:nth-child(5),#transferRules .tr-table td:nth-child(5){min-width:76px;white-space:nowrap}
+#transferRules .tr-table th:nth-child(2){width:76px}
+#transferRules .tr-table th:nth-child(3){width:23%}
+#transferRules .tr-table th:nth-child(4){width:19%}
+#transferRules .tr-table th:nth-child(5){width:21%}
+#transferRules .tr-table th:nth-child(6),#transferRules .tr-table td:nth-child(6){min-width:76px;white-space:nowrap}
+#transferRules .tr-priority{font-weight:600;font-variant-numeric:tabular-nums;color:#344054}
 #transferRules .tr-table .pill{white-space:nowrap}
 #transferRules .tr-goods{max-width:270px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.65}
 #transferRules .tr-centers{max-width:240px;line-height:1.65}
@@ -56,6 +58,8 @@
 #transferRules .tr-form-section h3{font-size:14px;margin:0 0 12px}
 #transferRules .tr-form-section>p{margin:-6px 0 13px}
 #transferRules .tr-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px 20px}
+#transferRules .tr-basic-grid{grid-template-columns:minmax(0,1.7fr) 100px minmax(160px,1fr)}
+#transferRules .tr-form-section>.tr-priority-hint{margin:12px 0 0;color:var(--muted);font-size:12px}
 #transferRules .tr-required{color:#d92d20;display:inline}
 #transferRules label.tr-field>.tr-required{position:absolute;left:56px;top:0}
 #transferRules .tr-radio{height:36px;display:flex;align-items:center;gap:24px}
