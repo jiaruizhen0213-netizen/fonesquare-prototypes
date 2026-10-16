@@ -141,6 +141,9 @@ async function environment(saved = {}) {
   form.dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true }));
   assert.equal(rows().length, 4, 'Two warehouse choices include both targets');
   form.querySelector('[data-action="export"]').click();
+  assert.equal(blobs.length, 0, 'Export queues a task before downloading');
+  await new Promise(resolve=>setTimeout(resolve,1600));
+  w.document.querySelector('#export-tasks-app [data-download]').click();
   assert.equal(blobs.length, 1);
   const csv = await new Promise(resolve => { const r = new w.FileReader(); r.onload = () => resolve(r.result); r.readAsText(blobs[0]); });
   assert(csv.includes('"运营中心","调拨仓库","WMS调拨结果","型号名称"'));

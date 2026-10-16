@@ -112,6 +112,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <em>海外预估售价</em>
 </button>
       <button class="nav" data-view="transferRules"><span>⇄</span><em>自动调拨规则</em></button>
+      <button class="nav" data-view="exportTasks"><span>⇩</span><em>导出任务列表</em></button>
       <div class="user">
 <span class="avatar">王</span> 王小明<br>
 <span style="padding-left:39px">海外运营中心</span>
@@ -812,7 +813,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             function detailText(r,key){const result=detailFormat(r,key);return String(result.value)+(result.reason?'\n'+result.reason:'');}
             const inventoryCols=['物品编号','库存状态','二级SKU名称','二级LEVEL','货源主体','型号名称','购买渠道','内存','颜色','运营中心','海外购买渠道','海外等级','最新看图成色','质检报告编号','海外结算价','卖家参考价P1','海外预估售价','命中策略名称','比货留货时间','留货结果','快照时间','渠道切换时间'];
-            const configs={details:{root:'stayDetails',rows,cols:detailCols},inventory:{root:'stayInventory',rows:[...inventory,...history],cols:inventoryCols}};
+            const configs={details:{root:'stayDetails',rows,cols:detailCols.filter(k=>k!=='留货原因')},inventory:{root:'stayInventory',rows:[...inventory,...history],cols:inventoryCols}};
             const state={details:{page:1,size:20,sort:null,dir:1,filters:{}},inventory:{page:1,size:50,sort:null,dir:1,filters:{}}};
             const form = type => document.getElementById('rp-'+type+'-filter');
             function multi(type,key,options,advanced=false){const label=type==='details'&&key==='型号名称'?'型号':key;return `<div class="rp-field" ${advanced?'data-advanced hidden':''}><label>${esc(label)}</label><details class="rp-multi" data-key="${esc(key)}"><summary>不限</summary><div class="rp-options"><input type="search" placeholder="搜索选项" aria-label="搜索${esc(label)}">${options.map(v=>`<label><input type="checkbox" value="${esc(v)}">${esc(v)}</label>`).join('')}</div></details></div>`;}
@@ -855,6 +856,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               table.innerHTML='<thead><tr>'+cfg.cols.map(k=>`<th><button type="button" class="rp-sort" data-sort="${esc(k)}">${esc(k)} ${s.sort===k?(s.dir===1?'↑':'↓'):'↕'}</button></th>`).join('')+'</tr></thead><tbody>'+ (selected.length?selected.map(r=>'<tr>'+cfg.cols.map(k=>{
                 const field=type==='details'?detailFormat(r,k):{value:display(k,r[k]),reason:''},value=field.value;
                 let content=esc(value);
+                if(type==='details'&&k==='留货来源')content+=`<small class="rp-cell-note">${esc(detailValue(r,'留货原因')||'—')}</small>`;
                 if(type==='details'&&k==='调拨仓库'){
                   const t=r.transfer;
                   content=t?`<button class="text-btn tr-destination" type="button" data-transfer="${cfg.rows.indexOf(r)}" title="查看本次调拨信息"><span>${esc(t.warehouseName||'—')}</span><small>${t.warehouseId?esc(t.warehouseId)+' · ':''}${esc(t.status)}</small></button>`:'—';
@@ -876,7 +878,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
               showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),[...detailDialogCols.filter(k=>!r.transfer||k!=='WMS调拨结果').map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
             }
-            function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['WMS调拨结果',detailValue(r,'WMS调拨结果')||'—'],['WMS状态返回时间',r.wmsTransferReturnedAt||'—'],['调拨发起时间',t.requestedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
+            function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['调拨发起时间',t.requestedAt||'—'],['WMS调拨结果',detailValue(r,'WMS调拨结果')||'—'],['WMS状态返回时间',r.wmsTransferReturnedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
             function openTransfer(r){
               const t=r.transfer;if(!t)return;
               showDialog('details','调拨信息 · '+r['物品编号'],[['物品编号',r['物品编号']],['运营中心',r['运营中心']],['调拨仓库',detailValue(r,'调拨仓库')||'—'],...transferEntries(r)],true);
@@ -890,7 +892,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             function openStrategy(type,r){if(type==='details'){const s=r.strategy;showDialog(type,'策略详情 · '+s.name,[['策略ID',s.id],['策略名称',s.name],['目标地区',s.region],['配置修订号',r['配置修订号']],['货品范围配置',s.range],['目标数量',s.target],['基准价',s.base],['最高价',s.ceiling],['质量模板版本',s.template],['匹配模式',s.mode],['策略级质检附加筛选',s.filter],['分层占比容差',s.tolerance],['有效样本量',s.sample]]);}else{showDialog(type,'策略详情 · '+r['命中策略名称'],[['策略名称',r['命中策略名称']],['货品范围配置',r['型号名称']+' · '+r['内存']],['海外等级',r['海外等级']],['目标地区','香港'],['目标数量',100],['基准价',r['海外结算价']],['最高价',r['海外结算价']+100],['质量模板版本',r['海外等级']+'级 · V1'],['匹配模式','等级兜底'],['有效样本量',0],['配置修订号','R1'],['执行频次','每日一次'],['说明','模拟策略详情，只读展示关联策略。']]);}}
             function exportFields(type){return type==='details'?[...detailCols]:[...new Set([...inventoryCols,...Object.keys(inventory[0])])];}
             function csvCell(v){let text=String(v??'—');if(/^[=+\-@\t\r]/.test(text))text="'"+text;return '"'+text.replace(/"/g,'""')+'"';}
-            function download(type){const cols=exportFields(type),data=filtered(type),csv='\ufeff'+[cols,...data.map(r=>cols.map(k=>type==='details'?detailText(r,k):r['商品信息来源']==='PMS'&&['快照时间','货源主体','运营中心'].includes(k)?'':display(k,r[k])))].map(r=>r.map(csvCell).join(',')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=(type==='details'?'留货明细':'留货库存')+'-模拟数据.csv';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);say(type,`已导出当前筛选全部 ${data.length} 条模拟记录`);}
+            function download(type){const cols=exportFields(type),data=filtered(type),csv='\ufeff'+[cols,...data.map(r=>cols.map(k=>type==='details'?detailText(r,k):r['商品信息来源']==='PMS'&&['快照时间','货源主体','运营中心'].includes(k)?'':display(k,r[k])))].map(r=>r.map(csvCell).join(',')).join('\r\n');window.RetentionExportTasks.create({type:'留货明细导出',format:'csv',filename:'留货明细-模拟数据.csv',csv,count:data.length});say(type,`已创建导出任务，共 ${data.length} 条记录，请前往导出任务列表下载`);}
             render('details');
 // Static prototype only: local fixtures simulate PMS details and Galaxy locks.
 const manualKey='overseas-specified-items-prototype-v1';
@@ -1372,6 +1374,7 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
 </div>
 </section>
       </div>
+    <section id="exportTasks" class="view page"><div class="heading"><div><h1>导出任务列表</h1><p>查看导出进度并下载文件。原型任务仅保存在当前浏览器，处理过程为模拟。</p></div></div><div id="export-tasks-app"></div></section>
     </main>
   </div>
   <div class="overlay" id="overlay" onclick="closeDrawer()">
@@ -1491,7 +1494,7 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
     </div>
   </div>
   <script>
-    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价',transferRules:'自动调拨规则'};
+    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价',transferRules:'自动调拨规则',exportTasks:'导出任务列表'};
     function showView(id){if(id==='mapping')id='qualityTemplates';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));document.getElementById('crumb').textContent=names[id];window.scrollTo({top:0,behavior:'smooth'});}
     function showCreate(){showView('create')}
     document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>showView(n.dataset.view)));
@@ -1527,7 +1530,8 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
     document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeDrawer();closePriceUpload()}});
     if(names[location.hash.slice(1)])showView(location.hash.slice(1));
   </script>
-  <script src="inventory.js?v=20261015-multi"></script>
+  <script src="export-tasks.js?v=20261016-1"></script>
+  <script src="inventory.js?v=20261016-export-tasks"></script>
   <script src="strategy-results.js?v=20261014-list2"></script>
   <script src="strategy-price-trial.js?v=20261015-compact1"></script>
   <script src="strategy-editor.js?v=20261015-compact1"></script>

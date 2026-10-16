@@ -95,11 +95,8 @@
   }
   function download() {
     const cols=exportColumns(),rows=matches(),matrix=[cols,...rows.map(r=>cols.map(k=>r[k]??''))];
-    const ws=XLSX.utils.aoa_to_sheet(matrix);
-    // Identifiers remain strings, preserving long numbers and leading zeroes.
-    ws['!cols']=cols.map(k=>({wch:k==='SKU名称'?58:20}));
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'库存明细');XLSX.writeFile(wb,source+'明细-演示数据.xlsx',{compression:true});
-    app().querySelector('.inv-message').textContent='已导出当前筛选的全部 '+rows.length+' 条记录';
+    window.RetentionExportTasks.create({type:'留货库存导出',format:'xlsx',filename:source+'明细-演示数据.xlsx',matrix,count:rows.length});
+    app().querySelector('.inv-message').textContent='已创建导出任务，共 '+rows.length+' 条记录，请前往导出任务列表下载';
   }
   document.addEventListener('click',event=>{if(!event.target.closest('#inventory-app .inv-multi'))closeMultis();});
   document.addEventListener('DOMContentLoaded',build);
