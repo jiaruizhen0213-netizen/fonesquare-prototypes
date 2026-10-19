@@ -52,11 +52,14 @@ async function environment(saved = {}) {
 
   w.showView('stayDetails');
   const headers = Array.from(w.document.querySelectorAll('#rp-details-table th'), el => el.textContent.replace(/[↕↑↓]/g, '').trim());
+  assert.deepEqual(headers.slice(0, 2), ['物品编号', '商品码']);
+  assert.equal(headers.filter(name => name === '物品编号' || name === '物品编码').length, 1);
   const sourceIndex = headers.indexOf('运营中心'), targetIndex = headers.indexOf('调拨仓库');
   assert.equal(targetIndex, sourceIndex + 1);
   const wmsIndex = headers.indexOf('WMS调拨结果');
   assert.equal(wmsIndex, targetIndex + 1);
   const rows = () => Array.from(w.document.querySelectorAll('#rp-details-table tbody tr'));
+  assert.equal(rows()[0].children[0].textContent, '20260807135404011810');
   assert(rows()[0].children[targetIndex].textContent.includes('CB020304'));
   assert(rows()[0].children[targetIndex].textContent.includes('优检东莞检测中心（1仓）'));
   assert.equal(rows()[0].children[sourceIndex].textContent, '优检常州检测中心');
@@ -146,6 +149,7 @@ async function environment(saved = {}) {
   w.document.querySelector('#export-tasks-app [data-download]').click();
   assert.equal(blobs.length, 1);
   const csv = await new Promise(resolve => { const r = new w.FileReader(); r.onload = () => resolve(r.result); r.readAsText(blobs[0]); });
+  assert(csv.startsWith('"商品码","物品编码",'), 'List column order does not change existing export fields');
   assert(csv.includes('"运营中心","调拨仓库","WMS调拨结果","型号名称"'));
   assert(csv.includes('已发货'));
   assert(csv.includes('CB020304 · 优检东莞检测中心（1仓）'));

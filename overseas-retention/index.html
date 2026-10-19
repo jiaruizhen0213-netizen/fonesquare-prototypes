@@ -70,7 +70,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   <link rel="stylesheet" href="strategy-results.css?v=20261014-list2">
 <link rel="stylesheet" href="inventory.css?v=20261015-multi">
 <link rel="stylesheet" href="strategy-price-trial.css?v=20261015-compact1">
-<link rel="stylesheet" href="strategy-editor.css?v=20261015-compact1">
+<link rel="stylesheet" href="strategy-editor.css?v=20261019-filters">
 <link rel="stylesheet" href="transfer-rules.css?v=20261016-priority1">
 <script src="transfer-rules.js?v=20261016-priority-default1"></script>
 
@@ -700,6 +700,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             #stayDetails .rp-options input[type=checkbox],#stayInventory .rp-options input[type=checkbox]{width:15px;height:15px}
             #stayDetails .rp-actions,#stayInventory .rp-actions{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
             #stayDetails td,#stayInventory td{white-space:nowrap}#stayDetails td.rp-reason,#stayInventory td.rp-reason{white-space:normal;min-width:200px}
+            #rp-details-table th:first-child,#rp-details-table td:first-child:not([colspan]){position:sticky;left:0;box-shadow:inset -1px 0 var(--line),3px 0 6px #10182808}
+            #rp-details-table th:first-child{z-index:2;background:#f9fafb}
+            #rp-details-table td:first-child:not([colspan]){z-index:1;background:#fff}
             #stayDetails .rp-cell-note{display:block;margin-top:4px;max-width:240px;white-space:normal;color:#667085;font-size:12px;line-height:1.5}#stayDetails .rp-kv dd{white-space:pre-line}
             #stayDetails .rp-pagination,#stayInventory .rp-pagination{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:16px}
             #stayDetails .rp-pagination select,#stayInventory .rp-pagination select{padding:6px;border:1px solid #d0d5dd;border-radius:5px;background:white}
@@ -813,7 +816,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             }
             function detailText(r,key){const result=detailFormat(r,key);return String(result.value)+(result.reason?'\n'+result.reason:'');}
             const inventoryCols=['物品编号','库存状态','二级SKU名称','二级LEVEL','货源主体','型号名称','购买渠道','内存','颜色','运营中心','海外购买渠道','海外等级','最新看图成色','质检报告编号','海外结算价','卖家参考价P1','海外预估售价','命中策略名称','比货留货时间','留货结果','快照时间','渠道切换时间'];
-            const configs={details:{root:'stayDetails',rows,cols:detailCols.filter(k=>k!=='留货原因')},inventory:{root:'stayInventory',rows:[...inventory,...history],cols:inventoryCols}};
+            const configs={details:{root:'stayDetails',rows,cols:['物品编号',...detailCols.filter(k=>k!=='物品编码'&&k!=='留货原因')]},inventory:{root:'stayInventory',rows:[...inventory,...history],cols:inventoryCols}};
             const state={details:{page:1,size:20,sort:null,dir:1,filters:{}},inventory:{page:1,size:50,sort:null,dir:1,filters:{}}};
             const form = type => document.getElementById('rp-'+type+'-filter');
             function multi(type,key,options,advanced=false){const label=type==='details'&&key==='型号名称'?'型号':key;return `<div class="rp-field" ${advanced?'data-advanced hidden':''}><label>${esc(label)}</label><details class="rp-multi" data-key="${esc(key)}"><summary>不限</summary><div class="rp-options"><input type="search" placeholder="搜索选项" aria-label="搜索${esc(label)}">${options.map(v=>`<label><input type="checkbox" value="${esc(v)}">${esc(v)}</label>`).join('')}</div></details></div>`;}
@@ -863,7 +866,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                 }
                 if(k==='库存状态'||k==='留货结果')content=badge(value);
                 const hasProductCode=Boolean(r['商品码']&&r['商品码']!=='—');
-                if((type==='inventory'&&k==='物品编号')||(type==='details'&&((k==='商品码'&&hasProductCode)||(k==='物品编码'&&!hasProductCode))))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
+                if((type==='inventory'&&k==='物品编号')||(type==='details'&&((k==='商品码'&&hasProductCode)||(k==='物品编号'&&!hasProductCode))))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
                 if((k==='命中策略'||k==='命中策略名称')&&value!=='—'&&(type!=='details'||r.strategy))content=`<button class="text-btn" type="button" data-strategy="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
                 if(field.reason)content+=`<small class="rp-cell-note">${esc(field.reason)}</small>`;
                 return `<td class="${k.includes('原因')?'rp-reason':''}">${content}</td>`;
@@ -1534,6 +1537,6 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
   <script src="inventory.js?v=20261016-export-tasks"></script>
   <script src="strategy-results.js?v=20261014-list2"></script>
   <script src="strategy-price-trial.js?v=20261015-compact1"></script>
-  <script src="strategy-editor.js?v=20261015-compact1"></script>
+  <script src="strategy-editor.js?v=20261019-filters"></script>
 </body>
 </html>

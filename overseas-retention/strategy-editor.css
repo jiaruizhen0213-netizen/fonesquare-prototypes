@@ -47,6 +47,22 @@
 .strategy-row-actions .se-edit,.strategy-row-actions .se-trial{font-size:13px;font-weight:600;padding:0}
 #strategy .se-save-note{color:var(--green);margin:-10px 0 16px;font-size:13px}
 #strategy .se-save-note:empty{display:none}
+#strategy>.filter{flex-wrap:wrap;overflow:visible}
+#strategy .se-model-filter{position:relative;width:220px;max-width:100%;flex-shrink:0}
+#strategy .se-model-filter[open]{z-index:30}
+#strategy .se-model-filter summary{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border:1px solid #d0d5dd;border-radius:6px;background:#fff;color:#344054;cursor:pointer;list-style:none}
+#strategy .se-model-filter summary::-webkit-details-marker{display:none}
+#strategy .se-model-filter summary::after{content:"";width:7px;height:7px;flex-shrink:0;border-right:1.5px solid #667085;border-bottom:1.5px solid #667085;transform:rotate(45deg);margin:-4px 2px 0 auto}
+#strategy .se-model-filter[open] summary{border-color:var(--brand)}
+#strategy .se-model-filter[open] summary::after{transform:rotate(225deg);margin-top:3px}
+#strategy .se-model-filter summary span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#strategy .se-model-filter :is(summary,input,button):focus-visible{outline:2px solid #98bcff;outline-offset:2px}
+#strategy .se-model-options{position:absolute;top:calc(100% + 6px);left:0;width:100%;border:1px solid #d0d5dd;border-radius:8px;background:#fff;box-shadow:0 6px 20px #10182820;padding:6px}
+#strategy .se-model-list{max-height:230px;overflow-y:auto}
+#strategy .se-model-list label{display:flex;align-items:center;gap:8px;padding:9px 6px;cursor:pointer;border-radius:4px}
+#strategy .se-model-list label:hover{background:#f2f4f7}
+#strategy .se-model-list input{width:16px;min-width:16px;height:16px;padding:0;margin:0;flex-shrink:0;accent-color:var(--brand)}
+#strategy .se-model-clear{width:100%;margin-top:4px;padding:8px;border:0;border-top:1px solid var(--line);background:#fff;color:var(--brand);text-align:left;border-radius:0}
 @keyframes se-price-highlight{from{background:#eaf2ff}to{background:#fff}}
 @media(prefers-reduced-motion:reduce){#strategy-editor-modal .se-updated{animation:none}}
 @media(max-width:760px){#strategy-editor-modal .se-target-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

@@ -49,6 +49,60 @@
     name:row.cells[0].querySelector('.link').textContent.trim(),country:row.cells[1].textContent.trim(),
     status:row.querySelector('.pill').textContent.trim(),deadline:'2026-08-15T18:00',frequency:'3',note:'',
     tolerances:['10','10','8']}));
+  // A completed fixture makes editing and reopening a fulfilled target reviewable.
+  const completedRow=rows[0].cloneNode(true);
+  completedRow.querySelector('.strategy-row-actions').innerHTML='<span class="link">查看</span><span class="link">编辑</span>';
+  completedRow.cells[0].querySelector('.sub').textContent='演示策略 · 当前页面保存';
+  completedRow.cells[5].textContent='—';
+  records.push({...records[0],id:'STRATEGY-DEMO-5',name:'iPhone 13 Pro 香港补货',range:'ip13pro',template:'ip13pro-c',base:1920,ceiling:2000,target:200,locked:200,status:'已完成'});
+  rows.push(completedRow);rows[0].parentElement.append(completedRow);
+  updateRow(completedRow,records.at(-1));
+  const filterPanel=document.querySelector('#strategy > .panel.filter');
+  const searchFilter=filterPanel.querySelector('input');
+  const [statusFilter,countryFilter,categoryFilter]=filterPanel.querySelectorAll('select');
+  searchFilter.id='se-filter-search';searchFilter.setAttribute('aria-label','搜索策略名称或配置名称');
+  [statusFilter,countryFilter,categoryFilter].forEach((select,i)=>{select.id=['se-filter-status','se-filter-country','se-filter-category'][i];select.setAttribute('aria-label',['策略状态','国家/地区','品类'][i]);});
+  if(![...countryFilter.options].some(option=>option.value==='美国'))countryFilter.add(new Option('美国','美国'));
+  const modelFilter=document.createElement('details');modelFilter.id='se-filter-model';modelFilter.className='se-model-filter';
+  modelFilter.innerHTML='<summary aria-label="型号，多选"><span>选择型号</span></summary><div class="se-model-options" role="group" aria-label="型号选项"><div class="se-model-list"></div><button type="button" class="se-model-clear">清空选择</button></div>';
+  [...new Set(ranges.map(range=>range.model))].forEach(model=>{
+    const label=document.createElement('label'),checkbox=document.createElement('input'),text=document.createElement('span');
+    checkbox.type='checkbox';checkbox.value=model;checkbox.name='strategyModel';text.textContent=model;label.append(checkbox,text);modelFilter.querySelector('.se-model-list').append(label);
+  });
+  categoryFilter.after(modelFilter);
+  const resetFilter=filterPanel.querySelector(':scope > .text-btn'),queryFilter=filterPanel.querySelector(':scope > .secondary');
+  resetFilter.id='se-filter-reset';queryFilter.id='se-filter-query';
+  let activeFilters={query:'',models:[],status:'',country:'',category:''};
+  function selectedModels(){return [...modelFilter.querySelectorAll('input:checked')].map(input=>input.value);}
+  function refreshModelLabel(){
+    const values=selectedModels(),summary=modelFilter.querySelector('summary');
+    summary.querySelector('span').textContent=values.length===0?'选择型号':values.length===1?values[0]:'型号：已选 '+values.length+' 项';
+    summary.title=values.length?values.join('、'):'型号，多选';
+  }
+  function applyFilters(){
+    document.getElementById('se-filter-empty')?.remove();
+    let count=0;
+    records.forEach((record,index)=>{
+      const range=ranges.find(item=>item.id===record.range);
+      const visible=(!activeFilters.query||(record.name+' '+range.name).toLowerCase().includes(activeFilters.query))&&(!activeFilters.models.length||activeFilters.models.includes(range.model))&&(!activeFilters.status||record.status===activeFilters.status)&&(!activeFilters.country||record.country===activeFilters.country)&&(!activeFilters.category||activeFilters.category==='手机');
+      rows[index].hidden=!visible;if(visible)count++;
+    });
+    document.querySelector('#strategy .strategy-list .panel-head small').textContent='共 '+count+' 条';
+    if(!count){const empty=document.createElement('tr');empty.id='se-filter-empty';empty.innerHTML='<td colspan="8" class="empty">暂无符合条件的策略</td>';rows[0].parentElement.append(empty);}
+  }
+  function queryStrategies(){
+    activeFilters={query:searchFilter.value.trim().toLowerCase(),models:selectedModels(),status:statusFilter.selectedIndex?statusFilter.value:'',country:countryFilter.selectedIndex?countryFilter.value:'',category:categoryFilter.selectedIndex?categoryFilter.value:''};
+    modelFilter.open=false;applyFilters();
+  }
+  modelFilter.addEventListener('change',refreshModelLabel);
+  modelFilter.querySelector('.se-model-clear').onclick=()=>{modelFilter.querySelectorAll('input:checked').forEach(input=>input.checked=false);refreshModelLabel();};
+  modelFilter.addEventListener('keydown',event=>{if(event.key==='Escape'){modelFilter.open=false;modelFilter.querySelector('summary').focus();event.preventDefault();}});
+  modelFilter.addEventListener('focusout',event=>{if(event.relatedTarget&&!modelFilter.contains(event.relatedTarget))modelFilter.open=false;});
+  document.addEventListener('click',event=>{if(!modelFilter.contains(event.target))modelFilter.open=false;});
+  queryFilter.onclick=queryStrategies;
+  searchFilter.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();queryStrategies();}});
+  resetFilter.onclick=()=>{searchFilter.value='';[statusFilter,countryFilter,categoryFilter].forEach(select=>select.selectedIndex=0);modelFilter.querySelectorAll('input:checked').forEach(input=>input.checked=false);refreshModelLabel();queryStrategies();};
+  applyFilters();
   const fields = {};
   const names = {'策略名称':'name','国家/地区':'country','货品范围配置':'range','质量模板版本':'template','目标留货数量':'target','最晚完成时间':'deadline','基准价 P':'base','最高价 U':'ceiling','执行频次':'frequency','策略备注':'note'};
   form.querySelectorAll('.field').forEach(field => {
@@ -165,7 +219,7 @@
     const old=records[editIndex];if(old&&target<old.locked)return '目标留货数量不得少于已锁数量';
     return {...old,changed:true,id:old?.id||'STRATEGY-DEMO-'+(records.length+1),name:fields.name.value.trim(),country:fields.country.value,
       range:fields.range.value,template:fields.template.value,target,base,ceiling,locked:old?.locked||0,
-      status:old&&old.status!=='草稿'?old.status:status,deadline:fields.deadline.value,frequency:fields.frequency.value,note:fields.note.value,
+      status:old?.status==='已完成'&&old.locked<target?'执行中':old&&old.status!=='草稿'?old.status:status,deadline:fields.deadline.value,frequency:fields.frequency.value,note:fields.note.value,
       tolerances:[...form.querySelectorAll('.quality input')].map(input=>input.value)};
   }
   function updateRow(row,record){
@@ -174,8 +228,10 @@
     row.cells[2].replaceChildren(document.createTextNode(range.model.replace(/^苹果 |^三星 |^谷歌 /,'' )+' '+range.memory));
     const sub=document.createElement('div');sub.className='sub';sub.textContent='质量模板：'+template.name;row.cells[2].append(sub);
     row.cells[3].textContent=record.locked+' / '+record.target;row.cells[4].textContent=money(record.base)+' / '+money(record.ceiling);
+    if(record.status==='已完成')row.cells[5].textContent='—';
+    else if(record.changed&&record.status==='执行中')row.cells[5].textContent='按配置执行';
     row.cells[6].querySelector('.pill').textContent=record.status;
-    row.cells[6].querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':'');
+    row.cells[6].querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':record.status==='已完成'?' done':'');
   }
   function bindRow(row,index){
     row.cells[0].querySelector('.link').onclick=()=>openDetails(index);
@@ -196,12 +252,13 @@
       row.cells[0].querySelector('.sub').textContent='演示策略 · 当前页面保存';row.cells[5].textContent=record.status==='草稿'?'启用后计算':'按配置执行';
       records.push(record);rows.push(row);document.querySelector('#strategy .strategy-list-table tbody').append(row);bindRow(row,records.length-1);updateRow(row,record);
     }else{records[editIndex]=record;updateRow(rows[editIndex],record);}
-    note.textContent='已保存策略「'+record.name+'」：基准价 '+money(record.base)+'，最高价 '+money(record.ceiling)+'（原型演示）';close();
+    applyFilters();
+    note.textContent='已保存策略「'+record.name+'」：'+record.status+'，基准价 '+money(record.base)+'，最高价 '+money(record.ceiling)+'（原型演示）';close();
   }
   function openDetails(index){
     lastViewed=index;originalOpenDrawer();const record=records[index],range=ranges.find(r=>r.id===record.range),template=templates.find(t=>t.id===record.template);
     const drawer=document.getElementById('drawer');drawer.querySelector('h2').textContent=record.name;drawer.querySelector('.pill').textContent=record.status;
-    drawer.querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':'');
+    drawer.querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':record.status==='已完成'?' done':'');
     const values={'国家 / 地区':record.country,'货品范围':range.name,'质量模板':template.name,'目标 / 已锁':record.target+' / '+record.locked+' 台','最晚完成时间':record.deadline||'—','基准价 P / 最高价 U':money(record.base)+' / '+money(record.ceiling)};
     drawer.querySelectorAll('.kv > div').forEach(cell=>{const label=cell.querySelector('label');if(Object.hasOwn(values,label.textContent.trim()))cell.replaceChildren(label,document.createTextNode(values[label.textContent.trim()]));});
     const showRecordedRun=index===0&&!record.changed;
