@@ -726,7 +726,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <div class="page-note"><span class="info-dot">i</span>一条记录对应一次留货中一个物品的处理结果，包含指定策略留货和指定物品留货。以下为模拟数据。</div>
           <div class="rp-formula"><b>预估利润计算</b><br>单台预估利润率 = （预估售价 − 海外结算价）÷ 预估售价。<br>策略留货数量达标后，按该策略全部成功明细计算平均结算价和平均预估利润率；未达标时显示“策略留货未完成”。平均值不随列表筛选变化。缺少价格或币种不一致时，在对应数值下显示原因；指定物品留货不计算策略平均值。</div>
           <form id="rp-details-filter" class="panel rp-filters"></form>
-          <div class="panel"><div class="panel-head"><h2>留货明细 <small id="rp-details-count"></small></h2><small>点击商品码查看详情</small></div><div class="table-wrap"><table id="rp-details-table"></table></div><div id="rp-details-pagination" class="rp-pagination"></div></div>
+          <div class="panel"><div class="panel-head"><h2>留货明细 <small id="rp-details-count"></small></h2><small>点击物品编号查看详情</small></div><div class="table-wrap"><table id="rp-details-table"></table></div><div id="rp-details-pagination" class="rp-pagination"></div></div>
           <dialog class="rp-dialog" id="rp-details-dialog" aria-labelledby="rp-details-dialog-title"><header><h2 id="rp-details-dialog-title"></h2><button type="button" class="secondary" onclick="this.closest('dialog').close()">关闭</button></header><article></article></dialog>
         </section>
         <section class="view" id="transferRules"></section>
@@ -870,8 +870,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                   content=t?`<button class="text-btn tr-destination" type="button" data-transfer="${cfg.rows.indexOf(r)}" title="查看本次调拨信息"><span>${esc(t.warehouseName||'—')}</span><small>${t.warehouseId?esc(t.warehouseId)+' · ':''}${esc(t.status)}</small></button>`:'—';
                 }
                 if(k==='库存状态'||k==='留货结果')content=badge(value);
-                const hasProductCode=Boolean(r['商品码']&&r['商品码']!=='—');
-                if((type==='inventory'&&k==='物品编号')||(type==='details'&&((k==='商品码'&&hasProductCode)||(k==='物品编号'&&!hasProductCode))))content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
+                if(k==='物品编号')content=`<button class="text-btn" type="button" data-open="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
                 if((k==='命中策略'||k==='命中策略名称')&&value!=='—'&&(type!=='details'||r.strategy))content=`<button class="text-btn" type="button" data-strategy="${cfg.rows.indexOf(r)}">${esc(value)}</button>`;
                 if(field.reason)content+=`<small class="rp-cell-note">${esc(field.reason)}</small>`;
                 return `<td class="${k.includes('原因')?'rp-reason':''}">${content}</td>`;
@@ -884,7 +883,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
             function showDialog(type,title,entries,formatted=false){const d=document.getElementById('rp-'+type+'-dialog');d.querySelector('h2').textContent=title;d.querySelector('article').innerHTML='<dl class="rp-kv">'+entries.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(formatted?v:display(k,v))}</dd>`).join('')+'</dl>';d.showModal();}
             function openRecord(type,r){
               if(type==='inventory'){showDialog(type,'库存详情 · '+r['物品编号'],Object.entries(r));return;}
-              showDialog(type,'留货明细详情 · '+(r['商品码']||r['物品编号']),[...detailDialogCols.filter(k=>!r.transfer||k!=='WMS调拨结果').map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
+              showDialog(type,'留货明细详情 · '+r['物品编号'],[...detailDialogCols.filter(k=>!r.transfer||k!=='WMS调拨结果').map(k=>[k,detailText(r,k)]),...transferEntries(r)],true);
             }
             function transferEntries(r){const t=r.transfer;if(!t)return [];return [['命中调拨规则',t.ruleNames.join('、')||'—'],['调拨申请状态',t.status],['调拨发起时间',t.requestedAt||'—'],['WMS调拨结果',detailValue(r,'WMS调拨结果')||'—'],['WMS状态返回时间',r.wmsTransferReturnedAt||'—'],['银河调拨单号',t.orderNo||'—']];}
             function openTransfer(r){
