@@ -53,7 +53,7 @@
   const completedRow=rows[0].cloneNode(true);
   completedRow.querySelector('.strategy-row-actions').innerHTML='<span class="link">查看</span><span class="link">编辑</span>';
   completedRow.cells[0].querySelector('.sub').textContent='演示策略 · 当前页面保存';
-  completedRow.cells[5].textContent='—';
+  completedRow.cells[6].textContent='—';
   records.push({...records[0],id:'STRATEGY-DEMO-5',name:'iPhone 13 Pro 香港补货',range:'ip13pro',template:'ip13pro-c',base:1920,ceiling:2000,target:200,locked:200,status:'已完成'});
   rows.push(completedRow);rows[0].parentElement.append(completedRow);
   updateRow(completedRow,records.at(-1));
@@ -88,7 +88,7 @@
       rows[index].hidden=!visible;if(visible)count++;
     });
     document.querySelector('#strategy .strategy-list .panel-head small').textContent='共 '+count+' 条';
-    if(!count){const empty=document.createElement('tr');empty.id='se-filter-empty';empty.innerHTML='<td colspan="8" class="empty">暂无符合条件的策略</td>';rows[0].parentElement.append(empty);}
+    if(!count){const empty=document.createElement('tr');empty.id='se-filter-empty';empty.innerHTML='<td colspan="9" class="empty">暂无符合条件的策略</td>';rows[0].parentElement.append(empty);}
   }
   function queryStrategies(){
     activeFilters={query:searchFilter.value.trim().toLowerCase(),models:selectedModels(),status:statusFilter.selectedIndex?statusFilter.value:'',country:countryFilter.selectedIndex?countryFilter.value:'',category:categoryFilter.selectedIndex?categoryFilter.value:''};
@@ -225,13 +225,14 @@
   function updateRow(row,record){
     const range=ranges.find(r=>r.id===record.range),template=templates.find(t=>t.id===record.template);
     row.cells[0].querySelector('.link').textContent=record.name;row.cells[1].textContent=record.country;
-    row.cells[2].replaceChildren(document.createTextNode(range.model.replace(/^苹果 |^三星 |^谷歌 /,'' )+' '+range.memory));
-    const sub=document.createElement('div');sub.className='sub';sub.textContent='质量模板：'+template.name;row.cells[2].append(sub);
-    row.cells[3].textContent=record.locked+' / '+record.target;row.cells[4].textContent=money(record.base)+' / '+money(record.ceiling);
-    if(record.status==='已完成')row.cells[5].textContent='—';
-    else if(record.changed&&record.status==='执行中')row.cells[5].textContent='按配置执行';
-    row.cells[6].querySelector('.pill').textContent=record.status;
-    row.cells[6].querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':record.status==='已完成'?' done':'');
+    row.cells[2].textContent=range.model;
+    row.cells[3].replaceChildren(document.createTextNode(range.model.replace(/^苹果 |^三星 |^谷歌 /,'' )+' '+range.memory));
+    const sub=document.createElement('div');sub.className='sub';sub.textContent='质量模板：'+template.name;row.cells[3].append(sub);
+    row.cells[4].textContent=record.locked+' / '+record.target;row.cells[5].textContent=money(record.base)+' / '+money(record.ceiling);
+    if(record.status==='已完成')row.cells[6].textContent='—';
+    else if(record.changed&&record.status==='执行中')row.cells[6].textContent='按配置执行';
+    row.cells[7].querySelector('.pill').textContent=record.status;
+    row.cells[7].querySelector('.pill').className='pill'+(record.status==='草稿'?' draft':record.status==='已暂停'?' pause':record.status==='已完成'?' done':'');
   }
   function bindRow(row,index){
     row.cells[0].querySelector('.link').onclick=()=>openDetails(index);
@@ -249,7 +250,7 @@
     if(editIndex===null){
       const row=rows[0].cloneNode(true);row.querySelector('.se-trial')?.remove();row.querySelector('.sr-entry')?.remove();
       row.querySelector('.se-edit')?.replaceWith(Object.assign(document.createElement('span'),{className:'link',textContent:'编辑'}));
-      row.cells[0].querySelector('.sub').textContent='演示策略 · 当前页面保存';row.cells[5].textContent=record.status==='草稿'?'启用后计算':'按配置执行';
+      row.cells[0].querySelector('.sub').textContent='演示策略 · 当前页面保存';row.cells[6].textContent=record.status==='草稿'?'启用后计算':'按配置执行';
       records.push(record);rows.push(row);document.querySelector('#strategy .strategy-list-table tbody').append(row);bindRow(row,records.length-1);updateRow(row,record);
     }else{records[editIndex]=record;updateRow(rows[editIndex],record);}
     applyFilters();

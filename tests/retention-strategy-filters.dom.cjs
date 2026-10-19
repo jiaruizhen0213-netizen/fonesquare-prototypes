@@ -42,7 +42,7 @@ const root = path.resolve(__dirname, '../overseas-retention');
   assert.equal($('#se-save-draft').hidden,true);
   change($('#se-target'),250);$('#se-cancel').click();
   assert.equal(status(completed),'已完成','Cancel cannot reactivate the strategy');
-  assert.equal(completed.cells[3].textContent,'200 / 200');
+  assert.equal(completed.cells[4].textContent,'200 / 200');
 
   completed.querySelector('.se-edit').click();
   change($('#se-target'),199);$('#se-save').click();
@@ -51,7 +51,7 @@ const root = path.resolve(__dirname, '../overseas-retention');
   assert.equal(status(completed),'已完成','Invalid target cannot change status');
   change($('#se-target'),200);$('#se-save').click();
   assert.equal(status(completed),'已完成','A target equal to already retained quantity stays completed');
-  assert.equal(completed.cells[5].textContent,'—');
+  assert.equal(completed.cells[6].textContent,'—');
 
   $('#se-filter-status').value='已完成';query();
   assert.deepEqual(visible(),[completed]);
@@ -61,8 +61,8 @@ const root = path.resolve(__dirname, '../overseas-retention');
   assert.equal($('#strategy-editor-modal').open,true,'The drawer also edits a completed strategy');
   change($('#se-target'),250);$('#se-save').click();
   assert.equal(status(completed),'执行中','Increasing the target above retained quantity resumes execution');
-  assert.equal(completed.cells[3].textContent,'200 / 250');
-  assert.equal(completed.cells[5].textContent,'按配置执行');
+  assert.equal(completed.cells[4].textContent,'200 / 250');
+  assert.equal(completed.cells[6].textContent,'按配置执行');
   assert.equal(visible().length,0,'Saving rechecks the active completed-status filter');
   assert.match($('#se-filter-empty').textContent,/暂无符合条件/);
   reset();

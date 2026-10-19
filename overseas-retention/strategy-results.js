@@ -4,15 +4,15 @@
   const strategyRows = [...document.querySelectorAll('#strategy > .panel:last-child tbody tr')];
   const strategies = strategyRows.map((row, index) => {
     const cells = row.querySelectorAll('td');
-    const goods = cells[2].childNodes[0].textContent.trim();
-    const model = goods.replace(/\s+\d+G$/, '');
+    const goods = cells[3].childNodes[0].textContent.trim();
+    const model = cells[2].textContent.trim();
     const memory = (goods.match(/\d+G$/) || ['—'])[0];
-    const prices = cells[4].textContent.match(/[\d,]+/g) || ['1500'];
+    const prices = cells[5].textContent.match(/[\d,]+/g) || ['1500'];
     return { index, name: cells[0].querySelector('.link').textContent.trim(), model, memory,
       base: Number(prices[0].replace(/,/g, '')), ceiling: Number(prices[1].replace(/,/g, '')),
       estimated: [4680, 3650, 2980, null][index],
       acceptable: index === 0 ? 4362 : Number(prices[0].replace(/,/g, '')),
-      draft: cells[6].textContent.includes('草稿') };
+      draft: cells[7].textContent.includes('草稿') };
   });
   const batchTimes = ['2026-10-13 18:00', '2026-10-13 05:00'];
   const sample = [

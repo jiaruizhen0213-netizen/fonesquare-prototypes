@@ -268,7 +268,7 @@ async function integrationAcceptance() {
   change(w, $('#se-ceiling'), 5100);
   $('#se-save').click();
   assert.equal(dialog.open, false, 'Manual P/U above the estimate can be saved when U >= P');
-  assert.match(rows()[0].cells[4].textContent, /5,000.*5,100/);
+  assert.match(rows()[0].cells[5].textContent, /5,000.*5,100/);
   assert.equal(rows()[0].querySelector('.pill').textContent, statusBeforeEdit, 'Editing preserves the strategy status');
   assert.equal(rows()[0].cells[0].querySelector('.link').textContent, nameBeforeEdit);
   assert.equal(rows().length, originalRows.length, 'Editing does not create a second strategy');
@@ -288,7 +288,7 @@ async function integrationAcceptance() {
   assert.equal(dialog.open, false);
   assert.equal(rows().length, originalRows.length + 1);
   assert.equal(rows().at(-1).querySelector('.pill').textContent, '草稿');
-  assert.match(rows().at(-1).cells[4].textContent, /4,300.*4,580/);
+  assert.match(rows().at(-1).cells[5].textContent, /4,300.*4,580/);
   assert.equal(rows().at(-1).cells[0].querySelector('.link').textContent, '价格试算验收草稿');
   w.showView('create');
   await tick();

@@ -1,14 +1,15 @@
 #strategy .strategy-list{overflow:hidden}
-#strategy .strategy-list-table{min-width:1330px;table-layout:fixed}
+#strategy .strategy-list-table{min-width:1510px;table-layout:fixed}
 #strategy .strategy-list-table th,#strategy .strategy-list-table td{padding:16px 18px}
 #strategy .strategy-list-table th:nth-child(1){width:230px}
 #strategy .strategy-list-table th:nth-child(2){width:90px}
-#strategy .strategy-list-table th:nth-child(3){width:205px}
-#strategy .strategy-list-table th:nth-child(4){width:180px}
-#strategy .strategy-list-table th:nth-child(5){width:155px}
-#strategy .strategy-list-table th:nth-child(6){width:110px}
-#strategy .strategy-list-table th:nth-child(7){width:92px}
-#strategy .strategy-list-table th:nth-child(8){width:268px}
+#strategy .strategy-list-table th:nth-child(3){width:180px}
+#strategy .strategy-list-table th:nth-child(4){width:205px}
+#strategy .strategy-list-table th:nth-child(5){width:180px}
+#strategy .strategy-list-table th:nth-child(6){width:155px}
+#strategy .strategy-list-table th:nth-child(7){width:110px}
+#strategy .strategy-list-table th:nth-child(8){width:92px}
+#strategy .strategy-list-table th:nth-child(9){width:268px}
 #strategy .strategy-list-table td{white-space:nowrap;line-height:1.65}
 #strategy .strategy-list-table th:first-child,#strategy .strategy-list-table td:first-child{position:sticky;left:0;z-index:1;background:#fff;box-shadow:1px 0 0 var(--line)}
 #strategy .strategy-list-table th:last-child,#strategy .strategy-list-table td:last-child{position:sticky;right:0;z-index:1;background:#fff;box-shadow:-1px 0 0 var(--line)}
