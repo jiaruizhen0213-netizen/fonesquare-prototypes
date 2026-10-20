@@ -5,6 +5,7 @@
  const esc=s=>String(s??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  let selected=null,returnY=0;
  const snapshots={
+  'FSO-261020-0216':{model:'iphone',lot:'FS-HK-260823-0216',source:['卖家接受预中标价','Seller accepted pre-winning price']},
   'FSO-260821-0098':{lot:'FS-HK-260821-0186',sold:'2026-08-21 11:02',condition:'A',privacy:['未记录','Not recorded'],returns:['未发起','Not initiated']},
   'FSO-260819-0039':{model:'huawei',reportTime:'2026-08-19 09:30',lot:'FS-HK-260819-0039',sold:'2026-08-19 11:02',deliveredAt:'2026-08-21 10:10',privacy:['通过','Passed'],returns:['未发起','Not initiated']},
   'FSO-260820-0048':{model:'huawei',lot:'FS-HK-260820-0048',sold:'2026-08-20 11:02',privacy:['不通过','Failed'],returns:['运营未发起','Not initiated by operations']},

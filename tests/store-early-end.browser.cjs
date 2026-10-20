@@ -1,0 +1,46 @@
+const assert = require('node:assert/strict');
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+(async () => {
+ const browser = await chromium.launch({headless:true});
+ const page = await browser.newPage({viewport:{width:390,height:844}}), errors=[];
+ page.on('pageerror', e=>errors.push(e.message));
+ const open = async () => { await page.goto((process.env.PROTOTYPE_BASE_URL || 'http://127.0.0.1:8856')+'/store.html'); await page.locator('[data-case-entry=role]').click(); await page.locator('#roleOverviewPage [data-role-entry=employee]').click(); await page.locator('#currentAuctionCard').click(); };
+ const end = async () => {await page.locator('#endActiveLot').click(); await page.locator('#confirmEndActiveLot').click();};
+ try {
+  await open(); await page.locator('#endActiveLot').click(); await page.locator('#cancelEndActiveLot').click();
+  assert.equal(await page.locator('#endActiveLot').isVisible(),true);
+  assert.equal(await page.locator('#earlyEndResult').isVisible(),false);
+  await end();
+  assert.equal(await page.locator('#lotPage .status-line').innerText(),'已结束');
+  assert.equal(await page.locator('#lotAuctionCountdown').innerText(),'00:00');
+  assert.equal(await page.locator('#endActiveLot').isVisible(),false);
+  assert.match(await page.locator('#earlyEndResult').innerText(),/2,115.00/);
+  await page.locator('#acceptEarlyPrice').click(); await page.locator('#confirmSellerDecisionButton').click();
+  assert.equal(await page.locator('#acceptContractError').isVisible(),true);
+  await page.locator('#acceptContractConfirm').check(); await page.locator('#acceptSellerMobile').fill('+60123456789');
+  await page.locator('#confirmSellerDecisionButton').click();
+  assert.equal(await page.locator('#earlyEndOrderCard').getAttribute('hidden'),null);
+  assert.notEqual(await page.locator('#generatedOrderCard').getAttribute('hidden'),null);
+  assert.equal(await page.evaluate(()=>transactionOrderCreated),false);
+  await page.evaluate(()=>showPage('orders')); await page.locator('#earlyEndOrderCard').click();
+  assert.match(await page.locator('#storeOrderDetailPage').innerText(),/FS-HK-260823-0216/);
+  await page.evaluate(()=>showPage('lot')); await page.screenshot({path:'/tmp/store-early-end-accepted.png'});
+  await open(); await page.evaluate(()=>{currentAuctionCard.dataset.sellerProceeds='';}); await end();
+  assert.match(await page.locator('#earlyEndResult').innerText(),/暂无有效报价/);
+  assert.equal(await page.locator('#acceptEarlyPrice').count(),0);
+  await open(); await end(); await page.locator('#rejectEarlyPrice').click(); await page.locator('#chooseEndLot').click();
+  await page.locator('#closeSellerDecisionResult').click();
+  assert.equal(await page.locator('#acceptEarlyPrice').count(),0);
+  assert.notEqual(await page.locator('#earlyEndOrderCard').getAttribute('hidden'),null);
+  await open(); await end(); await page.locator('#rejectEarlyPrice').click(); await page.locator('#chooseReauction').click();
+  await page.locator('#closeSellerDecisionResult').click();
+  assert.equal(await page.locator('#endActiveLot').isVisible(),true);
+  assert.match(await page.locator('#lotPage .status-line').innerText(),/竞拍中/);
+  await end(); await page.evaluate(()=>applyLanguage('en'));
+  assert.match(await page.locator('#earlyEndResult').innerText(),/Seller proceeds/);
+  await page.screenshot({path:'/tmp/store-early-end-price.png'});
+  await page.evaluate(()=>{roleSwitch.value='merchant';applyRoleScope();});
+  assert.equal(await page.locator('#acceptEarlyPrice').count(),0);
+  assert.deepEqual(errors,[]);console.log('PASS early end confirmation, cancellation, no bids, acceptance, order isolation/detail, rejection, re-auction, language and permissions');
+ } finally {await browser.close();}
+})().catch(e=>{console.error(e);process.exit(1)});

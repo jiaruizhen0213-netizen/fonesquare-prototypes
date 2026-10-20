@@ -1671,8 +1671,8 @@
     function sortAuctionCards() { [...auctionList.querySelectorAll('.auction-card')].sort((a, b) => Number(a.dataset.deadline) - Number(b.dataset.deadline)).forEach((card) => auctionList.appendChild(card)); }
     const updateAuctionCountdowns = () => { const now = Date.now(); document.querySelectorAll('[data-auction-countdown]').forEach((countdown) => { const card = countdown.closest('.auction-card'); countdown.textContent = formatCountdown(Number(card.dataset.deadline) - now); }); if (activeAuctionEnd) { const remaining = formatCountdown(activeAuctionEnd - now);  document.getElementById('lotAuctionCountdown').textContent = remaining; } };
     const initializeAuctionDeadlines = () => { const now = Date.now(); auctionList.querySelectorAll('[data-deadline-offset-minutes]').forEach((card) => { card.dataset.deadline = String(now + Number(card.dataset.deadlineOffsetMinutes) * 60 * 1000); }); sortAuctionCards(); updateAuctionCountdowns(); };
-    const startAuction = () => { activeAuctionStart = Date.now(); activeAuctionEnd = activeAuctionStart + AUCTION_DURATION_MINUTES * 60 * 1000; currentAuctionCard.dataset.deadline = String(activeAuctionEnd);   document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); sortAuctionCards(); updateAuctionCountdowns(); };
-    function openPreWinnerDetail() { showPage('preWinnerDetail'); }
+    const startAuction = () => { window.storeEarlyEnd?.reset(); activeAuctionStart = Date.now(); activeAuctionEnd = activeAuctionStart + AUCTION_DURATION_MINUTES * 60 * 1000; currentAuctionCard.dataset.deadline = String(activeAuctionEnd);   document.getElementById('lotAuctionStart').textContent = formatAuctionTime(activeAuctionStart); document.getElementById('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd); sortAuctionCards(); updateAuctionCountdowns(); };
+    function openPreWinnerDetail() { window.storeEarlyEnd?.leaveDecision(); showPage('preWinnerDetail'); }
     document.getElementById('preWinnerAuctionCard').addEventListener('click', openPreWinnerDetail);
     const sellerDecisionDialog = document.getElementById('sellerDecisionDialog');
     const sellerAcceptPanel = document.getElementById('sellerAcceptPanel');
@@ -1695,6 +1695,7 @@
     acceptContractConfirm.addEventListener('change', () => document.getElementById('acceptContractError').classList.remove('show'));
     acceptSellerMobile.addEventListener('input', () => document.getElementById('acceptSellerMobileError').classList.remove('show'));
     const completeSellerDecision = (result) => {
+      if (window.storeEarlyEnd?.isDecision()) { window.storeEarlyEnd.complete(result); return; }
       const status = document.getElementById('preWinnerStatus');
       status.className = result === 'accepted' || result === 'reauction' ? 'callout success' : 'callout warning';
       const copies = {
@@ -1712,14 +1713,14 @@
       applyRoleScope();
     };
     document.getElementById('confirmSellerDecisionButton').addEventListener('click', () => {
-      if (transactionOrderCreated) { showToast('成交订单已存在，已返回同一订单'); sellerDecisionDialog.close(); return; }
+      if (window.storeEarlyEnd?.isDecision() ? window.storeEarlyEnd.orderCreated() : transactionOrderCreated) { showToast('成交订单已存在，已返回同一订单'); sellerDecisionDialog.close(); return; }
       const validContract = acceptContractConfirm.checked;
       const validMobile = /^\+601\d{8,9}$/.test(acceptSellerMobile.value.trim().replace(/[\s-]/g, ''));
       document.getElementById('acceptContractError').classList.toggle('show', !validContract);
       document.getElementById('acceptSellerMobileError').classList.toggle('show', !validMobile);
       if (!validContract || !validMobile) return;
-      transactionOrderCreated = true;
-      document.getElementById('generatedOrderCard').removeAttribute('hidden');
+      if (window.storeEarlyEnd?.isDecision()) window.storeEarlyEnd.createOrder();
+      else { transactionOrderCreated = true; document.getElementById('generatedOrderCard').removeAttribute('hidden'); }
       completeSellerDecision('accepted');
       sellerDecisionDialog.close();
       showToast('卖家接受，唯一成交订单已生成');
@@ -2111,6 +2112,7 @@
       renderProfileScope();
       applyOrderScope();
       renderEarnings();
+      window.storeEarlyEnd?.render();
     };
     roleSwitch.addEventListener('change', applyRoleScope);
     document.querySelectorAll('[data-role-entry]').forEach((button) => button.addEventListener('click', () => {
@@ -2199,6 +2201,7 @@
   <script src="store-merchant-banks.js?v=20260910-1"></script>
   <script src="detail-report.js?v=20260920-2"></script>
   <script src="auction-detail-alignment.js?v=20260920-2"></script>
-  <script src="order-details.js?v=20260920-2"></script>
+  <script src="store-early-end.js?v=20261020-1"></script>
+  <script src="order-details.js?v=20261020-1"></script>
 </body>
 </html>
