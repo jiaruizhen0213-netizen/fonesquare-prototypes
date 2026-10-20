@@ -162,7 +162,7 @@
         const options = fields[key].concat(rule[key].filter(v => !fields[key].some(o => o.value === v)).map(value => ({ value, label: value })));
         picker('#trEdit-' + key, options, rule[key], '不限', false, null, label);
       });
-      picker('#trEditTarget', warehouseOptions, rule.warehouseId ? [rule.warehouseId] : [], '请选择调拨仓库', true, values => $('#trInstitution').value = values[0] || '', '调拨仓库');
+      picker('#trEditTarget', warehouses.map(w => ({ value: w.id, label: w.name })), rule.warehouseId ? [rule.warehouseId] : [], '请选择调拨仓库', true, values => $('#trInstitution').value = values[0] || '', '调拨仓库');
       $('#trFormError').hidden = true;
       $('#trRuleDialog').showModal();
       $('#trName').focus();
