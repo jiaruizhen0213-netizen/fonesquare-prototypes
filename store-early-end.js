@@ -13,6 +13,12 @@
   bar.before(result);
   document.body.insertAdjacentHTML('beforeend', '<dialog id="endActiveLotDialog" aria-labelledby="endActiveLotTitle" data-no-i18n><div class="dialog-body"><h2 id="endActiveLotTitle"></h2><p></p><div class="dialog-actions"><button type="button" class="secondary" id="cancelEndActiveLot"></button><button type="button" class="primary" id="confirmEndActiveLot"></button></div></div></dialog>');
   const dialog = $('endActiveLotDialog');
+  document.body.insertAdjacentHTML('beforeend', '<dialog id="earlyPriceDialog" aria-labelledby="earlyPriceTitle" data-no-i18n><div class="dialog-body"></div></dialog>');
+  const priceDialog = $('earlyPriceDialog');
+  function openPriceDialog() {
+    if (state.result === 'pending' && editable() && !priceDialog.open) priceDialog.showModal();
+  }
+
   const order = $('generatedOrderCard').cloneNode(true);
   order.id = 'earlyEndOrderCard'; order.dataset.orderId = 'FSO-261020-0216';
   order.querySelector('.unified-order-head strong').textContent = 'iPhone 17 Pro Max 512GB';
@@ -44,13 +50,20 @@
     $('decisionNote').textContent = pending ? t('请向卖家确认卖家应得金额。接受后维护合同和 +60 手机号；拒绝后选择重拍或结束标单。', 'Confirm seller proceeds. Acceptance requires contract confirmation and a +60 mobile; rejection allows re-auction or ending the lot.') : t('本轮竞拍已结束。', 'This auction round has ended.');
     result.innerHTML = hasQuote() ? '<h2 class="section-title">' + t('卖家应得金额', 'Seller proceeds') + '</h2><strong>MYR ' + Number(card.dataset.sellerProceeds).toLocaleString('en-MY', {minimumFractionDigits:2}) + '</strong>' : '<p>' + t('暂无有效报价，标单已结束。', 'No valid bids. The lot has ended.') + '</p>';
     if (pending && editable()) {
-      result.insertAdjacentHTML('beforeend', '<div class="dialog-actions"><button class="secondary" id="rejectEarlyPrice">' + t('不接受', 'Decline') + '</button><button class="primary" id="acceptEarlyPrice">' + t('接受预中标价', 'Accept pre-winning price') + '</button></div>');
+      result.innerHTML = '<button type="button" class="wide-button secondary" id="openEarlyPrice">' + t('确认是否接受报价', 'Review price') + '</button>';
+      $('openEarlyPrice').onclick = openPriceDialog;
+      priceDialog.querySelector('.dialog-body').innerHTML = '<h2 id="earlyPriceTitle">' + t('是否接受报价？', 'Accept this price?') + '</h2><p>' + t('标单已结束，请确认是否接受本次报价。', 'Bidding has ended. Please accept or decline this price.') + '</p><div class="dialog-summary"><div class="summary-row"><span>' + t('卖家应得金额', 'Seller proceeds') + '</span><strong>MYR ' + Number(card.dataset.sellerProceeds).toLocaleString('en-MY', {minimumFractionDigits:2}) + '</strong></div></div><div class="dialog-actions"><button type="button" class="secondary" id="rejectEarlyPrice">' + t('不接受', 'Decline') + '</button><button type="button" class="primary" id="acceptEarlyPrice">' + t('接受预中标价', 'Accept pre-winning price') + '</button></div><button type="button" class="wide-button tertiary" id="closeEarlyPrice">' + t('稍后确认', 'Decide later') + '</button>';
       $('rejectEarlyPrice').onclick = () => decide('reject');
       $('acceptEarlyPrice').onclick = () => decide('accept');
+      $('closeEarlyPrice').onclick = () => priceDialog.close();
+    } else {
+      priceDialog.close();
+      priceDialog.querySelector('.dialog-body').replaceChildren();
     }
   }
   function decide(choice) {
     if (!editable() || state.result !== 'pending') return;
+    priceDialog.close();
     state.decision = true;
     $('acceptContractConfirm').checked = false; $('acceptSellerMobile').value = '';
     $('acceptContractError').classList.remove('show'); $('acceptSellerMobileError').classList.remove('show');
@@ -70,7 +83,7 @@
     state.ended = true; state.result = hasQuote() ? 'pending' : 'no-bids';
     activeAuctionEnd = Date.now(); card.dataset.deadline = String(activeAuctionEnd);
     $('lotAuctionEnd').textContent = formatAuctionTime(activeAuctionEnd);
-    updateAuctionCountdowns(); sortAuctionCards(); dialog.close(); render();
+    updateAuctionCountdowns(); sortAuctionCards(); dialog.close(); render(); openPriceDialog();
   };
   window.storeEarlyEnd = {
     render, isDecision: () => state.decision, orderCreated: () => state.order,
@@ -82,6 +95,8 @@
       order.hidden = false;
     },
     reset() {
+      priceDialog.close();
+      priceDialog.querySelector('.dialog-body').replaceChildren();
       state.ended = false; state.result = ''; state.decision = false;
       const resultRow = lot.querySelectorAll('.shared-auction-info .summary-row')[3];
       if (resultRow) resultRow.querySelector('strong').textContent = '—';
@@ -104,7 +119,7 @@
       applyOrderScope();
     }
   };
-  roleSwitch.addEventListener('change', () => { dialog.close(); sellerDecisionDialog.close(); render(); });
+  roleSwitch.addEventListener('change', () => { dialog.close(); priceDialog.close(); sellerDecisionDialog.close(); render(); });
   let language = document.documentElement.lang;
   new MutationObserver(() => { if (language !== document.documentElement.lang) { language = document.documentElement.lang; render(); } }).observe(document.documentElement, {attributes:true, attributeFilter:['lang']});
   render();
