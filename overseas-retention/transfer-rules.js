@@ -65,7 +65,7 @@
     const ruleNames = selected.map(r => r.name);
     if (targets.length > 1) return { ...empty, priority, ruleNames, status: '待处理', reason: '最高优先级相同但调拨目标仓不同，请处理规则冲突' };
     const target = warehouses.find(w => w.id === targets[0]);
-    if (!target) return { ...empty, ruleNames, status: '待处理', reason: '调拨目标仓或银河机构编号缺失' };
+    if (!target) return { ...empty, ruleNames, status: '待处理', reason: '调拨目标仓或目标仓ID缺失' };
     const snapshot = { ...empty, priority, warehouseId: target.id, warehouseName: target.name, ruleNames };
     const source = normalize(item['运营中心'], 'centers');
     if (!source || source === '—' || source === '-') return { ...snapshot, status: '待处理', reason: '商品当前运营中心缺失' };
@@ -86,7 +86,7 @@
       <dialog class="tr-dialog" id="trRuleDialog" aria-labelledby="trDialogTitle"><form id="trRuleForm" novalidate><header><div><h2 id="trDialogTitle">新建调拨规则</h2><p>不同字段同时满足，同一字段满足任一选项。</p></div><button type="button" class="tr-close" data-tr-close aria-label="关闭">×</button></header><article>
       <section class="tr-form-section"><h3>基本信息</h3><div class="tr-grid tr-basic-grid"><label class="tr-field">规则名称 <span class="tr-required">*</span><input id="trName" required maxlength="60" placeholder="例如：iPhone 13 调拨东莞"></label><label class="tr-field">优先级 <span class="tr-required">*</span><input id="trPriority" type="number" min="1" step="1" required aria-describedby="trPriorityHint"></label><div class="tr-field"><label>状态</label><div class="tr-radio"><label><input type="radio" name="trEnabled" value="true" checked> 启用</label><label><input type="radio" name="trEnabled" value="false"> 停用</label></div></div></div><p class="tr-priority-hint" id="trPriorityHint">默认 1，可编辑；数字越小越优先。同优先级命中不同目标仓时，标记为待处理。</p></section>
       <section class="tr-form-section"><h3>商品匹配条件</h3><p class="tr-muted">未选择表示不限；运营中心为商品当前所在中心。</p><div class="tr-grid">${dimensions.map(([key,,label]) => `<div class="tr-field"><label>${label}</label><div id="trEdit-${key}"></div></div>`).join('')}</div></section>
-      <section class="tr-form-section"><h3>调拨去向</h3><div class="tr-grid"><div class="tr-field"><label>调拨仓库 <span class="tr-required">*</span></label><div id="trEditTarget"></div></div><label class="tr-field">银河机构编号<input id="trInstitution" readonly placeholder="选择调拨仓库后自动带出"></label></div></section>
+      <section class="tr-form-section"><h3>调拨去向</h3><div class="tr-grid"><div class="tr-field"><label>调拨仓库 <span class="tr-required">*</span></label><div id="trEditTarget"></div></div><label class="tr-field">目标仓ID<input id="trInstitution" readonly placeholder="选择调拨仓库后自动带出"></label></div></section>
       <p class="tr-form-note">保存后用于后续新发起的调拨判断，历史留货明细保留当时的目标仓。</p><p id="trFormError" role="alert" class="tr-form-error" hidden></p></article><footer><button type="button" class="secondary" data-tr-close>取消</button><button type="submit" class="primary">保存</button></footer></form></dialog>`;
     const $ = selector => root.querySelector(selector);
     const centerOptions = warehouses.map(w => ({ value: w.name, label: w.name }));
@@ -177,7 +177,7 @@
       if (toggle) {
         const rule = rules.find(r => r.id === toggle.dataset.trToggle);
         if (!rule) return;
-        if (!rule.enabled && !warehouses.some(w => w.id === rule.warehouseId)) { feedback('该仓库尚未配置银河机构编号，无法启用。'); return; }
+        if (!rule.enabled && !warehouses.some(w => w.id === rule.warehouseId)) { feedback('该仓库尚未配置目标仓ID，无法启用。'); return; }
         rule.enabled = !rule.enabled; rule.updatedAt = timestamp(); persist(`规则已${rule.enabled ? '启用' : '停用'}，历史明细保持不变`);
       }
       if (!event.target.closest('.tr-picker')) root.querySelectorAll('.tr-picker[open]').forEach(node => node.open = false);
@@ -192,7 +192,7 @@
       const name = $('#trName').value.trim();
       const priority = Number($('#trPriority').value);
       const warehouseId = pickerMap.get('trEditTarget').values()[0] || '';
-      let error = !name ? '请输入规则名称。' : !Number.isSafeInteger(priority) || priority < 1 ? '优先级请输入大于等于 1 的整数。' : !warehouseId ? '请选择调拨仓库。' : !warehouses.some(w => w.id === warehouseId) ? '该仓库尚未配置银河机构编号。' : '';
+      let error = !name ? '请输入规则名称。' : !Number.isSafeInteger(priority) || priority < 1 ? '优先级请输入大于等于 1 的整数。' : !warehouseId ? '请选择调拨仓库。' : !warehouses.some(w => w.id === warehouseId) ? '该仓库尚未配置目标仓ID。' : '';
       if (error) { $('#trFormError').textContent = error; $('#trFormError').hidden = false; if (!name) $('#trName').focus(); return; }
       const record = { id: editingId || 'TR-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), name, priority, enabled: $('input[name="trEnabled"]:checked').value === 'true', warehouseId, updatedAt: timestamp() };
       dimensions.forEach(([key]) => record[key] = pickerMap.get('trEdit-' + key).values());

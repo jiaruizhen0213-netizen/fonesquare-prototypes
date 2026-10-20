@@ -72,7 +72,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <link rel="stylesheet" href="strategy-price-trial.css?v=20261015-compact1">
 <link rel="stylesheet" href="strategy-editor.css?v=20261019-filters">
 <link rel="stylesheet" href="transfer-rules.css?v=20261016-priority1">
-<script src="transfer-rules.js?v=20261016-priority-default1"></script>
+<script src="transfer-rules.js?v=20261020-warehouse-id"></script>
 
 </head>
 <body>
@@ -893,7 +893,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
               const note=document.createElement('p');note.className='tr-detail-note';note.textContent='调拨仓库为本次判定的目标仓；已受理不代表已经到仓。WMS调拨结果以仓库返回为准，未返回显示“—”。以下为原型示例。';article.prepend(note);
               if(t.status==='发起失败'){
                 const retry=document.createElement('button');retry.type='button';retry.className='primary tr-retry';retry.textContent='重试调拨（演示）';article.append(retry);
-                retry.onclick=()=>{retry.disabled=true;t.status='待发起';t.reason='已按原目标仓及机构编号重新排队（演示），尚未收到受理结果';t.requestedAt='—';render('details');openTransfer(r);};
+                retry.onclick=()=>{retry.disabled=true;t.status='待发起';t.reason='已按原目标仓ID重新排队（演示），尚未收到受理结果';t.requestedAt='—';render('details');openTransfer(r);};
               }
             }
             function openStrategy(type,r){if(type==='details'){const s=r.strategy;showDialog(type,'策略详情 · '+s.name,[['策略ID',s.id],['策略名称',s.name],['目标地区',s.region],['配置修订号',r['配置修订号']],['货品范围配置',s.range],['目标数量',s.target],['基准价',s.base],['最高价',s.ceiling],['质量模板版本',s.template],['匹配模式',s.mode],['策略级质检附加筛选',s.filter],['分层占比容差',s.tolerance],['有效样本量',s.sample]]);}else{showDialog(type,'策略详情 · '+r['命中策略名称'],[['策略名称',r['命中策略名称']],['货品范围配置',r['型号名称']+' · '+r['内存']],['海外等级',r['海外等级']],['目标地区','香港'],['目标数量',100],['基准价',r['海外结算价']],['最高价',r['海外结算价']+100],['质量模板版本',r['海外等级']+'级 · V1'],['匹配模式','等级兜底'],['有效样本量',0],['配置修订号','R1'],['执行频次','每日一次'],['说明','模拟策略详情，只读展示关联策略。']]);}}
