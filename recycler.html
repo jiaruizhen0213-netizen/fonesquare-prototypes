@@ -842,6 +842,7 @@
       renderAuction();
     }));
     document.getElementById('openQuote').addEventListener('click', () => {
+      if (!window.RecyclerContact.requireAddress()) return;
       const lot = currentLot();
       if (lot.bid !== null && (lot.editSeconds ?? 0) <= 0) {
         showToast('The 30-second edit window has ended', '30 秒改价窗口已结束');
@@ -855,6 +856,7 @@
     document.getElementById('cancelQuote').addEventListener('click', () => quoteDialog.close());
 
     const submitBid = amount => {
+      if (!window.RecyclerContact.requireAddress()) { pendingBid = null; return; }
       const lot = currentLot();
       lot.bid = amount;
       lot.editSeconds = 30;
@@ -867,6 +869,7 @@
     };
     document.getElementById('quoteForm').addEventListener('submit', event => {
       event.preventDefault();
+      if (!window.RecyclerContact.requireAddress()) { pendingBid = null; return; }
       const amount = Number(bidAmount.value);
       const lot = currentLot();
       if (!Number.isFinite(amount) || amount <= 0) return;
@@ -924,7 +927,7 @@
     setLanguage(currentLanguage);
   </script>
   <script src="shop-address.js?v=20260910-4"></script>
-  <script src="recycler-contact.js?v=20260910-1"></script>
+  <script src="recycler-contact.js?v=20261020-1"></script>
   <script src="detail-report.js?v=20260920-2"></script>
   <script src="auction-detail-alignment.js?v=20260920-2"></script>
   <script src="order-details.js?v=20260920-3"></script>
