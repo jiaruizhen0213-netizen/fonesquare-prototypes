@@ -11,7 +11,7 @@
   const result = document.createElement('section');
   result.className = 'section'; result.id = 'earlyEndResult'; result.setAttribute('data-no-i18n', '');
   bar.before(result);
-  document.body.insertAdjacentHTML('beforeend', '<dialog id="endActiveLotDialog" data-no-i18n><h2></h2><p></p><div class="dialog-actions"><button type="button" class="secondary" id="cancelEndActiveLot"></button><button type="button" class="primary" id="confirmEndActiveLot"></button></div></dialog>');
+  document.body.insertAdjacentHTML('beforeend', '<dialog id="endActiveLotDialog" aria-labelledby="endActiveLotTitle" data-no-i18n><div class="dialog-body"><h2 id="endActiveLotTitle"></h2><p></p><div class="dialog-actions"><button type="button" class="secondary" id="cancelEndActiveLot"></button><button type="button" class="primary" id="confirmEndActiveLot"></button></div></div></dialog>');
   const dialog = $('endActiveLotDialog');
   const order = $('generatedOrderCard').cloneNode(true);
   order.id = 'earlyEndOrderCard'; order.dataset.orderId = 'FSO-261020-0216';
