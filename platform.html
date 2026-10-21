@@ -102,7 +102,7 @@
         <div class="card"><div class="card-body">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
             <label for="downloadType">导出类型：</label>
-            <select class="control" id="downloadType" style="width:180px;margin-right:8px"><option value="">全部类型</option><option>商家列表</option><option>标单列表</option><option>成交订单</option></select>
+            <select class="control" id="downloadType" style="width:180px;margin-right:8px"><option value="">全部类型</option><option>成交订单</option><option>资金台账</option><option>门店预付金</option><option>结算单</option></select>
             <button class="btn primary" id="downloadSearch">查询</button><button class="btn" id="downloadReset">重置</button><button class="btn" id="downloadRefresh">刷新</button>
           </div>
           <div class="table-wrap"><table class="table" style="min-width:850px"><thead><tr><th>导出编号</th><th>导出任务</th><th>操作时间</th><th>操作人</th><th>状态</th><th>操作</th></tr></thead><tbody id="downloadRows"></tbody></table></div>
@@ -732,13 +732,21 @@
     // Static prototype login identity; currentUser is the merchant being viewed, not the operator.
     const downloadOperator = Object.freeze({id:'platform-ray', name:'贾瑞真'});
     const downloadCreatedAt = Date.now();
-    const downloadTasks = Array.from({length:8}, function(_, index) {
-      const type = ['商家列表','标单列表','成交订单'][index % 3];
-      const source = type === '商家列表' ? merchantRecords().map(u => [u.id,u.name,u.account]) : type === '标单列表' ? bids.map(b => [b.id,b.status]) : orders.map(o => [o.id,o.status]);
-      return {id:'EX'+String(downloadCreatedAt-index*3600000)+String(index).padStart(4,'0'),ownerId:downloadOperator.id,type,
-        createdAt:downloadCreatedAt-index*3600000,headers:type === '商家列表' ? ['账号 ID','名称','统一账号'] : ['编号','状态'],rows:source};
-    });
+    let downloadTasks = null;
     function ownDownloadTasks() {
+      if (!downloadTasks) {
+        const samples = [
+          {type:'成交订单',headers:['订单号','状态'],rows:orders.map(row => [row.id,row.status])},
+          {type:'资金台账',headers:['资金明细号','订单号','金额'],rows:financialEntries().map(row => [row.id,row.order,row.amount])},
+          {type:'门店预付金',headers:['流水号','门店','流水类型','币种','本次变动金额'],rows:window.prototypeState.prepaymentLedgerV2.map(row => [row.id,row.store,row.type,row.currency,row.amount])},
+          {type:'结算单',headers:['结算单号','结算方向','币种','金额','账单状态'],rows:window.prototypeState.settlementBillsV2.map(row => [row.id,row.settlementDirection,row.currency,row.amount,row.billStatus])}
+        ];
+        downloadTasks = Array.from({length:8}, function(_, index) {
+          const sample = samples[index % samples.length];
+          return {id:'EX'+String(downloadCreatedAt-index*3600000)+String(index).padStart(4,'0'),ownerId:downloadOperator.id,
+            createdAt:downloadCreatedAt-index*3600000,type:sample.type,headers:sample.headers,rows:sample.rows};
+        });
+      }
       return downloadTasks.filter(task => task.ownerId === downloadOperator.id).sort((a,b) => b.createdAt-a.createdAt);
     }
     function renderDownloads() {
