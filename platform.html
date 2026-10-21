@@ -85,7 +85,7 @@
         <div class="nav-item" data-nav="settlementConfig">⚙ <span>结算配置</span></div>
         <div class="nav-item" data-nav="platformFundAccount">▣ <span>平台资金账户</span></div>
         <div class="nav-group">下载中心</div>
-        <div class="nav-item muted">⇩ <span>我的文件</span></div>
+        <div class="nav-item" data-nav="downloads">⇩ <span>我的文件</span></div>
       </div>
     </aside>
 
@@ -96,6 +96,19 @@
       </header>
 
       <section class="page" id="b2bHomePage"><div class="card"><div class="card-body"><h2>海外 B2B 管理后台</h2><p>商家列表、店铺列表和店员列表已迁至实时竞拍。</p><button class="btn primary" onclick="setView('list')">进入实时竞拍商家列表</button></div></div></section>
+      <section class="page" id="downloadsPage">
+        <div class="page-title"><h1>下载中心</h1></div>
+        <p class="subtle" style="margin:0 0 28px">查看导出任务进度，文件生成后7天内可从此处下载。仅显示本人创建的下载任务。</p>
+        <div class="card"><div class="card-body">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+            <label for="downloadType">导出类型：</label>
+            <select class="control" id="downloadType" style="width:180px;margin-right:8px"><option value="">全部类型</option><option>商家列表</option><option>标单列表</option><option>成交订单</option></select>
+            <button class="btn primary" id="downloadSearch">查询</button><button class="btn" id="downloadReset">重置</button><button class="btn" id="downloadRefresh">刷新</button>
+          </div>
+          <div class="table-wrap"><table class="table" style="min-width:850px"><thead><tr><th>导出编号</th><th>导出任务</th><th>操作时间</th><th>操作人</th><th>状态</th><th>操作</th></tr></thead><tbody id="downloadRows"></tbody></table></div>
+        </div></div>
+      </section>
+
       <section class="page active" id="listPage">
         <div class="page-title"><h1>商家列表</h1></div>
         <div class="alert"><span>ⓘ</span><div>展示两端全部统一账号，分别维护 FoneSquare 出价权限与门店端建拍权限。是否登录门店端、选择身份或完善资料不影响展示。</div></div>
@@ -716,6 +729,38 @@
     function validateShareBands(bands){if(!bands.length)return '至少保留一个价格段。';for(let i=0;i<bands.length;i++){const b=bands[i],values=Object.values(b);if(values.some(function(v){return !Number.isFinite(v)||v<0}))return '价格与金额、比例均须为非负数字。';if(b.max<=b.min)return '价格上限必须大于价格下限。';if(b.platformRate+b.storeRate+b.employeeRate>100)return '每个价格段的平台、店铺和员工比例合计不得超过 100%。';if(i&&b.min!==bands[i-1].max+1)return '价格段必须连续且不能重叠。'}return ''}
     function addShareBand(bands){const last=bands[bands.length-1],min=last?last.max+1:0;bands.push({min:min,max:min+999,platformFixed:0,platformRate:0,storeFixed:0,storeRate:0,employeeFixed:0,employeeRate:0})}
     users.forEach(function(u){if(u.ratioStatus==='完整'&&!u.shareRules)u.shareRules=cloneShareRuleSet(defaultShareRules)})
+    // Static prototype login identity; currentUser is the merchant being viewed, not the operator.
+    const downloadOperator = Object.freeze({id:'platform-ray', name:'贾瑞真'});
+    const downloadCreatedAt = Date.now();
+    const downloadTasks = Array.from({length:8}, function(_, index) {
+      const type = ['商家列表','标单列表','成交订单'][index % 3];
+      const source = type === '商家列表' ? merchantRecords().map(u => [u.id,u.name,u.account]) : type === '标单列表' ? bids.map(b => [b.id,b.status]) : orders.map(o => [o.id,o.status]);
+      return {id:'EX'+String(downloadCreatedAt-index*3600000)+String(index).padStart(4,'0'),ownerId:downloadOperator.id,type,
+        createdAt:downloadCreatedAt-index*3600000,headers:type === '商家列表' ? ['账号 ID','名称','统一账号'] : ['编号','状态'],rows:source};
+    });
+    function ownDownloadTasks() {
+      return downloadTasks.filter(task => task.ownerId === downloadOperator.id).sort((a,b) => b.createdAt-a.createdAt);
+    }
+    function renderDownloads() {
+      const type = $('#downloadType').value;
+      const tasks = ownDownloadTasks().filter(task => !type || task.type === type);
+      $('#downloadRows').innerHTML = tasks.map(task => {
+        const expired = Date.now()-task.createdAt >= 7*24*60*60*1000;
+        const time = new Date(task.createdAt).toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'});
+        return '<tr><td>'+esc(task.id)+'</td><td>'+esc(task.type)+'<div>记录数：'+task.rows.length+'</div></td><td>'+esc(time)+'</td><td>'+esc(downloadOperator.name)+'</td><td>'+tag(expired?'已过期':'已完成',expired?'gray':'green')+'</td><td>'+(expired?'—':'<button class="btn link" data-download-task="'+esc(task.id)+'">下载文件</button>')+'</td></tr>';
+      }).join('') || '<tr><td colspan="6" style="text-align:center;padding:48px;color:var(--muted)">暂无下载任务</td></tr>';
+    }
+    $('#downloadSearch').onclick = renderDownloads;
+    $('#downloadReset').onclick = function() { $('#downloadType').value='';renderDownloads(); };
+    $('#downloadRefresh').onclick = renderDownloads;
+    document.addEventListener('click', function(event) {
+      const button = event.target.closest('[data-download-task]');
+      if (!button) return;
+      const task = ownDownloadTasks().find(item => item.id === button.dataset.downloadTask);
+      if (!task) return;
+      if (Date.now()-task.createdAt >= 7*24*60*60*1000) {renderDownloads();return;}
+      exportCsv(task.type+'-'+task.id+'.csv',task.headers,task.rows);
+    });
     function toast(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2600)}
     function showModal(id){$('#overlay').classList.add('show');$(id).classList.add('show')}
     function closeModals(){$('#overlay').classList.remove('show');$$('.modal').forEach(x=>x.classList.remove('show'))}
@@ -723,9 +768,9 @@
       $$('.page').forEach(x=>x.classList.remove('active'));
       const page=$(`#${view}Page`);if(!page)return;
       page.classList.add('active');
-      const names={list:'商家列表',detail:'商家详情',add:'添加商家',store:'店铺列表',storeDetail:'店铺详情',staff:'店员列表',defaultRatio:'默认分账规则',mappingRule:'一级属性转换规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算单',settlementBillDetail:'结算单详情',settlementConfig:'结算配置',platformFundAccount:'平台资金账户'};
+      const names={downloads:'下载中心',list:'商家列表',detail:'商家详情',add:'添加商家',store:'店铺列表',storeDetail:'店铺详情',staff:'店员列表',defaultRatio:'默认分账规则',mappingRule:'一级属性转换规则',bidList:'标单列表',bidDetail:'标单详情',roundList:'竞拍轮次',roundDetail:'竞拍轮次详情',orderList:'成交订单',orderDetail:'订单详情',privacyList:'隐私结果记录',returnList:'退回记录',adjustmentList:'退款与售后记录',adjustmentCreate:'发起退款／售后',adjustmentDetail:'退款／售后详情',financeLedger:'资金台账',settlementBill:'结算单',settlementBillDetail:'结算单详情',settlementConfig:'结算配置',platformFundAccount:'平台资金账户'};
       const navKey={storeDetail:'store',detail:'list',add:'list',bidDetail:'bidList',roundDetail:'roundList',orderDetail:'orderList',privacyList:'orderList',returnList:'orderList',adjustmentList:'orderList',adjustmentCreate:'orderList',adjustmentDetail:'orderList',settlementBillDetail:'settlementBill'}[view]||view;
-      const group=view==='mappingRule'?'商品映射管理':['bidList','bidDetail','roundList','roundDetail'].includes(view)?'竞拍运营':['orderList','orderDetail','privacyList','returnList','adjustmentList','adjustmentCreate','adjustmentDetail'].includes(view)?'订单中心':['financeLedger','settlementBill','settlementBillDetail','settlementConfig','platformFundAccount'].includes(view)?'财务管理':view==='defaultRatio'?'系统配置':'商家管理';
+      const group=view==='downloads'?'下载中心':view==='mappingRule'?'商品映射管理':['bidList','bidDetail','roundList','roundDetail'].includes(view)?'竞拍运营':['orderList','orderDetail','privacyList','returnList','adjustmentList','adjustmentCreate','adjustmentDetail'].includes(view)?'订单中心':['financeLedger','settlementBill','settlementBillDetail','settlementConfig','platformFundAccount'].includes(view)?'财务管理':view==='defaultRatio'?'系统配置':'商家管理';
       $('#crumbGroup').textContent=group;$('#crumbCurrent').textContent=names[view]||view;
       $$('[data-nav]').forEach(x=>x.classList.toggle('active',x.dataset.nav===navKey));window.scrollTo(0,0)
     }
@@ -1013,6 +1058,7 @@
       if(deviceAction)handleDeviceAction(deviceAction.dataset.deviceAction,deviceAction.dataset.deviceId);
       if(shareRemove)removeShareBand(shareRemove.dataset.shareRemove,Number(shareRemove.dataset.index));
       if(nav){
+        if(nav.dataset.nav==='downloads'){renderDownloads();setView('downloads')}
         if(nav.dataset.nav==='list'){filtered=merchantRecords();renderList();setView('list')}
         if(nav.dataset.nav==='store'){filteredStores=[...stores];renderStoreList();setView('store')}
         if(nav.dataset.nav==='staff'){filteredStaff=staffAccounts();renderStaffList();setView('staff')}
