@@ -4,6 +4,9 @@ const KEY='fs-wholesale-reservation-v2',VERSION=2,stamp=()=>new Date().toLocaleS
 const esc=x=>String(x??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function pool(prefix,n,price,missing=0){return Array.from({length:n},(_,i)=>({id:prefix+'-'+(i+1),settlement:i<n-missing?price:null}));}
 function seed(){const at='2026/10/21 09:00:00';const defs=[
+ ['W010','iPhone 17','256G','A','大陆国行','白色',5200,12,156,350000,340000,0],
+ ['W011','iPhone 17','256G','A','大陆国行','黑色',5100,8,0,345000,0,0],
+ ['W012','iPhone 17','256G','A','大陆国行','粉色',5300,0,60,0,350000,0],
  ['W001','iPhone 16','128G','A','大陆国行','白色',4050,2,356,298000,285000,6],
  ['W002','iPhone 16','128G','A','大陆国行','黑色',3900,3,87,280000,275000,0],
  ['W003','iPhone 16','128G','A','大陆国行','粉色',4900,0,120,0,310000,0],
@@ -13,8 +16,8 @@ function seed(){const at='2026/10/21 09:00:00';const defs=[
  ['W007','iPhone 13','128G','B','大陆国行','绿色',1600,0,9,0,100000,0],
  ['W008','iPhone 15','128G','A','大陆国行','蓝色',2800,0,0,0,0,0],
  ['W009','iPhone 15 Plus','256G','B','国际版','黑色',3200,0,500,0,220000,0]
- ];return {schema:VERSION,revision:0,skus:defs.map((a,i)=>({id:a[0],code:'PMS-'+a[0],model:a[1],memory:a[2],grade:a[3],channel:a[4],color:a[5],price:a[6],currency:'HKD',site:'香港',enabled:true,fx:1.10,fxAt:at,spot:pool(a[0]+'-SPOT',a[7],a[9]),reserve:pool(a[0]+'-RES',a[8],a[10],a[11]),createdAt:at,updatedAt:at,report:'RPT-'+a[0],reportAt:at,photos:['背面','正面','侧面']})),logs:[]};}
-function read(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x?.schema===VERSION&&Array.isArray(x.skus))return x;}catch{}return seed();}
+ ];return {schema:VERSION,demoCasesVersion:1,revision:0,skus:defs.map((a,i)=>({id:a[0],code:'PMS-'+a[0],model:a[1],memory:a[2],grade:a[3],channel:a[4],color:a[5],price:a[6],currency:'HKD',site:'香港',enabled:true,fx:1.10,fxAt:at,spot:pool(a[0]+'-SPOT',a[7],a[9]),reserve:pool(a[0]+'-RES',a[8],a[10],a[11]),createdAt:at,updatedAt:at,report:'RPT-'+a[0],reportAt:at,photos:['背面','正面','侧面']})),logs:[]};}
+function read(){try{const x=JSON.parse(localStorage.getItem(KEY));if(x?.schema===VERSION&&Array.isArray(x.skus)){if(!x.demoCasesVersion){const examples=seed().skus.filter(s=>['W010','W011','W012'].includes(s.id)&&!x.skus.some(old=>old.id===s.id));x.skus.unshift(...examples);x.demoCasesVersion=1;try{localStorage.setItem(KEY,JSON.stringify(x));}catch{}}return x;}}catch{}return seed();}
 function commit(data){try{localStorage.setItem(KEY,JSON.stringify(data));w.dispatchEvent(new CustomEvent('wholesale-change'));return true;}catch{return false;}}
 const groupKey=s=>JSON.stringify([s.site,s.model,s.memory,s.grade,s.channel]);
 const title=s=>`${s.model} ${s.memory} / ${s.grade}级 / ${s.channel}`;
