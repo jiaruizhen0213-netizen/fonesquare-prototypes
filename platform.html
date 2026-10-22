@@ -2000,16 +2000,60 @@
     return {details:details,summaries:[...summaries.values()].map(function (summary) { return [summary.currency,summary.count,summary.accounts.size,summary.amount]; })};
   }
 
+  // Export schemas follow the finance PRD; list rendering and business state stay independent.
+  function downloadFinanceWorkbookV2(name, sheets) {
+    const workbook = XLSX.utils.book_new();
+    sheets.forEach(function (sheet) {
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([sheet.headers].concat(sheet.rows)), sheet.name);
+    });
+    XLSX.writeFile(workbook, name + '.xlsx');
+  }
+
   function exportStoreSettlementV2() {
     let data;
     try { data = buildStorePayoutExportV2(visibleSettlementsV2); } catch (error) { toast(error.message); return; }
     if (!data.details.length) { toast('当前筛选结果没有待打款结算单。'); return; }
-    const xml = function (value) { return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
-    const sheet = function (name,rows) { return '<Worksheet ss:Name="' + name + '"><Table>' + rows.map(function (row) { return '<Row>' + row.map(function (cell) { return '<Cell><Data ss:Type="' + (typeof cell === 'number' ? 'Number' : 'String') + '">' + xml(cell) + '</Data></Cell>'; }).join('') + '</Row>'; }).join('') + '</Table></Worksheet>'; };
-    const workbook = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' + sheet('打款明细',[['结算单号','站点','结算类型','涉及门店 ID / 名称','收款人银行登记名称','收款银行','银行账号','币种','结算金额','结算周期'],...data.details]) + sheet('请款汇总',[['币种','结算单数量','收款人数','请款总金额'],...data.summaries]) + '</Workbook>';
-    const url = URL.createObjectURL(new Blob([workbook],{type:'application/vnd.ms-excel;charset=utf-8'}));
-    const link = document.createElement('a'); link.href = url; link.download = '打款清单.xml'; link.click(); setTimeout(function () { URL.revokeObjectURL(url); },1000);
+    const details = data.details.map(function (row) {
+      const bill = visibleSettlementsV2.find(function (item) { return item.id === row[0]; });
+      const account = bill.accountSnapshot;
+      return [bill.period,bill.id,bill.type,bill.site,(bill.stores || []).map(function (store) { return store.id; }).join('、'),(bill.stores || []).map(function (store) { return store.name; }).join('、'),account.holder,account.bankName,String(account.accountNumber),bill.currency,bill.amount];
+    });
+    downloadFinanceWorkbookV2('打款清单',[
+      {name:'打款明细',headers:['结算周期','结算单号','结算方向/类型','站点','门店 ID','门店名称','收款人银行登记名称','收款银行','银行账号','币种','结算金额'],rows:details},
+      {name:'请款汇总',headers:['币种','结算单数量','收款人数','请款总金额'],rows:data.summaries}
+    ]);
     toast('已导出打款明细和请款汇总。');
+  }
+
+  function exportStorePrepaymentV2() {
+    if (currentStorePrepaymentTabV2 === 'ledger') {
+      const snapshots = prepaymentBalanceSnapshotsV2();
+      downloadFinanceWorkbookV2('预付金流水',[{name:'预付金流水',headers:['流水号','业务发生时间','门店名称','门店ID','站点','币种','流水类型','本次变动金额','变动前余额','变动后余额','资金账户流水号','资金发生时间'],rows:visiblePrepaymentOrdersV2.map(function (row) {
+        const snapshot = snapshots[row.id], bankMovement = hasPrepaymentBankMovementV2(row);
+        return [row.id,row.occurredAt,row.store,row.storeId,row.site,row.currency,row.type,row.amount,Number(snapshot.before.toFixed(2)),Number(snapshot.after.toFixed(2)),bankMovement ? row.reference : '—',bankMovement ? row.occurredAt : '—'];
+      })}]);
+    } else {
+      // Use the same filters and balance calculation as the summary list.
+      const keyword = ($('#prepaymentV2SummaryStore') || {}).value || '', site = ($('#prepaymentV2SummarySite') || {}).value || '', currency = ($('#prepaymentV2SummaryCurrency') || {}).value || '', balanceStatus = ($('#prepaymentV2BalanceStatus') || {}).value || '';
+      const rows = prepaymentSummariesV2.filter(function (item) { const dimension = prepaymentLedgerV2.find(function (row) { return row.storeId === item.storeId; }) || {site:'MY',currency:'MYR'}, balance = prepaymentBalanceV2(item); return (!keyword || (item.store + item.storeId).toLowerCase().includes(keyword.trim().toLowerCase())) && (!site || dimension.site === site) && (!currency || dimension.currency === currency) && (!balanceStatus || (balanceStatus === 'sufficient' ? balance >= 0 : balance < 0)); });
+      downloadFinanceWorkbookV2('门店预付金汇总',[{name:'门店预付金汇总',headers:['门店名称','门店ID','站点','币种','预付金余额','周期内已使用金额','退款恢复金额','取消退款扣回金额','已退金额','收款人银行登记名称','收款银行','银行账号'],rows:rows.map(function (item) {
+        const dimension = prepaymentLedgerV2.find(function (row) { return row.storeId === item.storeId; }) || {site:'MY',currency:'MYR'};
+        const bank = (stores.find(function (store) { return store.id === item.storeId; }) || {}).bank || {};
+        return [item.store,item.storeId,dimension.site,dimension.currency,Number(prepaymentBalanceV2(item).toFixed(2)),item.used,item.restored,item.clawback,item.returned,bank.holder || '—',bank.bankName || '—',bank.accountNumber == null ? '—' : String(bank.accountNumber)];
+      })}]);
+    }
+    toast('已导出当前页签。');
+  }
+
+  function exportFundsLedgerV2() {
+    const keyword = ($('#fundV2Keyword') || {}).value || '', type = ($('#fundV2Type') || {}).value || '', start = ($('#fundV2BusinessStart') || {}).value || '', end = ($('#fundV2BusinessEnd') || {}).value || '', site = ($('#fundV2Site') || {}).value || '', currency = ($('#fundV2Currency') || {}).value || '', receipt = ($('#fundV2Receipt') || {}).value || '', settlement = ($('#fundV2Settlement') || {}).value || '';
+    const rows = fundLedgerRowsV2.filter(function (row) { const date = row.businessAt.slice(0,10); return (!keyword || (row.id + row.order).toLowerCase().includes(keyword.trim().toLowerCase())) && (!type || row.type === type) && (!start || date >= start) && (!end || date <= end) && (!site || (row.site || 'MY') === site) && (!currency || (row.currency || 'MYR') === currency) && (!receipt || row.receipt === receipt) && (!settlement || row.settlement === settlement); });
+    downloadFinanceWorkbookV2('资金台账',[{name:'资金台账',headers:['资金明细号','订单号','业务类型','业务时间','站点','币种','业务归属门店','完整中标价','卖家应得金额','门店分成','店员分成','平台分成','当前应结算金额','预付金影响','回收商收款状态','关联结算单号','结算单状态'],rows:rows.map(function (row) {
+      const order = orders.find(function (item) { return item.id === row.order; });
+      const bills = settlementBillsV2.filter(function (bill) { return bill.billStatus !== '已作废' && bill.sources.some(function (source) { return source.order === row.order; }); });
+      return [row.id,row.order,row.type,row.businessAt,row.site || 'MY',row.currency || 'MYR',row.storeName || (order && order.store) || '—',row.winning,row.seller,row.store,row.staff,row.platform,row.current,row.prepayment,row.receipt,bills.map(function (bill) { return bill.id; }).join('、') || '—',row.settlement];
+    })}]);
+    toast('已按当前筛选导出资金台账。');
   }
 
 
@@ -2278,7 +2322,8 @@
     if (action === 'run-settlement-preview-v2') openBusinessModal('结算预览','<div class="alert success"><span>✓</span><div>预览完成：本次将生成平台应收与平台应付结算单，不读取取货或送达状态。</div></div>','关闭',function () { closeModals(); },'primary');
     if (action === 'rerun-settlement-v2') { settlementConfigV2.lastRun='2026-09-02 11:25：补跑完成，无新增结算单'; renderSettlementConfigV2(); toast('补跑完成。'); }
     if (action === 'export-settlement') exportStoreSettlementV2();
-    else if (action === 'export-ledger') exportCsv('资金台账.csv',['资金明细号','订单号','业务类型','完整中标价','卖家应得金额','门店分成','店员分成','平台分成','当前应结算金额'],fundLedgerRowsV2.filter(function (row) { const date = row.businessAt.slice(0,10); return (!$('#fundV2Keyword').value || (row.id + row.order).toLowerCase().includes($('#fundV2Keyword').value.trim().toLowerCase())) && (!$('#fundV2Type').value || row.type === $('#fundV2Type').value) && (!$('#fundV2BusinessStart').value || date >= $('#fundV2BusinessStart').value) && (!$('#fundV2BusinessEnd').value || date <= $('#fundV2BusinessEnd').value) && (!$('#fundV2Site').value || (row.site || 'MY') === $('#fundV2Site').value) && (!$('#fundV2Currency').value || (row.currency || 'MYR') === $('#fundV2Currency').value) && (!$('#fundV2Receipt').value || row.receipt === $('#fundV2Receipt').value) && (!$('#fundV2Settlement').value || row.settlement === $('#fundV2Settlement').value); }).map(function (row) { return [row.id,row.order,row.type,row.winning,row.seller,row.store,row.staff,row.platform,row.current]; }));
+    else if (action === 'export-ledger') exportFundsLedgerV2();
+    else if (action === 'export-prepayment') exportStorePrepaymentV2();
     else if (action && action.startsWith('export-')) toast('导出任务已提交（原型演示）。');
   });
 
