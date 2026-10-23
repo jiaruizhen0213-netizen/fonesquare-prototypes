@@ -520,6 +520,7 @@
   </style>
   <link rel="stylesheet" href="order-list-cards.css?v=20260920-2" />
   <link rel="stylesheet" href="detail-report.css?v=20260920-2">
+  <link rel="stylesheet" href="quick-inquiry.css?v=20261023-1">
 </head>
 <body>
   <main class="phone-shell" aria-label="供货端门店端与店员 App 原型">
@@ -574,6 +575,8 @@
         <article class="role-case"><p class="section-kicker">门店端</p><h2>商家主账号</h2><ul><li>商家主账号可查看本商家下属全部店铺、全部操作人的标单和订单</li><li>查看取货、隐私、退回、店铺收益、商家分成和所属员工佣金</li><li>可按规则为本商家有效店铺发起建拍</li><li>商家主账号不能替其他实际建拍操作人记录卖家决定</li></ul><button class="wide-button secondary" type="button" data-role-entry="merchant">以商家主账号进入</button></article>
       </div>
     </section>
+
+    <section class="page with-actions qi-store" data-page="quickInquiry" id="quickInquiryPage" data-no-i18n></section>
 
     <section class="page with-actions" data-page="inspection" id="inspectionPage">
       <header class="topbar"><button class="icon-button" type="button" data-back="scan" aria-label="返回">‹</button><h1>填写质检结果</h1><button class="icon-button" id="inspectionScanEntry" type="button" aria-label="重新扫描设备">⌗</button></header>
@@ -2203,5 +2206,8 @@
   <script src="auction-detail-alignment.js?v=20260920-2"></script>
   <script src="store-early-end.js?v=20261020-2"></script>
   <script src="order-details.js?v=20261020-1"></script>
+  <script src="platform-pms-mapping.js?v=20260921-1"></script>
+  <script src="quick-inquiry-core.js?v=20261023-1"></script>
+  <script src="store-quick-inquiry.js?v=20261023-1"></script>
 </body>
 </html>
