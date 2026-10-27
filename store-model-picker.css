@@ -1,0 +1,41 @@
+/* Brand/model chooser, scoped to the store quick-inquiry screen. */
+#quickInquiryPage.qi-selecting-model{padding:0;min-height:0;height:100dvh;background:#fff;overflow:hidden}
+#quickInquiryPage.qi-selecting-model.active{display:flex;flex-direction:column}
+.qi-picker-header{display:flex;align-items:center;gap:10px;flex-shrink:0;min-height:76px;padding:14px 14px 14px 8px;background:#fff0e7}
+.qi-picker-header>.icon-button{flex-shrink:0;width:29px;font-size:30px;color:#342a25}
+.qi-picker-header .qi-search{flex:1;min-width:0;border:0;border-radius:24px;padding:10px 14px;background:#fffaf7;box-shadow:none}
+.qi-picker-header .qi-search input{font-size:14px;line-height:22px}
+.qi-picker-header .qi-demo{font-size:8px;padding:4px 0;color:#b78062;background:none;letter-spacing:.5px}
+.qi-search-clear{border:0;background:#ece5df;color:#918579;flex-shrink:0;width:19px;height:19px;border-radius:50%;font-size:16px;line-height:16px;padding:0}
+.qi-category-tabs{display:flex;align-items:center;gap:8px;padding:13px 12px;border-bottom:1px solid #f1f2f3;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.qi-category-tabs::-webkit-scrollbar,.qi-series-tabs::-webkit-scrollbar{display:none}
+.qi-category-tabs button{white-space:nowrap;border:0;background:#f3f4f5;color:#8a8d93;border-radius:20px;padding:8px 15px;font-size:13px;line-height:18px}
+.qi-category-tabs button.selected{background:#ffede3;color:#e34d16;font-weight:650}
+.qi-picker-body{display:flex;flex:1;min-height:0;overflow:hidden}
+.qi-brand-rail{width:86px;flex-shrink:0;background:#f6f7f8;overflow-y:auto;scrollbar-width:none}
+.qi-brand-rail button{position:relative;width:100%;padding:22px 8px;border:0;background:none;font-size:15px;color:#5a5e66;line-height:20px;text-align:center}
+.qi-brand-rail button.selected{background:#fff;color:#252932;font-weight:650}
+.qi-brand-rail button.selected:before{content:'';position:absolute;left:0;top:21px;width:3px;height:23px;background:#ff5b23}
+.qi-model-pane{display:flex;flex-direction:column;flex:1;min-width:0;min-height:0;position:relative}
+.qi-series-header{display:flex;align-items:center;border-bottom:1px solid #f5f5f6;padding:15px 0 13px 12px;flex-shrink:0}
+.qi-series-tabs{display:flex;gap:8px;overflow:auto;min-width:0;scrollbar-width:none;flex:1}
+.qi-series-tabs button,.qi-series-menu button{font-size:11px;white-space:nowrap;padding:7px 9px;line-height:17px;border:1px solid #e9eaed;background:#f6f6f7;color:#7d8188;border-radius:4px}
+.qi-series-tabs button.selected,.qi-series-menu button.selected{border-color:#ffdbc6;background:#fff9f5;color:#e35b1d;font-weight:600}
+.qi-series-expand{width:29px;flex-shrink:0;align-self:stretch;border:0;background:#fff;color:#93979e;font-size:18px;padding:0;box-shadow:-5px 0 8px #ffffffcc}
+.qi-series-menu{position:absolute;top:62px;left:0;right:0;z-index:3;padding:16px;background:#fff;box-shadow:0 10px 15px #26304312;border-bottom:1px solid #edf0f3}
+.qi-series-menu>span{display:block;font-size:11px;color:#969ba5;margin-bottom:12px}
+.qi-series-menu button{margin:0 7px 8px 0}
+.qi-model-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 14px;scrollbar-width:thin;scrollbar-color:#e4e6ea transparent;position:relative}
+.qi-series-group h2{margin:0;padding:23px 0 10px;font-size:15px;line-height:22px;font-weight:650;color:#373b42}
+.qi-picker-model{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;border:0;border-bottom:1px solid #f1f2f3;background:#fff;color:#4d535d;padding:20px 0;font-size:13px;line-height:20px}
+.qi-picker-model:hover,.qi-picker-model:focus-visible{background:#fffbf8}
+.qi-picker-model .qi-model-arrow{font-size:17px;color:#c2c6cd}
+.qi-picker-model small{display:block;font-size:10px;color:#a0a6ae;margin-top:5px}
+.qi-picker-note{font-size:10px;color:#adb2ba;line-height:1.8;margin:25px 0 14px;text-align:center}
+.qi-category-empty{padding:55px 15px;font-size:13px;line-height:1.8}
+.qi-category-empty small{font-size:11px}
+.qi-search-results{display:block;overflow:auto;padding:0 20px}
+.qi-search-count{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#5e6570;padding:22px 0 8px}
+.qi-search-count span{font-weight:400;color:#a0a6af;font-size:11px}
+@media(max-width:350px){.qi-picker-header{gap:6px;padding-right:10px}.qi-category-tabs{gap:6px;padding-left:9px;padding-right:9px}.qi-category-tabs button{font-size:12px;padding:7px 12px}.qi-brand-rail{width:74px}.qi-model-scroll{padding:0 12px}.qi-series-group h2{font-size:14px}}
+.qi-series-expand{font-size:0}.qi-series-expand:after{content:'';display:block;width:5px;height:5px;margin:auto;border-right:1.5px solid #9ca2ac;border-bottom:1.5px solid #9ca2ac;transform:rotate(45deg)}.qi-series-expand[aria-expanded="true"]:after{transform:rotate(225deg)}
