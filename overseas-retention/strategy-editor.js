@@ -168,7 +168,7 @@
     if(!range||!template)return {label:'请先选择货品范围和质量模板',items:[],estimatedPrices:[],disabledReason:'请先选择货品范围和质量模板'};
     const items=snapshot.filter(item=>item.available&&item.model===range.model&&item.memory===range.memory&&item.grade===template.grade&&range.channels.includes(item.channel)&&(!range.colors.length||range.colors.includes(item.color)));
     return {label:[range.model,range.memory,'海外等级 '+template.grade,'海外购买渠道 '+range.channels.join(' / '),range.colors.length?'颜色 '+range.colors.join(' / '):'全色'].join(' · '),
-      currency:'CNY',items:items.map(({id,price})=>({id,price})),
+      currency:'CNY',items:items.map(({id,price,color})=>({id,price,color})),
       estimatedPrices:range.channels.map(channel=>({channel,price:priceCatalog.get([range.model,range.memory,template.grade,channel,fields.country.value,'CNY'].join('|'))??null})),
       initialPrice:fields.base.value===''?undefined:Number(fields.base.value),snapshotTime,priceTime};
   }

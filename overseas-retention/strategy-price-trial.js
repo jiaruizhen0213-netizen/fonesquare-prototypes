@@ -53,6 +53,7 @@
         <summary>试算说明</summary>
         <div class="spt-details-content">
           <p class="spt-description">使用符合当前策略条件的可留货库存已有结算价，无价格商品跳过。实际留货时会重新取价。</p>
+          <p class="spt-description">结算均价 = 当前价格以内商品的结算价合计 ÷ 台数；各颜色按对应商品计算。</p>
           <p class="spt-channels" data-trial-role="channels"></p>
           <p class="spt-times" data-trial-role="times"></p>
         </div>
@@ -64,7 +65,8 @@
         </div>
         <div class="spt-controls">
           <div class="spt-number-field"><label for="${id}-price">试算价格（元）</label><input data-trial-role="price" id="${id}-price" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="${id}-hint"></div>
-          <div class="spt-result"><span class="spt-result-threshold">结算价 ≤ <strong data-trial-role="selected"></strong></span><span class="spt-result-count">符合价格的库存 <strong data-trial-role="count">0</strong> 台</span></div>
+          <div class="spt-result"><span class="spt-result-threshold">结算价 ≤ <strong data-trial-role="selected"></strong></span><span class="spt-result-count">符合价格的库存 <strong data-trial-role="count">0</strong> 台</span><span class="spt-result-average">结算均价 <strong data-trial-role="average">—</strong></span></div>
+          <div class="spt-color-breakdown"><table class="spt-color-table" aria-label="按颜色拆分的库存数量与结算均价"><thead><tr><th scope="col">颜色</th><th scope="col">台数</th><th scope="col">结算均价</th></tr></thead><tbody data-trial-role="color-rows"></tbody></table></div>
           <button type="button" data-trial-role="apply" class="spt-apply">应用价格</button>
           <p id="${id}-hint" class="spt-hint" data-trial-role="hint"></p>
         </div>
@@ -80,6 +82,7 @@
     const applyButton = element('apply');
     const chart = element('chart');
     let context = {};
+    let pricedItems = [];
     let prices = [];
     let reference = null;
     let selected = 0;
@@ -103,6 +106,53 @@
       return !context.disabledReason && prices.length > 0;
     }
 
+    function averagePrice(totalCents, count) {
+      if (!count) return '—';
+      return '¥' + (Math.round(totalCents / count) / 100).toLocaleString('zh-CN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function syncColorBreakdown(count) {
+      const body = element('color-rows');
+      body.replaceChildren();
+      element('average').textContent = '—';
+      if (!enabled() || !inputValid || !count) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 3;
+        cell.className = 'spt-color-empty';
+        cell.textContent = context.disabledReason ? '请先选择有效的策略条件'
+          : !inputValid ? '请输入有效价格'
+          : !prices.length ? '暂无有价格的库存' : '暂无符合价格的库存';
+        row.append(cell);
+        body.append(row);
+        return;
+      }
+      const colors = new Map();
+      let totalCents = 0;
+      // This is the same inclusive prefix used by the chart and total count.
+      for (let index = 0; index < count; index++) {
+        const item = pricedItems[index];
+        totalCents += item.cents;
+        const group = colors.get(item.color) || { count: 0, totalCents: 0 };
+        group.count++;
+        group.totalCents += item.cents;
+        colors.set(item.color, group);
+      }
+      element('average').textContent = averagePrice(totalCents, count);
+      colors.forEach((group, color) => {
+        const row = document.createElement('tr');
+        [color, String(group.count), averagePrice(group.totalCents, group.count)].forEach(value => {
+          const cell = document.createElement('td');
+          cell.textContent = value;
+          row.append(cell);
+        });
+        body.append(row);
+      });
+    }
+
     function updateSelectionGraphic() {
       if (!geometry || !selectionGroup) return;
       selectionGroup.replaceChildren();
@@ -121,8 +171,9 @@
       const count = countWithin(prices, selected);
       element('selected').textContent = inputValid ? money(selected) : '—';
       element('count').textContent = inputValid ? String(count) : '—';
+      syncColorBreakdown(count);
       slider.value = String(selected / 100);
-      slider.setAttribute('aria-valuetext', money(selected) + '，' + count + ' 台');
+      slider.setAttribute('aria-valuetext', inputValid ? money(selected) + '，' + count + ' 台' : '请输入有效价格');
       if (!keepInput) priceInput.value = String(selected / 100);
       applyButton.disabled = !enabled() || reference === null || !inputValid;
       priceInput.setAttribute('aria-invalid', String(!inputValid));
@@ -299,7 +350,11 @@
       if (destroyed) return;
       context = nextContext || {};
       const items = Array.isArray(context.items) ? context.items : [];
-      prices = items.map(item => toCents(item.price)).filter(value => value !== null).sort((a,b) => a-b);
+      pricedItems = items.map(item => ({
+        cents: toCents(item.price),
+        color: String(item.color == null ? '' : item.color).trim() || '未标注颜色'
+      })).filter(item => item.cents !== null).sort((a,b) => a.cents - b.cents);
+      prices = pricedItems.map(item => item.cents);
       const estimates = Array.isArray(context.estimatedPrices) ? context.estimatedPrices : [];
       const estimateValues = estimates.map(estimate => toCents(estimate.price));
       reference = estimateValues.length && estimateValues.every(value => value !== null && value > 0)

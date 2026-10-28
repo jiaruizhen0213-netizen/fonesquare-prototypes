@@ -167,6 +167,102 @@ async function moduleAcceptance() {
   console.log('PASS price trial module: exact cumulative counts, ties, missing prices, channel minimum, pointer/range crossing, guarded application, context replacement, empty scope, 320/360/720 chart geometry and teardown');
 }
 
+async function colorStatisticsAcceptance() {
+  const { dom, w, errors } = environment('<section id="trial"></section>');
+  w.eval(fs.readFileSync(chartFile, 'utf8'));
+  const container = w.document.getElementById('trial');
+  const role = name => container.querySelector('[data-trial-role="' + name + '"]');
+  const groups = () => Object.fromEntries([...role('color-rows').rows]
+    .filter(row => row.cells.length === 3)
+    .map(row => [row.cells[0].textContent, [Number(row.cells[1].textContent), row.cells[2].textContent]]));
+  const checkCount = expected => {
+    assert.equal(Number(role('count').textContent), expected);
+    assert.equal(Object.values(groups()).reduce((sum, group) => sum + group[0], 0), expected,
+      'The color counts must sum to the same inventory prefix as the total and chart');
+    if (role('chart').querySelector('[data-count]')) {
+      assert.equal(Number(role('chart').querySelector('[data-count]').dataset.count), expected);
+    }
+  };
+  const applied = [];
+  const context = {
+    initialPrice: 300,
+    estimatedPrices: [{ channel: 'CH', price: 300 }],
+    items: [
+      { price: 100, color: '蓝色' }, { price: 100, color: '蓝色' }, { price: 100, color: '蓝色' },
+      { price: 300, color: '黄色' }, { price: 300, color: '白色' },
+      { price: 200 }, { price: 200, color: '  ' },
+      { price: 450, color: '绿色' }, { price: 500, color: '<img src=x onerror=alert(1)>' },
+      { price: null, color: '紫色' }, { price: '', color: '紫色' },
+      { price: -1, color: '紫色' }, { price: 'invalid', color: '紫色' }
+    ]
+  };
+  const trial = w.RetentionPriceTrial.mount(container, context, value => applied.push(value));
+  checkCount(7);
+  assert.equal(role('average').textContent, '¥185.71', 'Overall mean weights each actual item, not each color equally');
+  assert.deepEqual(groups(), {
+    '蓝色': [3, '¥100.00'], '未标注颜色': [2, '¥200.00'],
+    '黄色': [1, '¥300.00'], '白色': [1, '¥300.00']
+  });
+  assert.equal(role('missing').textContent, '4', 'Missing and invalid prices never enter the group counts or averages');
+  role('apply').click();
+  assert.equal(applied.length, 1);
+  assert.equal(applied[0].base, 300);
+  assert.equal(applied[0].ceiling, 300);
+
+  change(w, role('slider'), 200);
+  checkCount(5);
+  assert.equal(role('average').textContent, '¥140.00');
+  assert.deepEqual(groups(), { '蓝色': [3, '¥100.00'], '未标注颜色': [2, '¥200.00'] },
+    'Dragging removes colors with no qualifying inventory');
+  change(w, role('price'), 500);
+  checkCount(9);
+  assert.equal(role('average').textContent, '¥250.00');
+  assert.deepEqual(groups()['<img src=x onerror=alert(1)>'], [1, '¥500.00']);
+  assert.equal(role('color-rows').querySelector('img'), null, 'Color names are rendered as plain text');
+  role('apply').click();
+  assert.equal(applied.length, 1, 'Statistics above the estimate do not bypass apply-price safeguards');
+  assert.equal(role('message').textContent, '超出预估售价请确认后手动输入');
+
+  change(w, role('price'), 0);
+  checkCount(0);
+  assert.equal(role('average').textContent, '—');
+  assert.match(role('color-rows').textContent, /暂无符合价格的库存/);
+  change(w, role('price'), 300);
+  change(w, role('price'), '');
+  assert.equal(role('average').textContent, '—');
+  assert.equal(role('count').textContent, '—');
+  assert.deepEqual(groups(), {});
+  assert.match(role('color-rows').textContent, /请输入有效价格/);
+  assert.equal(role('chart').querySelector('[data-count]'), null, 'Invalid input also clears the chart selection');
+  assert.equal(role('apply').disabled, true);
+
+  trial.update({ ...context, initialPrice: 1.01, items: [
+    { price: 1, color: '蓝色' }, { price: 1.01, color: '蓝色' }, { price: 0 }
+  ] });
+  checkCount(3);
+  assert.equal(role('average').textContent, '¥0.67');
+  assert.deepEqual(groups(), { '未标注颜色': [1, '¥0.00'], '蓝色': [2, '¥1.01'] },
+    'A fractional-cent mean rounds to two decimals, and explicit zero prices remain valid');
+  change(w, role('slider'), 0);
+  checkCount(1);
+  assert.equal(role('average').textContent, '¥0.00');
+  trial.update({ ...context, initialPrice: 650, items: [{ price: 650, color: '绿色' }] });
+  checkCount(1);
+  assert.equal(role('average').textContent, '¥650.00');
+  assert.deepEqual(groups(), { '绿色': [1, '¥650.00'] }, 'Context replacement cannot keep previous colors or amounts');
+  trial.update({ ...context, items: [] });
+  checkCount(0);
+  assert.equal(role('average').textContent, '—');
+  assert.match(role('color-rows').textContent, /暂无有价格的库存/);
+  trial.update({ ...context, disabledReason: '请先选择货品范围和质量模板' });
+  assert.equal(role('average').textContent, '—');
+  assert.deepEqual(groups(), {}, 'An incomplete scope must not present stale per-color results');
+  trial.destroy();
+  assert.deepEqual(errors, []);
+  dom.window.close();
+  console.log('PASS color statistics: inclusive thresholds, weighted mean, missing price/color handling, rounding, reactive grouping, invalid/empty scope and apply-price safeguards');
+}
+
 async function integrationAcceptance() {
   // The full-page fixture keeps the existing prototype renderers and data together.
   const { dom, w, errors } = environment(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), true);
@@ -195,6 +291,11 @@ async function integrationAcceptance() {
   change(w, $('#se-target'), 1);
   change(w, role('slider'), 4500);
   assert(number('count') > 1, 'Changing a target quantity cannot truncate the inventory trial');
+  const colorRows = [...role('color-rows').rows];
+  assert(colorRows.length > 1, 'The editor forwards actual item colors to the trial');
+  assert(colorRows.every(row => row.cells.length === 3 && row.cells[0].textContent !== '未标注颜色'));
+  assert.equal(colorRows.reduce((sum, row) => sum + Number(row.cells[1].textContent), 0), number('count'));
+  assert(number('average') > 0 && number('average') <= 4500);
   role('apply').click();
   assert.equal($('#se-base').value, '4500');
   assert.equal($('#se-ceiling').value, '4580');
@@ -309,5 +410,6 @@ async function integrationAcceptance() {
 
 (async () => {
   await moduleAcceptance();
+  await colorStatisticsAcceptance();
   if (!process.argv.includes('--module-only')) await integrationAcceptance();
 })().catch(error => { console.error(error); process.exitCode = 1; });
