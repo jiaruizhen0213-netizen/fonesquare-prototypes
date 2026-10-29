@@ -53,7 +53,9 @@
         <summary>试算说明</summary>
         <div class="spt-details-content">
           <p class="spt-description">使用符合当前策略条件的可留货库存已有结算价，无价格商品跳过。实际留货时会重新取价。</p>
-          <p class="spt-description">结算均价 = 当前价格以内商品的结算价合计 ÷ 台数；各颜色按对应商品计算。</p>
+          <p class="spt-description">结算均价（CN）= 当前价格以内商品的人民币结算价合计 ÷ 台数；各颜色按对应商品计算。</p>
+          <p class="spt-description">结算均价（HK）按万里汇人民币兑港币汇率换算，使用未舍入的人民币均价，结果保留两位小数。整体及各颜色使用同一汇率；试算价格、基准价和最高价仍为人民币。</p>
+          <p class="spt-times" data-trial-role="fx-time"></p>
           <p class="spt-channels" data-trial-role="channels"></p>
           <p class="spt-times" data-trial-role="times"></p>
         </div>
@@ -65,8 +67,10 @@
         </div>
         <div class="spt-controls">
           <div class="spt-number-field"><label for="${id}-price">试算价格（元）</label><input data-trial-role="price" id="${id}-price" type="number" min="0" step="0.01" inputmode="decimal" aria-describedby="${id}-hint"></div>
-          <div class="spt-result"><span class="spt-result-threshold">结算价 ≤ <strong data-trial-role="selected"></strong></span><span class="spt-result-count">符合价格的库存 <strong data-trial-role="count">0</strong> 台</span><span class="spt-result-average">结算均价 <strong data-trial-role="average">—</strong></span></div>
-          <div class="spt-color-breakdown"><table class="spt-color-table" aria-label="按颜色拆分的库存数量与结算均价"><thead><tr><th scope="col">颜色</th><th scope="col">台数</th><th scope="col">结算均价</th></tr></thead><tbody data-trial-role="color-rows"></tbody></table></div>
+          <div class="spt-result"><span class="spt-result-threshold">结算价 ≤ <strong data-trial-role="selected"></strong></span><span class="spt-result-count">符合价格的库存 <strong data-trial-role="count">0</strong> 台</span></div>
+          <div class="spt-result-averages"><span class="spt-result-average">结算均价（CN）<strong data-trial-role="average">—</strong></span><span class="spt-result-average">结算均价（HK）<strong data-trial-role="average-hk">—</strong></span></div>
+          <div class="spt-color-breakdown"><table class="spt-color-table" aria-label="按颜色拆分的库存数量与人民币、港币结算均价"><thead><tr><th scope="col">颜色</th><th scope="col">台数</th><th scope="col">结算均价<span>（CN）</span></th><th scope="col">结算均价<span>（HK）</span></th></tr></thead><tbody data-trial-role="color-rows"></tbody></table></div>
+          <p class="spt-fx-rate" data-trial-role="fx-rate"></p>
           <button type="button" data-trial-role="apply" class="spt-apply">应用价格</button>
           <p id="${id}-hint" class="spt-hint" data-trial-role="hint"></p>
         </div>
@@ -85,6 +89,7 @@
     let pricedItems = [];
     let prices = [];
     let reference = null;
+    let hkRate = null;
     let selected = 0;
     let lower = 0;
     let upper = 10000;
@@ -106,9 +111,14 @@
       return !context.disabledReason && prices.length > 0;
     }
 
-    function averagePrice(totalCents, count) {
-      if (!count) return '—';
-      return '¥' + (Math.round(totalCents / count) / 100).toLocaleString('zh-CN', {
+    function averagePrice(totalCents, count, rate = 1, symbol = '¥') {
+      if (!count || rate === null) return '—';
+      // Convert the unrounded per-item mean; do not convert the displayed CN mean.
+      const convertedCents = totalCents / count * rate;
+      if (!Number.isFinite(convertedCents)) return '—';
+      // Correct binary float noise at half-cent boundaries (for example 1 × 1.005).
+      const roundedCents = Math.round(convertedCents + Number.EPSILON * convertedCents);
+      return symbol + (roundedCents / 100).toLocaleString('zh-CN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
@@ -118,10 +128,11 @@
       const body = element('color-rows');
       body.replaceChildren();
       element('average').textContent = '—';
+      element('average-hk').textContent = '—';
       if (!enabled() || !inputValid || !count) {
         const row = document.createElement('tr');
         const cell = document.createElement('td');
-        cell.colSpan = 3;
+        cell.colSpan = 4;
         cell.className = 'spt-color-empty';
         cell.textContent = context.disabledReason ? '请先选择有效的策略条件'
           : !inputValid ? '请输入有效价格'
@@ -142,9 +153,10 @@
         colors.set(item.color, group);
       }
       element('average').textContent = averagePrice(totalCents, count);
+      element('average-hk').textContent = averagePrice(totalCents, count, hkRate, 'HK$');
       colors.forEach((group, color) => {
         const row = document.createElement('tr');
-        [color, String(group.count), averagePrice(group.totalCents, group.count)].forEach(value => {
+        [color, String(group.count), averagePrice(group.totalCents, group.count), averagePrice(group.totalCents, group.count, hkRate, 'HK$')].forEach(value => {
           const cell = document.createElement('td');
           cell.textContent = value;
           row.append(cell);
@@ -349,6 +361,14 @@
     function update(nextContext) {
       if (destroyed) return;
       context = nextContext || {};
+      const quote = context.fxRate || {};
+      const rate = typeof quote.rate === 'number' || typeof quote.rate === 'string' ? Number(quote.rate) : NaN;
+      hkRate = quote.provider === 'WorldFirst' && quote.from === 'CNY' && quote.to === 'HKD'
+        && (!context.currency || context.currency === 'CNY') && Number.isFinite(rate) && rate > 0 ? rate : null;
+      element('fx-rate').textContent = hkRate === null ? '万里汇汇率暂未取得，港币均价显示“—”'
+        : '万里汇汇率' + (quote.demo ? '（演示）' : '') + '：1 CNY = ' + hkRate + ' HKD';
+      element('fx-time').textContent = hkRate !== null && quote.updatedAt
+        ? (quote.demo ? '演示汇率时间 ' : '汇率更新时间 ') + quote.updatedAt : '';
       const items = Array.isArray(context.items) ? context.items : [];
       pricedItems = items.map(item => ({
         cents: toCents(item.price),

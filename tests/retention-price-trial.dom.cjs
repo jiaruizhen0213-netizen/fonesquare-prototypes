@@ -173,7 +173,7 @@ async function colorStatisticsAcceptance() {
   const container = w.document.getElementById('trial');
   const role = name => container.querySelector('[data-trial-role="' + name + '"]');
   const groups = () => Object.fromEntries([...role('color-rows').rows]
-    .filter(row => row.cells.length === 3)
+    .filter(row => row.cells.length === 4)
     .map(row => [row.cells[0].textContent, [Number(row.cells[1].textContent), row.cells[2].textContent]]));
   const checkCount = expected => {
     assert.equal(Number(role('count').textContent), expected);
@@ -263,6 +263,81 @@ async function colorStatisticsAcceptance() {
   console.log('PASS color statistics: inclusive thresholds, weighted mean, missing price/color handling, rounding, reactive grouping, invalid/empty scope and apply-price safeguards');
 }
 
+async function exchangeRateAcceptance() {
+  const { dom, w, errors } = environment('<section id="trial"></section>');
+  w.eval(fs.readFileSync(chartFile, 'utf8'));
+  const container = w.document.getElementById('trial');
+  const role = name => container.querySelector('[data-trial-role="' + name + '"]');
+  const groups = () => Object.fromEntries([...role('color-rows').rows]
+    .filter(row => row.cells.length === 4)
+    .map(row => [row.cells[0].textContent, [...row.cells].slice(1).map(cell => cell.textContent)]));
+  const fxRate = { provider: 'WorldFirst', from: 'CNY', to: 'HKD', rate: 1.09,
+    updatedAt: '2026-10-29 08:00:00', demo: true };
+  const context = { currency: 'CNY', initialPrice: 300, fxRate,
+    estimatedPrices: [{ channel: 'CH', price: 500 }],
+    items: [{ price: 100, color: '蓝色' }, { price: 100, color: '蓝色' },
+      { price: 300, color: '黑色' }, { price: null, color: '黄色' }] };
+  const applied = [];
+  const trial = w.RetentionPriceTrial.mount(container, context, value => applied.push(value));
+  assert.equal(role('average').textContent, '¥166.67');
+  assert.equal(role('average-hk').textContent, 'HK$181.67', 'HK overall mean weights items, not color means');
+  assert.deepEqual(groups(), {
+    '蓝色': ['2', '¥100.00', 'HK$109.00'], '黑色': ['1', '¥300.00', 'HK$327.00']
+  }, 'Every color gets its own HK mean using the same quote');
+  assert.match(role('fx-rate').textContent, /万里汇/);
+  assert.match(role('fx-rate').textContent, /1\.09/);
+  assert.match(role('fx-rate').textContent, /演示/);
+  change(w, role('slider'), 100);
+  assert.equal(role('average-hk').textContent, 'HK$109.00');
+  assert.deepEqual(groups(), { '蓝色': ['2', '¥100.00', 'HK$109.00'] });
+  role('apply').click();
+  assert.deepEqual(JSON.parse(JSON.stringify(applied)), [{ base: 100, ceiling: 500 }],
+    'HK display must not change the CNY prices applied to the strategy');
+  change(w, role('price'), 0);
+  assert.equal(role('average-hk').textContent, '—');
+  assert.equal(role('color-rows').rows[0].cells[0].colSpan, 4);
+  change(w, role('price'), '');
+  assert.equal(role('average-hk').textContent, '—', 'Invalid selection clears HK along with CN');
+
+  trial.update({ ...context, initialPrice: 1.01,
+    fxRate: { ...fxRate, rate: 1.2345 },
+    items: [{ price: 1, color: '蓝色' }, { price: 1.01, color: '蓝色' }] });
+  assert.equal(role('average').textContent, '¥1.01');
+  assert.equal(role('average-hk').textContent, 'HK$1.24',
+    'Multiply the unrounded source average before rounding HK, not the displayed CN mean');
+  assert.deepEqual(groups()['蓝色'], ['2', '¥1.01', 'HK$1.24']);
+
+  trial.update({ ...context, initialPrice: 1,
+    fxRate: { ...fxRate, rate: 1.005 }, items: [{ price: 1, color: '蓝色' }] });
+  assert.equal(role('average-hk').textContent, 'HK$1.01',
+    'A half-cent converted value rounds up without binary floating-point loss');
+
+  for (const invalidRate of [undefined, null, { ...fxRate, rate: 0 }, { ...fxRate, rate: -1 },
+    { ...fxRate, rate: NaN }, { ...fxRate, rate: Infinity }, { ...fxRate, rate: '' },
+    { ...fxRate, from: 'HKD', to: 'CNY' }, { ...fxRate, provider: 'other' }]) {
+    trial.update({ ...context, fxRate: invalidRate });
+    assert.equal(role('average').textContent, '¥166.67');
+    assert.equal(role('average-hk').textContent, '—', 'Missing or invalid quote must not reuse an older HK value');
+    assert(Object.values(groups()).every(row => row[2] === '—'));
+    assert.equal(role('apply').disabled, false, 'FX availability does not block existing CNY application');
+    assert(!container.textContent.includes('NaN') && !container.textContent.includes('Infinity'));
+  }
+  trial.update({ ...context, fxRate: { ...fxRate, rate: 1.2, demo: false } });
+  assert.equal(role('average-hk').textContent, 'HK$200.00', 'A replacement rate refreshes all displayed averages');
+  assert.deepEqual(groups()['黑色'], ['1', '¥300.00', 'HK$360.00']);
+  trial.update({ ...context, items: [{ price: 0, color: '白色' }] });
+  assert.equal(role('average-hk').textContent, 'HK$0.00', 'Zero price is valid and differs from missing FX');
+  trial.update({ ...context, items: [] });
+  assert.equal(role('average-hk').textContent, '—');
+  trial.update({ ...context, disabledReason: '请先选择货品范围和质量模板' });
+  assert.equal(role('average-hk').textContent, '—');
+  assert.deepEqual(groups(), {});
+  trial.destroy();
+  assert.deepEqual(errors, []);
+  dom.window.close();
+  console.log('PASS HK averages: WorldFirst quote, per-color and weighted totals, live selection, precision, invalid/missing FX, rate replacement and unchanged CNY application');
+}
+
 async function integrationAcceptance() {
   // The full-page fixture keeps the existing prototype renderers and data together.
   const { dom, w, errors } = environment(fs.readFileSync(path.join(root, 'index.html'), 'utf8'), true);
@@ -293,9 +368,12 @@ async function integrationAcceptance() {
   assert(number('count') > 1, 'Changing a target quantity cannot truncate the inventory trial');
   const colorRows = [...role('color-rows').rows];
   assert(colorRows.length > 1, 'The editor forwards actual item colors to the trial');
-  assert(colorRows.every(row => row.cells.length === 3 && row.cells[0].textContent !== '未标注颜色'));
+  assert(colorRows.every(row => row.cells.length === 4 && row.cells[0].textContent !== '未标注颜色'));
   assert.equal(colorRows.reduce((sum, row) => sum + Number(row.cells[1].textContent), 0), number('count'));
   assert(number('average') > 0 && number('average') <= 4500);
+  assert(number('average-hk') > 0);
+  assert(colorRows.every(row => /^HK\$/.test(row.cells[3].textContent)));
+  assert.match(role('fx-rate').textContent, /万里汇/);
   role('apply').click();
   assert.equal($('#se-base').value, '4500');
   assert.equal($('#se-ceiling').value, '4580');
@@ -411,5 +489,6 @@ async function integrationAcceptance() {
 (async () => {
   await moduleAcceptance();
   await colorStatisticsAcceptance();
+  await exchangeRateAcceptance();
   if (!process.argv.includes('--module-only')) await integrationAcceptance();
 })().catch(error => { console.error(error); process.exitCode = 1; });
