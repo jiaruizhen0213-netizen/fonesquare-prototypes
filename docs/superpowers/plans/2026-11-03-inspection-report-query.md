@@ -15,8 +15,8 @@
 - Preserve the attachment order for all 48 product and inspection fields after exclusions. Exclude 库存状态、批次日期、快照时间、货源主体、运营中心 and pricing/strategy/comparison/retention fields (关联策略、比货留货时间、留货结果、结算价、预估售价、价格更新时间).
 - Add only query metadata (查询状态、查询时间、查询失败原因), not pricing/strategy/comparison/retention/transfer fields.
 - Preserve string item numbers and leading zeros; reject formula cells and numeric identifiers longer than 15 digits.
-- Unknown reports, query failures and missing attributes are distinct. Only known demo identifiers return fixture data. All PMS behavior is explicitly simulated.
-- All new dropdown filters use checkbox multi-select. Same-field OR, cross-field AND; search applies on 查询.
+- Query status is exactly 查询中、成功、失败. All valid items, including queued items, start as 查询中. Missing reports, interface errors and invalid input are 失败 with distinct reasons; only interface failures can retry. Missing attributes remain blank. Only known demo identifiers return fixture data. All PMS behavior is explicitly simulated.
+- The only filters are exact item number and checkbox multi-select query status. Selected statuses use OR, composed with item number using AND; search applies on 查询. Model name remains a report field, not a filter.
 - No writes to existing inventory, retention, strategy or transfer state. No real PMS or lock requests.
 
 ## Task 1: New module and route
@@ -38,7 +38,7 @@ Interface: `window.RetentionExportTasks.create({type:'质检报告查询导出',
 
 - [x] Check template workbook contains `物品编号` and no mandatory region field.
 - [x] Test uploaded string IDs, duplicate merging, leading zeros, unsafe numeric/formula cells, blank or bad headers, empty/unreadable file, and safe text rendering.
-- [x] Test successful, missing and failed queries, retry recovery, live progress, repeated-upload replacement, filtering/reset and pagination.
+- [x] Test the three exact statuses, queued items displayed as 查询中, missing-report/interface/validation failure reasons, interface-only retry recovery, live progress, repeated-upload replacement, item-number/status filtering/reset and pagination.
 - [x] Check exported field names and actual values, blank failed-report values, original string IDs, and immutable snapshots. Verify original detail/inventory rows remain identical.
 - [x] Run focused DOM acceptance plus appropriate existing navigation/export regression. Check browser upload, details and result table at desktop and narrow widths with no page errors.
 - [ ] Inspect diff, commit only the relevant module/integration/tests/documentation. Push main, wait for Pages `built` at the exact commit, verify remote asset bytes and HTTP 200, then return the new route.

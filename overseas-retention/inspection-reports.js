@@ -13,7 +13,7 @@
     '是否可恢复出厂设置','机身美容情况'
   ];
   const resultColumns = [columns[0],'查询状态',...columns.slice(1),'查询时间','查询失败原因'];
-  const statuses = ['待查询','查询中','查询成功','未查询到','查询失败'];
+  const statuses = ['查询中','成功','失败'];
   const sampleIds = ['20260807135404011810','20260921000000000001','00001234567890123456','20260921000000000002','20260921000000000099'];
   const report = (item, code, model, memory, color, grade, number, pjtGrade, imei) => ({
     '物品编号':item,'SKU名称':model+' '+memory+' '+color+' 大陆国行（演示）','商品码':code,
@@ -41,7 +41,7 @@
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const display = value => value === '' || value == null ? '—' : String(value);
   const timestamp = () => new Date().toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'});
-  let app, rows=[], busy=false, reading=false, chosenFile=null, page=1, batchInfo=null, filters={query:'',model:[],status:[]}, generation=0;
+  let app, rows=[], busy=false, reading=false, chosenFile=null, page=1, batchInfo=null, filters={query:'',status:[]}, generation=0;
   const pageSize=10;
   const $ = selector => app.querySelector(selector);
 
@@ -55,16 +55,15 @@
     app.innerHTML=[
       '<div class="heading"><div><h1>质检报告查询</h1><p class="muted">上传物品编号，查询对应质检报告，查看商品信息与质检属性。</p></div><div class="ir-heading-actions"><button class="secondary" id="ir-template" type="button">下载模板</button><button class="primary" id="ir-upload" type="button">上传物品编号</button></div></div>',
       '<div class="ir-demo-note"><span>原型演示 · 模拟 PMS 查询，不执行留货或锁货。</span><button type="button" class="text-btn" id="ir-demo">加载演示数据</button></div>',
-      '<form id="ir-filters" class="panel ir-filters"><div><label class="ir-label" for="ir-query-number">物品编号</label><input id="ir-query-number" name="query" type="text" placeholder="输入完整物品编号"></div><div>'+multi('model','型号')+'</div><div>'+multi('status','查询状态')+'</div><div class="ir-filter-actions"><button class="primary" id="ir-query" type="submit">查询</button><button class="secondary" id="ir-reset" type="reset">重置</button></div></form>',
+      '<form id="ir-filters" class="panel ir-filters"><div><label class="ir-label" for="ir-query-number">物品编号</label><input id="ir-query-number" name="query" type="text" placeholder="输入完整物品编号"></div><div>'+multi('status','查询状态')+'</div><div class="ir-filter-actions"><button class="primary" id="ir-query" type="submit">查询</button><button class="secondary" id="ir-reset" type="reset">重置</button></div></form>',
       '<p id="ir-notice" class="ir-notice" role="status" aria-live="polite"></p>',
       '<div class="panel ir-results"><div class="panel-head"><div><h2>本次查询结果 <small id="ir-count">共 0 条</small></h2><p id="ir-batch" class="ir-batch">上传后展示本次查询结果，物品编号可点击查看报告详情。</p></div><div class="ir-result-actions"><button class="secondary" id="ir-retry" type="button" disabled>重试失败</button><button class="secondary" id="ir-export" type="button" disabled>导出</button></div></div>',
       '<div id="ir-progress" class="ir-progress" role="status" aria-live="polite" hidden></div>',
       '<div class="ir-table-wrap"><table id="ir-table"><thead><tr>'+resultColumns.map(k=>'<th scope="col">'+escape(k)+'</th>').join('')+'</tr></thead><tbody></tbody></table></div><div id="ir-pager" class="ir-pager"></div></div>',
-      '<dialog id="ir-upload-dialog" class="ir-dialog"><header><h2>上传物品编号</h2><button class="secondary" data-close="ir-upload-dialog" type="button" aria-label="关闭上传弹窗">关闭</button></header><div class="ir-dialog-body"><p>模板只需填写“物品编号”，请使用文本格式保存完整编号。</p><div id="ir-drop-zone" class="ir-drop-zone"><span class="ir-upload-icon">↑</span><strong>点击选择或拖拽 Excel 文件到这里</strong><span>.xlsx / .xls，最多 500 行，文件不超过 5 MB</span><button type="button" class="secondary" id="ir-choose">选择文件</button><input id="ir-file" type="file" accept=".xlsx,.xls" hidden></div><div class="ir-file-chip" id="ir-file-chip" hidden><span id="ir-filename"></span><button type="button" class="text-btn" id="ir-remove">移除</button></div><div class="ir-upload-links"><button type="button" class="text-btn" id="ir-template-modal">下载模板</button><button type="button" class="text-btn" id="ir-example-download">下载演示文件</button></div><p class="ir-upload-help">文件内重复编号合并查询；格式错误的行单独显示失败原因。新上传会替换本次结果，请先导出需要保留的数据。</p><p class="ir-upload-help">当前为原型演示，请使用演示文件体验成功、未查询到及失败重试。</p><p id="ir-upload-error" class="ir-error" role="alert"></p></div><footer><button type="button" class="secondary" data-close="ir-upload-dialog">取消</button><button type="button" class="primary" id="ir-submit" disabled>上传并查询</button></footer></dialog>',
+      '<dialog id="ir-upload-dialog" class="ir-dialog"><header><h2>上传物品编号</h2><button class="secondary" data-close="ir-upload-dialog" type="button" aria-label="关闭上传弹窗">关闭</button></header><div class="ir-dialog-body"><p>模板只需填写“物品编号”，请使用文本格式保存完整编号。</p><div id="ir-drop-zone" class="ir-drop-zone"><span class="ir-upload-icon">↑</span><strong>点击选择或拖拽 Excel 文件到这里</strong><span>.xlsx / .xls，最多 500 行，文件不超过 5 MB</span><button type="button" class="secondary" id="ir-choose">选择文件</button><input id="ir-file" type="file" accept=".xlsx,.xls" hidden></div><div class="ir-file-chip" id="ir-file-chip" hidden><span id="ir-filename"></span><button type="button" class="text-btn" id="ir-remove">移除</button></div><div class="ir-upload-links"><button type="button" class="text-btn" id="ir-template-modal">下载模板</button><button type="button" class="text-btn" id="ir-example-download">下载演示文件</button></div><p class="ir-upload-help">文件内重复编号合并查询；格式错误的行单独显示失败原因。新上传会替换本次结果，请先导出需要保留的数据。</p><p class="ir-upload-help">当前为原型演示，请使用演示文件体验查询中、成功、失败及失败重试。</p><p id="ir-upload-error" class="ir-error" role="alert"></p></div><footer><button type="button" class="secondary" data-close="ir-upload-dialog">取消</button><button type="button" class="primary" id="ir-submit" disabled>上传并查询</button></footer></dialog>',
       '<dialog id="ir-report-dialog" class="ir-dialog ir-report-dialog"><header><h2>质检报告详情</h2><button type="button" class="secondary" data-close="ir-report-dialog">关闭</button></header><div class="ir-dialog-body"><p class="ir-report-note">PMS 查询结果 · 原型演示数据；接口未返回的字段显示“—”。</p><dl id="ir-report-fields"></dl></div></dialog>'
     ].join('');
     setChoices('status',statuses);
-    setChoices('model',[]);
     $('#ir-template').onclick=$('#ir-template-modal').onclick=downloadTemplate;
     $('#ir-upload').onclick=()=>{ $('#ir-upload-error').textContent='';$('#ir-upload-dialog').showModal(); };
     $('#ir-choose').onclick=()=>$('#ir-file').click();
@@ -87,10 +86,10 @@
     $('#ir-export').onclick=exportRows;
     $('#ir-filters').onsubmit=event=>{
       event.preventDefault();
-      filters={query:$('#ir-query-number').value.trim(),model:selected('model'),status:selected('status')};page=1;closeMultis();render();
+      filters={query:$('#ir-query-number').value.trim(),status:selected('status')};page=1;closeMultis();render();
     };
     $('#ir-filters').onreset=()=>{
-      filters={query:'',model:[],status:[]};page=1;
+      filters={query:'',status:[]};page=1;
       app.querySelectorAll('.ir-multi input').forEach(input=>input.checked=false);
       app.querySelectorAll('.ir-multi').forEach(refreshSummary);closeMultis();render();
     };
@@ -118,7 +117,7 @@
   function selected(name){return [...app.querySelectorAll('.ir-multi[data-filter="'+name+'"] input:checked')].map(input=>input.value);}
   function setChoices(name,values){
     const menu=$('.ir-multi[data-filter="'+name+'"]'), old=new Set(selected(name));
-    menu.querySelector('.ir-option-list').innerHTML=values.length?values.map(value=>'<label><input type="checkbox" value="'+escape(value)+'" '+(old.has(value)?'checked':'')+'><span>'+escape(value)+'</span></label>').join(''):'<span class="ir-no-options">查询后展示可选型号</span>';
+    menu.querySelector('.ir-option-list').innerHTML=values.length?values.map(value=>'<label><input type="checkbox" value="'+escape(value)+'" '+(old.has(value)?'checked':'')+'><span>'+escape(value)+'</span></label>').join(''):'<span class="ir-no-options">暂无可选项</span>';
     refreshSummary(menu);
   }
   function refreshSummary(menu){
@@ -126,14 +125,14 @@
     summary.textContent=!values.length?'不限':values.length===1?values[0]:'已选 '+values.length+' 项';summary.title=values.join('、');
   }
   function closeMultis(except){app.querySelectorAll('.ir-multi[open]').forEach(menu=>{if(menu!==except)menu.open=false;});}
-  function matchingRows(){return rows.filter(row=>(!filters.query||row['物品编号']===filters.query)&&(!filters.model.length||filters.model.includes(row['型号名称']))&&(!filters.status.length||filters.status.includes(row['查询状态'])));}
+  function matchingRows(){return rows.filter(row=>(!filters.query||row['物品编号']===filters.query)&&(!filters.status.length||filters.status.includes(row['查询状态'])));}
   function render(){
     const found=matchingRows(),pages=Math.max(1,Math.ceil(found.length/pageSize));page=Math.max(1,Math.min(page,pages));
     $('#ir-count').textContent='共 '+found.length+' 条';
     $('#ir-table tbody').innerHTML=found.length?found.slice((page-1)*pageSize,page*pageSize).map(row=>'<tr>'+resultColumns.map((key,index)=>{
       const value=display(row[key]);
-      if(index===0)return '<td>'+(row['查询状态']==='查询成功'?'<button type="button" class="text-btn" data-report="'+row.id+'">'+escape(value)+'</button>':escape(value))+'</td>';
-      if(key==='查询状态')return '<td><span class="ir-state '+(row['查询状态']==='查询成功'?'success':row['查询状态']==='查询失败'?'error':row['查询状态']==='未查询到'?'empty':'pending')+'">'+escape(value)+'</span></td>';
+      if(index===0)return '<td>'+(row['查询状态']==='成功'?'<button type="button" class="text-btn" data-report="'+row.id+'">'+escape(value)+'</button>':escape(value))+'</td>';
+      if(key==='查询状态')return '<td><span class="ir-state '+(row['查询状态']==='成功'?'success':row['查询状态']==='失败'?'error':'pending')+'">'+escape(value)+'</span></td>';
       return '<td'+(key==='查询失败原因'?' class="ir-reason"':'')+'>'+escape(value)+'</td>';
     }).join('')+'</tr>').join(''):'<tr><td colspan="'+resultColumns.length+'" class="ir-empty">'+(rows.length?'暂无符合条件的查询结果':'暂无查询结果，请上传物品编号或加载演示数据')+'</td></tr>';
     $('#ir-pager').innerHTML='<span>第 '+page+' / '+pages+' 页 · 每页 '+pageSize+' 条</span><button type="button" class="secondary" data-page="-1" '+(page===1?'disabled':'')+'>上一页</button><button type="button" class="secondary" data-page="1" '+(page===pages?'disabled':'')+'>下一页</button>';
@@ -141,13 +140,13 @@
     $('#ir-file').disabled=$('#ir-choose').disabled=$('#ir-remove').disabled=busy||reading;
     $('#ir-submit').disabled=busy||reading||!chosenFile;
     app.querySelectorAll('#ir-upload-dialog [data-close]').forEach(button=>button.disabled=reading);
-    $('#ir-retry').disabled=busy||reading||!rows.some(row=>row.retryable&&row['查询状态']==='查询失败');
+    $('#ir-retry').disabled=busy||reading||!rows.some(row=>row.retryable&&row['查询状态']==='失败');
     $('#ir-export').disabled=busy||reading||!found.length;
     if(batchInfo){
-      const done=rows.filter(row=>!['待查询','查询中'].includes(row['查询状态'])).length;
+      const done=rows.filter(row=>row['查询状态']!=='查询中').length;
       const count=status=>rows.filter(row=>row['查询状态']===status).length;
       $('#ir-progress').hidden=false;
-      $('#ir-progress').textContent=(busy?'查询中':'查询完成')+'：'+done+' / '+rows.length+' 条 · 成功 '+count('查询成功')+' · 未查询到 '+count('未查询到')+' · 失败 '+count('查询失败');
+      $('#ir-progress').textContent=(busy?'查询中':'查询完成')+'：'+done+' / '+rows.length+' 条 · 成功 '+count('成功')+' · 失败 '+count('失败');
       $('#ir-batch').textContent=batchInfo.name+' · 上传 '+batchInfo.inputCount+' 行 · 重复编号合并 '+batchInfo.duplicates+' 行 · 仅保留本次查询结果';
     }
   }
@@ -229,38 +228,37 @@
           const value=await mockQuery(row);
           if(value){
             columns.slice(1).forEach(key=>{row[key]=value[key]??'';});
-            row['查询状态']='查询成功';row.retryable=false;
-          }else{row['查询状态']='未查询到';row['查询失败原因']='PMS 未返回该物品的质检报告';row.retryable=false;}
-        }catch(error){row['查询状态']='查询失败';row['查询失败原因']=error.message||'PMS 查询失败，请重试';row.retryable=true;}
+            row['查询状态']='成功';row.retryable=false;
+          }else{row['查询状态']='失败';row['查询失败原因']='PMS 未返回该物品的质检报告';row.retryable=false;}
+        }catch(error){row['查询状态']='失败';row['查询失败原因']=error.message||'PMS 查询失败，请重试';row.retryable=true;}
         row['查询时间']=timestamp();render();
       }
     }
     try{await Promise.all(Array.from({length:Math.min(4,targets.length)},worker));}
-    finally{busy=false;setChoices('model',[...new Set(rows.map(row=>row['型号名称']).filter(Boolean))]);render();}
+    finally{busy=false;render();}
   }
   async function startBatch(parsed,name){
     if(busy)return;
-    const id=++generation;filters={query:'',model:[],status:[]};page=1;
+    const id=++generation;filters={query:'',status:[]};page=1;
     $('#ir-filters').reset();$('#ir-report-dialog').close();$('#ir-notice').textContent='';
     batchInfo={name,inputCount:parsed.inputCount,duplicates:parsed.duplicates};
     rows=parsed.records.map((record,index)=>Object.assign(Object.fromEntries(columns.map(key=>[key,''])),{
-      id:'IR-'+id+'-'+index,'物品编号':record.number,'查询状态':record.error?'查询失败':'待查询',
+      id:'IR-'+id+'-'+index,'物品编号':record.number,'查询状态':record.error?'失败':'查询中',
       '查询时间':'','查询失败原因':record.error?'第 '+record.row+' 行：'+record.error:'',retryable:false,attempts:0
     }));
-    setChoices('model',[]);
-    await runQueries(rows.filter(row=>row['查询状态']==='待查询'));
+    await runQueries(rows.filter(row=>row['查询状态']==='查询中'));
   }
   async function retryFailed(){
     if(busy||reading)return;
-    const failed=rows.filter(row=>row.retryable&&row['查询状态']==='查询失败');
-    failed.forEach(row=>{row['查询状态']='待查询';row['查询失败原因']='';});
+    const failed=rows.filter(row=>row.retryable&&row['查询状态']==='失败');
+    failed.forEach(row=>{row['查询状态']='查询中';row['查询失败原因']='';});
     $('#ir-notice').textContent='正在重新查询 '+failed.length+' 条接口失败记录。';
     await runQueries(failed);
     $('#ir-notice').textContent='失败记录已重新查询，请查看最新结果。';
   }
   function openReport(id){
     const row=rows.find(record=>record.id===id);
-    if(!row||row['查询状态']!=='查询成功')return;
+    if(!row||row['查询状态']!=='成功')return;
     $('#ir-report-fields').innerHTML=[...columns,'查询状态','查询时间'].map(key=>'<dt>'+escape(key)+'</dt><dd>'+escape(display(row[key]))+'</dd>').join('');
     $('#ir-report-dialog').showModal();
   }

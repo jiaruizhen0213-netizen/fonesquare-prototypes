@@ -75,7 +75,7 @@ async function until(check, label, timeout = 8000) {
     Object.defineProperty($('#ir-file'), 'files', { configurable: true, value: [file] });
     $('#ir-file').dispatchEvent(new w.Event('change', { bubbles: true }));
   };
-  const finished = () => !/查询中|待查询/.test($('#ir-table tbody').textContent) && !$('#ir-export').disabled;
+  const finished = () => records().every(row => row['查询状态'] !== '查询中') && !$('#ir-export').disabled;
   const upload = async (book, name) => {
     click('#ir-upload'); selectFile(fileFrom(book, name)); click('#ir-submit');
     await until(() => !$('#ir-upload-dialog').open, 'upload dialog closes after parsing');
@@ -89,6 +89,9 @@ async function until(check, label, timeout = 8000) {
 
   assert($('#inspectionReports').classList.contains('active'), 'Direct hash opens the report query module');
   assert.equal($('#ir-filters select'), null, 'New dropdown filters are multi-selects');
+  assert.equal($('#ir-filters [data-filter=model]'), null, 'Model filter has been removed');
+  assert.deepEqual($$('#ir-filters .ir-label').map(node => node.textContent.trim()), ['物品编号', '查询状态']);
+  assert.deepEqual($$('#ir-filters [data-filter=status] input[type=checkbox]').map(input => input.value), ['查询中', '成功', '失败']);
   assert.equal(reportFields.length, 48, 'Report schema follows the attached 57-column file with 9 exclusions');
   assert.deepEqual(headers(), [reportFields[0], '查询状态', ...reportFields.slice(1), '查询时间', '查询失败原因']);
   assert.equal(headers().length, 51);
@@ -106,13 +109,26 @@ async function until(check, label, timeout = 8000) {
   click('#ir-example-download');
   assert(download && /示例|演示/.test(download.filename));
 
+  const queuedIds = ['QUEUE-1','QUEUE-2','QUEUE-3','QUEUE-4','QUEUE-5','QUEUE-6'];
+  click('#ir-upload'); selectFile(fileFrom(workbook([['物品编号'], ...queuedIds.map(no => [no])]))); click('#ir-submit');
+  await until(() => !$('#ir-upload-dialog').open, 'queued batch starts querying');
+  assert.equal(tableRows().length, 6);
+  assert(records().every(row => row['查询状态'] === '查询中'), 'Waiting work beyond the four concurrent requests also displays 查询中');
+  assert.equal($('#ir-export').disabled, true);
+  await until(finished, 'queued batch finishes');
+  assert(records().every(row => row['查询状态'] === '失败'));
+  assert(records().every(row => /PMS.*未返回.*报告/.test(row['查询失败原因'])), 'Missing reports are failures with an explicit reason');
+  assert.equal($('#ir-retry').disabled, true, 'No-report failures are not retried as interface errors');
+
   await upload(workbook([['物品编号'], [first], [second], [leadingZero], [retryId], [missingId]]));
   assert.equal(tableRows().length, 5);
-  assert.equal(byId(first)['查询状态'], '查询成功', 'An already-retained item is still queryable');
-  assert.equal(byId(second)['查询状态'], '查询成功');
-  assert.equal(byId(leadingZero)['查询状态'], '查询成功');
-  assert.equal(byId(retryId)['查询状态'], '查询失败');
-  assert.equal(byId(missingId)['查询状态'], '未查询到');
+  assert.equal(byId(first)['查询状态'], '成功', 'An already-retained item is still queryable');
+  assert.equal(byId(second)['查询状态'], '成功');
+  assert.equal(byId(leadingZero)['查询状态'], '成功');
+  assert.equal(byId(retryId)['查询状态'], '失败');
+  assert.equal(byId(missingId)['查询状态'], '失败');
+  assert(records().every(row => ['成功','失败'].includes(row['查询状态'])), 'Only the two completed statuses remain');
+  assert.match(byId(missingId)['查询失败原因'], /PMS.*未返回.*报告/);
   Object.entries(firstReportValues).forEach(([field, expected]) => {
     assert.equal(byId(first)[field], expected, field + ' contains a returned report value, not just a new column');
   });
@@ -127,6 +143,7 @@ async function until(check, label, timeout = 8000) {
   assert.deepEqual(detailLabels.filter(key => reportFields.includes(key)), reportFields, 'Detail fields preserve the attachment order');
   assert(detailLabels.every(key => !bannedFields.test(key)));
   const detailValues = Object.fromEntries($$('#ir-report-fields dt').map(node => [node.textContent.trim(), node.nextElementSibling.textContent.trim()]));
+  assert.equal(detailValues['查询状态'], byId(first)['查询状态'], 'Detail uses the same simplified status as its list row');
   Object.entries(firstReportValues).forEach(([field, expected]) => assert.equal(detailValues[field], expected, field + ' agrees between list and detail'));
   click('[data-close="ir-report-dialog"]');
   assert.equal($('#ir-report-dialog').open, false);
@@ -143,6 +160,9 @@ async function until(check, label, timeout = 8000) {
   assert.deepEqual(firstExport.matrix[0], [reportFields[0], '查询状态', ...reportFields.slice(1), '查询时间', '查询失败原因']);
   assert.equal(firstExport.matrix[0].length, 51);
   assert(firstExport.matrix[0].every(key => !bannedFields.test(key)));
+  const statusCol = firstExport.matrix[0].indexOf('查询状态');
+  assert(firstExport.matrix.slice(1).every(row => ['成功','失败'].includes(row[statusCol])), 'Export cannot retain the old status values');
+  assert.equal(firstExport.matrix.filter(row => row[statusCol] === '失败').length, 2);
   const noCol = firstExport.matrix[0].indexOf('物品编号');
   assert(firstExport.matrix.slice(1).some(row => row[noCol] === leadingZero), 'Export preserves exact leading-zero string');
   const firstExportRow = firstExport.matrix.find(row => row[noCol] === first);
@@ -155,18 +175,18 @@ async function until(check, label, timeout = 8000) {
   assert.equal($('#ir-export').disabled, true, 'No partial export while retry is still querying');
   await until(finished, 'retry finishes');
   assert.equal(tableRows().length, 5, 'Retry updates the failed row without duplicating it');
-  assert.equal(byId(retryId)['查询状态'], '查询成功');
-  assert.equal(byId(missingId)['查询状态'], '未查询到');
+  assert.equal(byId(retryId)['查询状态'], '成功');
+  assert.equal(byId(missingId)['查询状态'], '失败');
   assert.equal(JSON.stringify(tasks().find(task => task.id === firstExport.id).matrix), frozenExport,
     'Previously exported results are an immutable snapshot');
 
-  choose('status', '查询成功');
+  choose('status', '成功');
   assert.equal(tableRows().length, 5, 'Changing draft filters does not silently query');
   submitFilters(); assert.equal(tableRows().length, 4);
-  choose('status', '未查询到'); submitFilters(); assert.equal(tableRows().length, 5, 'Same-field status options use OR');
-  const selectedModel = byId(first)['型号名称'];
-  choose('model', selectedModel); submitFilters();
-  assert(records().every(row => row['型号名称'] === selectedModel), 'Model AND status filters compose');
+  choose('status', '失败'); submitFilters(); assert.equal(tableRows().length, 5, 'Same-field status options use OR');
+  choose('status', '失败'); submitFilters(); assert.equal(tableRows().length, 4);
+  $('#ir-filters input[name=query]').value = missingId; submitFilters();
+  assert.equal(tableRows().length, 0, 'Exact item number and selected status compose with AND');
   $('#ir-filters input[name=query]').value = first.slice(0, -1); submitFilters();
   assert.equal(tableRows().length, 0, 'Item number uses exact matching');
   $('#ir-filters input[name=query]').value = first; submitFilters();
@@ -224,15 +244,15 @@ async function until(check, label, timeout = 8000) {
   await until(() => !$('#ir-upload-dialog').open, 'delayed upload finishes parsing');
   await until(finished, 'delayed upload finishes querying');
   assert.equal(tableRows().length, 1);
-  assert.equal(byId(first)['查询状态'], '查询成功');
+  assert.equal(byId(first)['查询状态'], '成功');
   assert.equal(byId(second), undefined, 'The original selected file is the only new query batch');
 
   const mixed = workbook([['物品编号'], [first], [first], [leadingZero], [20260921000000000001], ['<img src=x>'], ['formula']]);
   mixed.Sheets[mixed.SheetNames[0]].A7 = { t: 's', v: second, f: '"' + second + '"' };
   await upload(mixed);
   assert.equal(tableRows().length, 5, 'One valid duplicate is merged; invalid rows remain visible');
-  assert.equal(records().filter(row => row['查询状态'] === '查询成功').length, 2);
-  assert.equal(records().filter(row => row['查询状态'] === '查询失败').length, 3);
+  assert.equal(records().filter(row => row['查询状态'] === '成功').length, 2);
+  assert.equal(records().filter(row => row['查询状态'] === '失败').length, 3);
   assert.match($('#inspectionReports').textContent, /重复/);
   assert.match($('#ir-table tbody').textContent, /精度|文本/);
   assert.match($('#ir-table tbody').textContent, /公式/);
@@ -272,5 +292,5 @@ async function until(check, label, timeout = 8000) {
   click('.nav[data-view="inspectionReports"]'); assert($('#inspectionReports').classList.contains('active'));
   assert.deepEqual(errors, []);
   dom.window.close();
-  console.log('PASS inspection reports: 48 attachment-ordered report fields plus 3 query fields, list/detail/XLSX value consistency and missing values, real XLSX import/template, precise IDs, per-row validation, duplicates, query/retry, filter OR/AND/reset, export snapshot/all pages and unchanged existing records');
+  console.log('PASS inspection reports: 48 attachment-ordered report fields plus 3 query fields, list/detail/XLSX value consistency and missing values, real XLSX import/template, precise IDs, per-row validation, duplicates, three-state query/retry, item-number/status-only filters OR/AND/reset, export snapshot/all pages and unchanged existing records');
 })().catch(error => { console.error(error); process.exitCode = 1; });
