@@ -70,6 +70,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   <link rel="stylesheet" href="strategy-results.css?v=20261019-model-column">
 <link rel="stylesheet" href="inventory.css?v=20261015-multi">
 <link rel="stylesheet" href="strategy-price-trial.css?v=20261029-hk-average">
+<link rel="stylesheet" href="inspection-reports.css?v=20261103-1">
 <link rel="stylesheet" href="strategy-editor.css?v=20261019-filters">
 <link rel="stylesheet" href="transfer-rules.css?v=20261016-priority1">
 <script src="transfer-rules.js?v=20261020-warehouse-name"></script>
@@ -94,6 +95,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 <span>▤</span>
 <em>留货库存</em>
 </button>
+      <button class="nav" data-view="inspectionReports"><span>▧</span><em>质检报告查询</em></button>
       <div class="group">基础配置</div>
       <button class="nav" data-view="configs">
 <span>▦</span>
@@ -730,6 +732,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <dialog class="rp-dialog" id="rp-details-dialog" aria-labelledby="rp-details-dialog-title"><header><h2 id="rp-details-dialog-title"></h2><button type="button" class="secondary" onclick="this.closest('dialog').close()">关闭</button></header><article></article></dialog>
         </section>
         <section class="view" id="transferRules"></section>
+        <section class="view" id="inspectionReports"><div id="inspection-reports-app"></div></section>
         <section class="view" id="stayInventory">
           <div id="inventory-app"></div>
           <script>
@@ -1501,7 +1504,7 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
     </div>
   </div>
   <script>
-    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价',transferRules:'自动调拨规则',exportTasks:'导出任务列表'};
+    const names={strategy:'指定策略留货',specifiedItems:'指定物品留货',create:'新建留货策略',execution:'执行记录',configs:'配置中心',mapping:'成色映射',stayDetails:'留货明细',stayInventory:'留货库存',inspectionReports:'质检报告查询',goodsRange:'货品范围配置',goodsRangeCreate:'新建货品范围',qualityTemplates:'质量模板',estimatedPrices:'海外预估售价',transferRules:'自动调拨规则',exportTasks:'导出任务列表'};
     function showView(id){if(id==='mapping')id='qualityTemplates';document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.view===id));document.getElementById('crumb').textContent=names[id];window.scrollTo({top:0,behavior:'smooth'});}
     function showCreate(){showView('create')}
     document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>showView(n.dataset.view)));
@@ -1537,10 +1540,11 @@ byId('mi-export').onclick=()=>{const cols=['原始行号',...manualCols];workboo
     document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeDrawer();closePriceUpload()}});
     if(names[location.hash.slice(1)])showView(location.hash.slice(1));
   </script>
-  <script src="export-tasks.js?v=20261016-2"></script>
+  <script src="export-tasks.js?v=20261103-inspection-reports"></script>
   <script src="inventory.js?v=20261016-export-tasks"></script>
   <script src="strategy-results.js?v=20261019-model-column"></script>
   <script src="strategy-price-trial.js?v=20261029-hk-average"></script>
   <script src="strategy-editor.js?v=20261029-hk-average"></script>
+  <script src="inspection-reports.js?v=20261103-1"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@
   let tasks=[],page=1,filters={type:''},notice='';
   try { const saved=JSON.parse(localStorage.getItem(key)||'[]'); if(Array.isArray(saved))tasks=saved.filter(t=>t&&typeof t.id==='string'&&['csv','xlsx'].includes(t.format)); } catch { notice='无法读取历史任务，当前仍可创建和下载任务。'; }
   function save(){try{localStorage.setItem(key,JSON.stringify(tasks));}catch{notice='浏览器无法保存任务；本次任务仍可下载，刷新后可能丢失。';}}
-  root.innerHTML=`<form class="panel filter"><label class="field">任务类型<select name="type"><option value="">全部任务类型</option><option>留货明细导出</option><option>留货库存导出</option></select></label><span class="grow"></span><button class="primary" type="submit">查询</button><button class="secondary" type="reset">重置</button></form><p class="hint" role="status" aria-live="polite"></p><div class="panel"><div class="panel-head"><h2>导出任务 <small id="et-count"></small></h2><button class="secondary" type="button" data-refresh>刷新</button></div><div class="table-wrap"><table><thead><tr>${['任务编号','任务类型','操作时间','操作人','状态','操作'].map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody></tbody></table></div><div class="panel-head" id="et-pager"></div></div>`;
+  root.innerHTML=`<form class="panel filter"><label class="field">任务类型<select name="type"><option value="">全部任务类型</option><option>留货明细导出</option><option>留货库存导出</option><option>质检报告查询导出</option></select></label><span class="grow"></span><button class="primary" type="submit">查询</button><button class="secondary" type="reset">重置</button></form><p class="hint" role="status" aria-live="polite"></p><div class="panel"><div class="panel-head"><h2>导出任务 <small id="et-count"></small></h2><button class="secondary" type="button" data-refresh>刷新</button></div><div class="table-wrap"><table><thead><tr>${['任务编号','任务类型','操作时间','操作人','状态','操作'].map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody></tbody></table></div><div class="panel-head" id="et-pager"></div></div>`;
   const form=root.querySelector('form');
   function update(){let changed=false;for(const t of tasks){if(t.status==='处理中'&&Date.now()>=t.readyAt){t.status='处理完成';changed=true;}}if(changed)save();}
   function render(){
@@ -14,14 +14,14 @@
     const pages=Math.max(1,Math.ceil(rows.length/10));page=Math.min(page,pages);
     root.querySelector('[role=status]').textContent=notice;
     root.querySelector('#et-count').textContent=`共 ${rows.length} 条`;
-    root.querySelector('tbody').innerHTML=rows.slice((page-1)*10,page*10).map(t=>`<tr><td>${escape(t.id)}</td><td>${escape(t.type)}<div class="sub">${t.count} 条记录</div></td><td style="white-space:nowrap">${escape(t.time)}</td><td>${escape(t.operator)}</td><td><span class="state ${t.status==='处理完成'?'sale':'locked'}">${escape(t.status)}</span></td><td>${t.status==='处理完成'?`<button class="text-btn" type="button" data-download="${escape(t.id)}">下载文件</button>`:'<span class="sub">等待处理完成</span>'}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">暂无导出任务，请在留货明细或留货库存中点击“导出”</td></tr>';
+    root.querySelector('tbody').innerHTML=rows.slice((page-1)*10,page*10).map(t=>`<tr><td>${escape(t.id)}</td><td>${escape(t.type)}<div class="sub">${t.count} 条记录</div></td><td style="white-space:nowrap">${escape(t.time)}</td><td>${escape(t.operator)}</td><td><span class="state ${t.status==='处理完成'?'sale':'locked'}">${escape(t.status)}</span></td><td>${t.status==='处理完成'?`<button class="text-btn" type="button" data-download="${escape(t.id)}">下载文件</button>`:'<span class="sub">等待处理完成</span>'}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">暂无导出任务，请在留货明细、留货库存或质检报告查询中点击“导出”</td></tr>';
     root.querySelector('#et-pager').innerHTML=`<span class="hint">第 ${page} / ${pages} 页 · 每页 10 条</span><div class="buttons"><button class="secondary" data-step="-1" ${page===1?'disabled':''}>上一页</button><button class="secondary" data-step="1" ${page===pages?'disabled':''}>下一页</button></div>`;
   }
   function download(t){
     try{
       if(t.format==='xlsx'){
         const ws=XLSX.utils.aoa_to_sheet(t.matrix);ws['!cols']=t.matrix[0].map(k=>({wch:k==='SKU名称'?58:20}));
-        const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'库存明细');XLSX.writeFile(wb,t.filename,{compression:true});
+        const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,t.type==='质检报告查询导出'?'质检报告':'库存明细');XLSX.writeFile(wb,t.filename,{compression:true});
       }else{
         const url=URL.createObjectURL(new Blob([t.csv],{type:'text/csv;charset=utf-8'}));
         const a=document.createElement('a');a.href=url;a.download=t.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
