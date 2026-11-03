@@ -1,22 +1,43 @@
 /* Static prototype: isolated, simulated PMS report lookup. No inventory or locking writes. */
 (() => {
   'use strict';
-  const columns = ['物品编号','商品码','货源主体','运营中心','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度'];
+  // Follow the 2026-11-02 inventory export headers; keep report attributes only.
+  const columns = [
+    '物品编号','SKU名称','型号名称','购买渠道','内存','颜色','IMEI','PJT等级','最新看图成色',
+    '海外购买渠道','海外等级','质检报告编号','商品码','边框背板','屏幕外观','屏幕显示',
+    '机身弯曲情况','受潮情况','电池健康度','维修情况','屏幕维修情况','主板维修情况',
+    '电池维修情况','零件维修情况','后壳维修情况','前摄维修情况','后摄维修情况',
+    '前摄拍摄功能','后摄拍摄功能','光线距离感应正常','售后案例情况','开机情况','通话功能',
+    '充电功能','无线功能','苹果保修期时长','ICLOUD是否可注销','指纹功能','指南针功能',
+    '触摸功能','面容识别功能','实体按键功能','振动功能','侧键','声音功能','数据连接功能',
+    '是否可恢复出厂设置','机身美容情况'
+  ];
   const resultColumns = [columns[0],'查询状态',...columns.slice(1),'查询时间','查询失败原因'];
   const statuses = ['待查询','查询中','查询成功','未查询到','查询失败'];
   const sampleIds = ['20260807135404011810','20260921000000000001','00001234567890123456','20260921000000000002','20260921000000000099'];
-  const report = (item, code, model, memory, color, grade, number, pjtGrade) => ({
-    '物品编号':item,'商品码':code,'货源主体':'','运营中心':'','型号名称':model,'内存':memory,'颜色':color,
+  const report = (item, code, model, memory, color, grade, number, pjtGrade, imei) => ({
+    '物品编号':item,'SKU名称':model+' '+memory+' '+color+' 大陆国行（演示）','商品码':code,
+    '型号名称':model,'购买渠道':'大陆国行','内存':memory,'颜色':color,'IMEI':imei,
     '海外购买渠道':'CH','海外等级':grade,'PJT等级':pjtGrade,'质检报告编号':number,'最新看图成色':'95新',
-    '边框背板':'轻微划痕','屏幕外观':'细微划痕','屏幕显示':'显示正常','电池健康度':'90%–99%'
+    '边框背板':'轻微划痕','屏幕外观':'细微划痕','屏幕显示':'显示正常','机身弯曲情况':'机身无弯曲',
+    '受潮情况':'机身无进水','电池健康度':'90%–99%','维修情况':'无维修','屏幕维修情况':'屏幕无维修情况',
+    '主板维修情况':'主板无维修情况','电池维修情况':'电池无维修','零件维修情况':'功能零件无维修和缺失',
+    '后壳维修情况':'后壳无异常','前摄维修情况':'前摄像头无维修和缺失','后摄维修情况':'后摄像头无维修和缺失',
+    '前摄拍摄功能':'前摄拍照摄像正常','后摄拍摄功能':'后摄拍照摄像正常','光线距离感应正常':'光线、距离感应正常',
+    '售后案例情况':'无售后维修案例','开机情况':'正常开机','通话功能':'通话功能正常','充电功能':'充电正常',
+    '无线功能':'无线正常','苹果保修期时长':'保修时长＜30天','ICLOUD是否可注销':'iCloud已注销',
+    '指纹功能':'不支持','指南针功能':'指南针功能正常','触摸功能':'触摸功能正常','面容识别功能':'面容识别功能正常',
+    '实体按键功能':'实体按键功能正常','振动功能':'振动功能正常','侧键':'侧键正常','声音功能':'声音功能正常',
+    '数据连接功能':'正常连接电脑','是否可恢复出厂设置':'已激活，可还原','机身美容情况':'无美容'
   });
   const fixtures = new Map([
-    [sampleIds[0],report(sampleIds[0],'DEMO-P-001','苹果 iPhone 13','128G','绿色','C','PMS-DEMO-001','B')],
-    [sampleIds[1],report(sampleIds[1],'DEMO-P-002','苹果 iPhone 15','256G','黑色','B','PMS-DEMO-002','A')],
-    [sampleIds[2],report(sampleIds[2],'DEMO-P-003','苹果 iPhone 15 Pro','256G','蓝色','A','PMS-DEMO-003','A1')],
-    [sampleIds[3],report(sampleIds[3],'DEMO-P-004','苹果 iPhone 14 Pro','256G','紫色','A','PMS-DEMO-004','A2')]
+    [sampleIds[0],report(sampleIds[0],'DEMO-P-001','苹果 iPhone 13','128G','绿色','C','PMS-DEMO-001','B','000000000000001')],
+    [sampleIds[1],report(sampleIds[1],'DEMO-P-002','苹果 iPhone 15','256G','黑色','B','PMS-DEMO-002','A','000000000000002')],
+    [sampleIds[2],report(sampleIds[2],'DEMO-P-003','苹果 iPhone 15 Pro','256G','蓝色','A','PMS-DEMO-003','A1','000000000000003')],
+    [sampleIds[3],report(sampleIds[3],'DEMO-P-004','苹果 iPhone 14 Pro','256G','紫色','A','PMS-DEMO-004','A2','000000000000004')]
   ]);
   fixtures.get(sampleIds[2])['电池健康度']='';
+  delete fixtures.get(sampleIds[2])['维修情况'];
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const display = value => value === '' || value == null ? '—' : String(value);
   const timestamp = () => new Date().toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'});

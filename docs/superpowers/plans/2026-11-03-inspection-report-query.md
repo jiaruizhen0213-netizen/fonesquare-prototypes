@@ -8,11 +8,11 @@
 
 **Tech Stack:** Vanilla JavaScript, HTML/CSS, existing embedded XLSX, JSDOM and Playwright.
 
-**Spec:** Current user request in this conversation, plus current `index.html` detailCols and detailDialogCols (verified 2026-11-03).
+**Spec:** User-confirmed follow-up in this conversation and the headers of `可留货库存明细20261102 (1).xlsx` (verified 2026-11-03). Only header names are reused; actual inventory records stay out of the public prototype.
 
 ## Global Constraints
 
-- Keep these report fields in order: 物品编号、商品码、货源主体、运营中心、型号名称、内存、颜色、海外购买渠道、海外等级、PJT等级、质检报告编号、最新看图成色、边框背板、屏幕外观、屏幕显示、电池健康度。
+- Preserve the attachment order for all 48 product and inspection fields after exclusions. Exclude 库存状态、批次日期、快照时间、货源主体、运营中心 and pricing/strategy/comparison/retention fields (关联策略、比货留货时间、留货结果、结算价、预估售价、价格更新时间).
 - Add only query metadata (查询状态、查询时间、查询失败原因), not pricing/strategy/comparison/retention/transfer fields.
 - Preserve string item numbers and leading zeros; reject formula cells and numeric identifiers longer than 15 digits.
 - Unknown reports, query failures and missing attributes are distinct. Only known demo identifiers return fixture data. All PMS behavior is explicitly simulated.
@@ -27,7 +27,7 @@ Files: create `overseas-retention/inspection-reports.js` and `.css`; add nav, em
 - [x] Build a heading, template/upload/example actions, query filters, current-result table, pagination, upload dialog and report detail dialog inside the new view.
 - [x] Upload template contains only `物品编号`; cells use string type and text number format. XLSX parser uses raw values and rejects unsafe identifiers rather than coercing them silently.
 - [x] Upload replaces the current query result with an explicit notice; merge repeated valid identifiers and report the duplicate count. Invalid rows remain visible as query failures. Loading prevents double submissions and result export until settled.
-- [x] A local async lookup function returns the 16-field whitelisted report, null for no report, and a retryable error fixture. Retry updates the same row without duplicating it.
+- [x] A local async lookup function returns the 48-field whitelisted report, null for no report, and a retryable error fixture. Retry updates the same row without duplicating it.
 - [x] Expose successful item numbers as blue detail links and keep the first table column sticky. Missing returned values display `—`.
 
 ## Task 2: Export integration and verification

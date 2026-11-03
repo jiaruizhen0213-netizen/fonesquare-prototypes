@@ -4,13 +4,20 @@ const assert = require('node:assert/strict');
 const { JSDOM, VirtualConsole } = require(process.env.JSDOM_MODULE || 'jsdom');
 
 const root = path.resolve(__dirname, '../overseas-retention');
-const reportFields = ['物品编号','商品码','货源主体','运营中心','型号名称','内存','颜色','海外购买渠道','海外等级','PJT等级','质检报告编号','最新看图成色','边框背板','屏幕外观','屏幕显示','电池健康度'];
-const bannedFields = /价格|结算价|售价|利润|策略|比货|运行批次|留货来源|留货原因|留货结果|调拨|WMS/;
+const reportFields = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/retention-inspection-report-headers.json'), 'utf8'));
+const bannedFields = /价格|结算价|售价|利润|策略|比货|运行批次|留货来源|留货原因|留货结果|调拨|WMS|库存状态|批次日期|快照时间|货源主体|运营中心/;
 const first = '20260807135404011810';
 const second = '20260921000000000001';
 const leadingZero = '00001234567890123456';
 const retryId = '20260921000000000002';
 const missingId = '20260000000000009999';
+const firstReportValues = {
+  'SKU名称': '苹果 iPhone 13 128G 绿色 大陆国行（演示）',
+  'IMEI': '000000000000001',
+  '屏幕维修情况': '屏幕无维修情况',
+  '充电功能': '充电正常',
+  '机身美容情况': '无美容'
+};
 
 async function until(check, label, timeout = 8000) {
   const deadline = Date.now() + timeout;
@@ -82,8 +89,9 @@ async function until(check, label, timeout = 8000) {
 
   assert($('#inspectionReports').classList.contains('active'), 'Direct hash opens the report query module');
   assert.equal($('#ir-filters select'), null, 'New dropdown filters are multi-selects');
-  assert.equal(headers()[0], '物品编号');
-  assert.deepEqual(headers().filter(key => reportFields.includes(key)), reportFields);
+  assert.equal(reportFields.length, 48, 'Report schema follows the attached 57-column file with 9 exclusions');
+  assert.deepEqual(headers(), [reportFields[0], '查询状态', ...reportFields.slice(1), '查询时间', '查询失败原因']);
+  assert.equal(headers().length, 51);
   assert(headers().every(key => !bannedFields.test(key)), 'No price, strategy, comparison, retention or transfer columns');
   assert.match($('#inspectionReports').textContent, /演示/);
   assert.equal(tableRows().length, 0);
@@ -105,25 +113,43 @@ async function until(check, label, timeout = 8000) {
   assert.equal(byId(leadingZero)['查询状态'], '查询成功');
   assert.equal(byId(retryId)['查询状态'], '查询失败');
   assert.equal(byId(missingId)['查询状态'], '未查询到');
+  Object.entries(firstReportValues).forEach(([field, expected]) => {
+    assert.equal(byId(first)[field], expected, field + ' contains a returned report value, not just a new column');
+  });
+  assert.equal(byId(leadingZero)['电池健康度'], '—');
+  assert.equal(byId(leadingZero)['维修情况'], '—', 'An omitted report property must not be defaulted to normal');
   assert.match(byId(retryId)['查询失败原因'], /超时|失败|异常/);
   assert.equal(byId(missingId)['质检报告编号'], '—');
   const firstButton = $$('#ir-table [data-report]').find(button => button.textContent === first);
   assert(firstButton, 'Successful item number opens the detail report'); firstButton.click();
   assert.equal($('#ir-report-dialog').open, true);
   const detailLabels = $$('#ir-report-fields dt').map(node => node.textContent.trim());
-  assert(reportFields.every(key => detailLabels.includes(key)));
+  assert.deepEqual(detailLabels.filter(key => reportFields.includes(key)), reportFields, 'Detail fields preserve the attachment order');
   assert(detailLabels.every(key => !bannedFields.test(key)));
+  const detailValues = Object.fromEntries($$('#ir-report-fields dt').map(node => [node.textContent.trim(), node.nextElementSibling.textContent.trim()]));
+  Object.entries(firstReportValues).forEach(([field, expected]) => assert.equal(detailValues[field], expected, field + ' agrees between list and detail'));
   click('[data-close="ir-report-dialog"]');
   assert.equal($('#ir-report-dialog').open, false);
+  $$('#ir-table [data-report]').find(button => button.textContent === leadingZero).click();
+  const missingDetailValues = Object.fromEntries($$('#ir-report-fields dt').map(node => [node.textContent.trim(), node.nextElementSibling.textContent.trim()]));
+  assert.equal(missingDetailValues['维修情况'], '—');
+  click('[data-close="ir-report-dialog"]');
 
   click('#ir-export');
   const firstExport = tasks()[0];
   assert.equal(firstExport.type, '质检报告查询导出');
   assert.equal(firstExport.count, 5);
   assert.equal(firstExport.matrix.length, 6);
+  assert.deepEqual(firstExport.matrix[0], [reportFields[0], '查询状态', ...reportFields.slice(1), '查询时间', '查询失败原因']);
+  assert.equal(firstExport.matrix[0].length, 51);
   assert(firstExport.matrix[0].every(key => !bannedFields.test(key)));
   const noCol = firstExport.matrix[0].indexOf('物品编号');
   assert(firstExport.matrix.slice(1).some(row => row[noCol] === leadingZero), 'Export preserves exact leading-zero string');
+  const firstExportRow = firstExport.matrix.find(row => row[noCol] === first);
+  Object.entries(firstReportValues).forEach(([field, expected]) => assert.equal(firstExportRow[firstExport.matrix[0].indexOf(field)], expected));
+  const missingExportRow = firstExport.matrix.find(row => row[noCol] === leadingZero);
+  assert.equal(missingExportRow[firstExport.matrix[0].indexOf('维修情况')], '', 'A missing attribute is blank in export');
+  assert.equal(missingExportRow[firstExport.matrix[0].indexOf('电池健康度')], '');
   const frozenExport = JSON.stringify(firstExport.matrix);
   click('#ir-retry');
   assert.equal($('#ir-export').disabled, true, 'No partial export while retry is still querying');
@@ -229,6 +255,11 @@ async function until(check, label, timeout = 8000) {
   const exportedSheet = download.book.Sheets['质检报告'];
   const exportedMatrix = Array.from(w.XLSX.utils.sheet_to_json(exportedSheet, { header: 1, defval: '' }), row => Array.from(row));
   assert.deepEqual(exportedMatrix, firstExport.matrix, 'Actual workbook values match the original immutable export');
+  assert.equal(w.XLSX.utils.decode_range(exportedSheet['!ref']).e.c + 1, 51);
+  const firstDataRow = exportedMatrix.findIndex(row => row[noCol] === first);
+  const imeiCell = exportedSheet[w.XLSX.utils.encode_cell({ r: firstDataRow, c: exportedMatrix[0].indexOf('IMEI') })];
+  assert.equal(imeiCell.t, 's');
+  assert.equal(imeiCell.v, firstReportValues.IMEI, 'Downloaded IMEI preserves its leading zeros as text');
   const leadingRow = exportedMatrix.findIndex(row => row[noCol] === leadingZero);
   const leadingCell = exportedSheet[w.XLSX.utils.encode_cell({ r: leadingRow, c: noCol })];
   assert.equal(leadingCell.t, 's');
@@ -241,5 +272,5 @@ async function until(check, label, timeout = 8000) {
   click('.nav[data-view="inspectionReports"]'); assert($('#inspectionReports').classList.contains('active'));
   assert.deepEqual(errors, []);
   dom.window.close();
-  console.log('PASS inspection reports: real XLSX import/template, precise IDs, per-row validation, duplicates, report outcomes/retry, detail field scope, filter OR/AND/reset, export snapshot/all pages and unchanged existing records');
+  console.log('PASS inspection reports: 48 attachment-ordered report fields plus 3 query fields, list/detail/XLSX value consistency and missing values, real XLSX import/template, precise IDs, per-row validation, duplicates, query/retry, filter OR/AND/reset, export snapshot/all pages and unchanged existing records');
 })().catch(error => { console.error(error); process.exitCode = 1; });
