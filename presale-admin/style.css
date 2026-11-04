@@ -28,3 +28,6 @@ body{background:#f7f8fa}.search-card,.inventory-card{border:0;border-radius:6px;
 .multi-chevron{width:7px;height:7px;flex-shrink:0;border-right:1.5px solid #536173;border-bottom:1.5px solid #536173;transform:rotate(45deg);margin:0 2px 4px}.multi-select[open] .multi-chevron{transform:rotate(225deg);margin-bottom:0}
 
 .presale-cost{min-width:118px;font-variant-numeric:tabular-nums}.presale-cost span,.presale-cost small{display:block;line-height:1.8}.cost-note{margin-top:-4px}
+
+/* Read-only frontend results beneath the existing listing-state labels. */
+.product-listing-state{min-width:100px;line-height:1.6}.product-listing-state>.tag{margin-bottom:5px}.front-state{display:block;font-size:11px;white-space:nowrap}.front-state.shown{color:#398568}.front-state.partial{color:#a77725}.front-state.hidden{color:#83909e}.inventory-card .front-state-reason{display:block;max-width:116px;margin-top:2px;white-space:normal;line-height:1.5;color:#9aa4af;font-size:10px}
