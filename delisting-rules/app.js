@@ -20,7 +20,7 @@
   const query=$('#ruleSearch').value.trim().toLowerCase(),scope=$('#scopeFilter').value,status=$('#statusFilter').value;
   const rows=state.rules.filter(r=>(!query||r.name.toLowerCase().includes(query))&&(!scope||r.scopes.includes(scope))&&(!status||r.enabled===(status==='on')));
   $('#ruleSummary').textContent='共 '+rows.length+' 条规则';
-  $('#ruleTable').innerHTML=rows.length?'<table><thead><tr><th>规则名称</th><th>生效范围</th><th>命中条件</th><th>命中动作</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody>'+rows.map(r=>'<tr data-rule-id="'+E(r.id)+'"><td><div class="rule-name">'+E(r.name)+'</div><span class="cell-sub">'+E(r.id)+'</span></td><td>'+scopeTags(r.scopes)+'</td><td>'+r.conditions.map((c,i)=>'<div class="condition-line">'+(i?'<span class="and">且</span>':'')+E(R.describe(c))+'</div>').join('')+'</td><td>'+badge('下架','orange')+'</td><td><button class="switch" role="switch" aria-checked="'+r.enabled+'" aria-label="'+E(r.name)+'启用状态" data-action="toggle" data-id="'+E(r.id)+'"></button><span class="muted">'+(r.enabled?'已启用':'已停用')+'</span></td><td class="muted">'+E(r.updatedAt)+'</td><td><button class="link" data-action="edit" data-id="'+E(r.id)+'">编辑</button><button class="link" data-action="copy" data-id="'+E(r.id)+'">复制</button><button class="link danger" data-action="delete" data-id="'+E(r.id)+'">删除</button></td></tr>').join('')+'</tbody></table>':'<div class="empty"><strong>暂无匹配规则</strong>可调整筛选条件或新建下架规则。</div>';
+  $('#ruleTable').innerHTML=rows.length?'<table><thead><tr><th>规则名称</th><th>生效范围</th><th>命中条件</th><th>命中动作</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody>'+rows.map(r=>'<tr data-rule-id="'+E(r.id)+'"><td><div class="rule-name">'+E(r.name)+'</div><span class="cell-sub">'+E(r.id)+'</span></td><td>'+scopeTags(r.scopes)+'</td><td>'+r.conditions.map((c,i)=>'<div class="condition-line">'+(i?'<span class="and">且</span>':'')+E(R.describe(c))+'</div>').join('')+'</td><td>'+badge('下架','orange')+'</td><td><button class="switch" role="switch" aria-checked="'+r.enabled+'" aria-label="'+E(r.name)+'启用状态" data-action="toggle" data-id="'+E(r.id)+'"></button><span class="muted">'+(r.enabled?'已启用':'已停用')+'</span></td><td class="muted">'+E(r.updatedAt)+'</td><td><button class="link" data-action="edit" data-id="'+E(r.id)+'">编辑</button><button class="link danger" data-action="delete" data-id="'+E(r.id)+'">删除</button></td></tr>').join('')+'</tbody></table>':'<div class="empty"><strong>暂无匹配规则</strong>可调整筛选条件或新建下架规则。</div>';
  }
  function renderLogs(){
   const source=$('#logSourceFilter').value,logs=allLogs().filter(x=>!source||x.source===source);
@@ -32,10 +32,9 @@
  function closeModal(){if($('#modal').open)$('#modal').close();runDraft=null;currentLog=null;returnFocus?.focus();}
  function modal(title,html){rememberFocus();$('#modalTitle').textContent=title;$('#modalBody').innerHTML=html;$('#modal').showModal();}
  function syncDraft(){if(!draft)return;draft.name=$('#ruleName').value;draft.note=$('#ruleNote').value;draft.enabled=$('#ruleEnabled').checked;draft.scopes=[...document.querySelectorAll('[name="ruleScope"]:checked')].map(x=>x.value);}
- function openEditor(id,copy=false){
+ function openEditor(id){
   const existing=state.rules.find(r=>r.id===id);
   draft=existing?clone(existing):{id:null,name:'',enabled:true,scopes:['reserve','spot'],conditions:[{field:'grade',op:'in',values:[]}],note:''};
-  if(copy){draft.id=null;draft.name+='（副本）';draft.enabled=false;}
   rememberFocus();$('#editorTitle').textContent=draft.id?'编辑下架规则':'新建下架规则';renderEditor();$('#editor').showModal();$('#ruleName').focus();
  }
  function optionsFor(field,values){
@@ -96,7 +95,7 @@
   const button=event.target.closest('[data-action]');if(!button||button.disabled)return;
   const action=button.dataset.action,id=button.dataset.id;
   if(action==='tab-rules')setTab('rules');if(action==='tab-logs')setTab('logs');
-  if(action==='create')openEditor();if(action==='edit')openEditor(id);if(action==='copy')openEditor(id,true);
+  if(action==='create')openEditor();if(action==='edit')openEditor(id);
   if(action==='toggle')toggle(id);if(action==='delete')remove(id);
   if(action==='close-editor')closeEditor();if(action==='close-modal')closeModal();
   if(action==='add-condition'){syncDraft();draft.conditions.push({field:'grade',op:'in',values:[]});renderEditor();}
