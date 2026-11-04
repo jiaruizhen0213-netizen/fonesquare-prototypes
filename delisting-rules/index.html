@@ -4,7 +4,7 @@
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width,initial-scale=1">
  <title>下架规则配置 · FoneSquare</title>
- <link rel="stylesheet" href="style.css?v=20261104-1">
+ <link rel="stylesheet" href="style.css?v=20261104-2">
 </head>
 <body>
  <header class="page-header">
@@ -12,18 +12,17 @@
   <div class="actions"><button data-action="run" class="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10a8 8 0 1 0-1 7M20 4v6h-6"/></svg> 执行规则</button><button data-action="create" class="button primary">＋ 新建规则</button></div>
  </header>
  <div class="policy-note"><span class="info-icon">i</span><div>库存更新后，命中启用规则的商品自动下架；人工上架后，下次库存更新仍会重新判断。<span>保存配置后，在下一次库存更新或手动执行时应用。</span></div></div>
- <section id="metrics" class="metrics" aria-label="规则概览"></section>
  <main class="card">
   <div class="tabs" role="tablist" aria-label="配置及记录"><button role="tab" aria-selected="true" data-action="tab-rules" id="tabRules">下架规则 <span id="ruleCount"></span></button><button role="tab" aria-selected="false" data-action="tab-logs" id="tabLogs">执行记录 <span id="logCount"></span></button></div>
   <section id="rulesPanel" role="tabpanel" aria-labelledby="tabRules"><div class="filter-row"><label class="search"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="ruleSearch" placeholder="搜索规则名称" aria-label="搜索规则名称"></label><select id="scopeFilter" aria-label="生效范围筛选"><option value="">全部范围</option><option value="reserve">预售商品</option><option value="spot">现货商品</option></select><select id="statusFilter" aria-label="规则状态筛选"><option value="">全部状态</option><option value="on">已启用</option><option value="off">已停用</option></select><button data-action="clear-filters" class="button">重置</button><span class="filter-help">多条规则命中任一条即下架</span></div><div id="ruleTable" class="table-wrap"></div><div class="table-footer"><span id="ruleSummary"></span><span>按颜色 SKU 分别判断现货与预售状态</span></div></section>
   <section id="logsPanel" role="tabpanel" aria-labelledby="tabLogs" hidden><div class="filter-row"><select id="logSourceFilter" aria-label="执行来源筛选"><option value="">全部执行来源</option><option value="manual">手动执行</option><option value="inventory">库存更新自动执行</option></select><button data-action="refresh-logs" class="button">刷新记录</button><span class="filter-help">保留执行方式、规则快照及商品状态变更明细</span></div><div id="logTable" class="table-wrap"></div><div class="table-footer"><span id="logSummary"></span><span>时间均为北京时间</span></div></section>
  </main>
  <details class="demo-tools"><summary>原型演示工具 <span>仅操作当前浏览器中的演示商品数据</span></summary><div><p>可先在现有商品列表手动上架命中商品，再模拟库存更新，验证规则会再次将其下架。当前样例商品如无 N 级，可编辑规则选择现有等级进行体验。</p><button data-action="inventory" class="button">模拟库存更新并执行规则</button><button data-action="products" class="button">返回商品列表</button><span>不接入真实库存或线上任务。</span></div></details>
- <dialog id="editor" class="drawer" aria-labelledby="editorTitle"><form id="ruleForm"><div class="drawer-header"><div><small>商品管理 / 下架规则</small><h2 id="editorTitle">新建下架规则</h2></div><button type="button" class="icon-button" data-action="close-editor" aria-label="关闭规则编辑">×</button></div><div class="drawer-body" id="editorBody"></div><div class="drawer-footer"><span>命中后下架所选类型</span><button type="button" class="button" data-action="close-editor">取消</button><button type="submit" class="button primary">保存规则</button></div></form></dialog>
+ <dialog id="editor" class="editor-modal" aria-labelledby="editorTitle"><form id="ruleForm"><div class="editor-header"><h2 id="editorTitle">新建下架规则</h2><button type="button" class="icon-button" data-action="close-editor" aria-label="关闭规则编辑">×</button></div><div class="editor-body" id="editorBody"></div><div class="editor-footer"><button type="button" class="button" data-action="close-editor">取消</button><button type="submit" class="button primary">保存</button></div></form></dialog>
  <dialog id="modal" class="modal" aria-labelledby="modalTitle"><div class="modal-header"><h2 id="modalTitle"></h2><button class="icon-button" data-action="close-modal" aria-label="关闭弹窗">×</button></div><div id="modalBody"></div></dialog>
  <div id="toast" role="status" aria-live="polite"></div>
  <script src="../wholesale-catalog.js?v=20261029-booking-costs"></script>
  <script src="rules-core.js?v=20261104-1"></script>
- <script src="app.js?v=20261104-1"></script>
+ <script src="app.js?v=20261104-2"></script>
 </body>
 </html>

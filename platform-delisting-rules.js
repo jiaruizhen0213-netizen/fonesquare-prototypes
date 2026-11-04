@@ -10,7 +10,7 @@
  button.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="white"/><circle cx="15" cy="12" r="2" fill="white"/><circle cx="9" cy="18" r="2" fill="white"/></svg><span>下架规则配置</span>';products.after(button);
  const page=d.createElement('section');page.id=view+'Page';page.className='page';
  const frame=d.createElement('iframe');frame.title='下架规则配置';
- frame.dataset.src='delisting-rules/index.html?v=20261104-1';
+ frame.dataset.src='delisting-rules/index.html?v=20261104-2';
  frame.style.cssText='width:100%;height:calc(100vh - 125px);min-height:720px;border:0;background:transparent';
  page.append(frame);d.querySelector('#presaleProductsPage').after(page);
  const original=w.setView;
