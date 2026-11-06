@@ -521,7 +521,6 @@
     .scan-menu::backdrop { background: #0006; }
     .scan-menu h2 { font-size: 16px; margin: 0 0 14px; text-align: center; }
     .scan-menu .scan-choice { display: flex; align-items: center; gap: 14px; width: 100%; padding: 18px 8px; border: 0; border-bottom: 1px solid var(--line); background: #fff; text-align: left; font-size: 17px; color: var(--ink); }
-    .scan-choice .scan-symbol { color: var(--orange); font-size: 24px; width: 28px; text-align: center; }
     .scan-menu .wide-button { margin-top: 16px; }
     .inspect-demo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
     .inspect-demo-actions button { flex: 1; }
@@ -972,8 +971,8 @@
 
   <dialog class="scan-menu" id="scanActionMenu" aria-labelledby="scanActionTitle">
     <h2 id="scanActionTitle">选择操作</h2>
-    <button class="scan-choice" id="getInspectionReport" type="button"><span class="scan-symbol" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5M3 12h18"/></svg></span><span>获取质检报告</span></button>
-    <button class="scan-choice" id="authorizeInspect" type="button"><span class="scan-symbol" aria-hidden="true">✓</span><span>授权 Rere Inspect</span></button>
+    <button class="scan-choice" id="getInspectionReport" type="button"><span>获取质检报告</span></button>
+    <button class="scan-choice" id="authorizeInspect" type="button"><span>授权 Rere Inspect</span></button>
     <button class="wide-button secondary" id="cancelScanAction" type="button">取消</button>
   </dialog>
   <script>
